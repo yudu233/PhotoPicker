@@ -1,9 +1,11 @@
 # PhotoPicker
 [![](https://jitpack.io/v/yudu233/PhotoPicker.svg)](https://jitpack.io/#yudu233/PhotoPicker)
+
 Android 照片选择器 
+
 简书：[PhotoPicker](http://www.jianshu.com/p/a6b5831797d0)
 
-### 各位读者来点Star支持一下吧  传送门：[PhotoPicker]
+### 各位读者来点Star支持一下吧
 
 参考项目：
 - https://github.com/donglua/PhotoPicker
@@ -17,7 +19,7 @@ Android 照片选择器
 - 集成UCrop裁剪
 
 ### 效果预览
-![01.png](http://upload-images.jianshu.io/upload_images/548993-cb27d44902920aed.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![01.png](http://upload-images.jianshu.io/upload_images/548993-040d5ccd77a101b6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 ![02.png](http://upload-images.jianshu.io/upload_images/548993-3bfb635af8fd49fd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 ![03.png](http://upload-images.jianshu.io/upload_images/548993-3cb12cb642bbf270.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 ![04.png](http://upload-images.jianshu.io/upload_images/548993-8ed048f6cec25939.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
