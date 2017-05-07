@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         new PhotoPickConfig.Builder(this)
                 .imageLoader(new GlideImageLoader())
                 .showCamera(true)
-                .maxPickSize(1)
+                .maxPickSize(9)
                 .build();
     }
 
