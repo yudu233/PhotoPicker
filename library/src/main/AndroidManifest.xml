@@ -1,0 +1,17 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="rain.coder.library">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+
+    <activity
+        android:name="rain.coder.photopicker.ui.PhotoPickActivity"
+        android:theme="@style/PhoAppTheme.AppTheme" />
+    <activity
+        android:name="rain.coder.photopicker.ui.PhotoPreviewActivity"
+        android:theme="@style/PhoAppTheme.AppTheme" />
+
+</manifest>

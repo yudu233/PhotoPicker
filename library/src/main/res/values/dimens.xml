@@ -1,0 +1,53 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="toolbar_padding_top">0dp</dimen>
+
+    <dimen name="layout_margin_4dp">4dp</dimen>
+    <dimen name="layout_margin_2dp">2dp</dimen>
+    <dimen name="layout_margin_5dp">5dp</dimen>
+    <dimen name="layout_margin_8dp">8dp</dimen>
+    <dimen name="layout_margin_16dp">16dp</dimen>
+    <dimen name="layout_margin_22dp">22dp</dimen>
+    <dimen name="layout_margin_24dp">24dp</dimen>
+    <dimen name="layout_margin_28dp">28dp</dimen>
+    <dimen name="layout_margin_32dp">32dp</dimen>
+    <dimen name="layout_margin_64dp">64dp</dimen>
+    <dimen name="layout_margin_70dp">70dp</dimen>
+    <dimen name="layout_padding_1dp">1dp</dimen>
+    <dimen name="layout_padding_2dp">2dp</dimen>
+    <dimen name="layout_padding_4dp">4dp</dimen>
+    <dimen name="layout_padding_6dp">6dp</dimen>
+    <dimen name="layout_padding_8dp">8dp</dimen>
+    <dimen name="layout_padding_12dp">12dp</dimen>
+    <dimen name="layout_padding_16dp">16dp</dimen>
+    <dimen name="layout_padding_22dp">22dp</dimen>
+    <dimen name="layout_padding_24dp">24dp</dimen>
+    <dimen name="layout_padding_28dp">28dp</dimen>
+    <dimen name="layout_padding_32dp">32dp</dimen>
+    <dimen name="layout_padding_64dp">64dp</dimen>
+
+    <!-- 系统最小字体是14sp -->
+    <dimen name="text_size_10sp">10sp</dimen>
+    <dimen name="text_size_12sp">12sp</dimen>
+    <dimen name="text_size_14sp">14sp</dimen>
+    <dimen name="text_size_15sp">15sp</dimen>
+    <dimen name="text_size_16sp">16sp</dimen>
+    <dimen name="text_size_18sp">18sp</dimen>
+    <dimen name="text_size_22sp">22sp</dimen>
+    <dimen name="text_size_26sp">26sp</dimen>
+    <dimen name="text_size_40sp">40sp</dimen>
+    <dimen name="text_size_6sp">6sp</dimen>
+
+    <dimen name="toast_layout_height">40dp</dimen>
+    <dimen name="icon_size_16dp">16dp</dimen>
+    <dimen name="icon_size_20dp">20dp</dimen>
+    <dimen name="icon_size_24dp">24dp</dimen>
+    <dimen name="icon_size_32dp">32dp</dimen>
+    <dimen name="icon_size_40dp">40dp</dimen>
+    <dimen name="icon_size_48dp">48dp</dimen>
+    <dimen name="icon_size_56dp">56dp</dimen>
+
+</resources>
