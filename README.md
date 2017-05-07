@@ -19,13 +19,10 @@ Android 照片选择器
 - 集成UCrop裁剪
 
 ### 效果预览
-![01.png](http://upload-images.jianshu.io/upload_images/548993-040d5ccd77a101b6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![02.png](http://upload-images.jianshu.io/upload_images/548993-3bfb635af8fd49fd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![03.png](http://upload-images.jianshu.io/upload_images/548993-3cb12cb642bbf270.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![04.png](http://upload-images.jianshu.io/upload_images/548993-8ed048f6cec25939.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![send.gif](http://upload-images.jianshu.io/upload_images/548993-2b9a11802bfc33d1.gif?imageMogr2/auto-orient/strip)
-![circleimage.gif](http://upload-images.jianshu.io/upload_images/548993-20da4901efbe291e.gif?imageMogr2/auto-orient/strip)
-![lookbigimage.gif](http://upload-images.jianshu.io/upload_images/548993-4027b93e6be8d593.gif?imageMogr2/auto-orient/strip)
+![01.png](https://github.com/yudu233/PhotoPicker/blob/master/picture/01.png) ![02.png](https://github.com/yudu233/PhotoPicker/blob/master/picture/02.png)
+![03.png](https://github.com/yudu233/PhotoPicker/blob/master/picture/03.png) ![04.png](https://github.com/yudu233/PhotoPicker/blob/master/picture/04.png)
+![send.gif](https://github.com/yudu233/PhotoPicker/blob/master/picture/send.gif) ![circleimage.gif](https://github.com/yudu233/PhotoPicker/blob/master/picture/circleimage.gif)
+![lookbigimage.gif](https://github.com/yudu233/PhotoPicker/blob/master/picture/lookbigimage.gif)
 
 ### 用法
 ```java
