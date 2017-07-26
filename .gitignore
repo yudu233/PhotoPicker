@@ -5,4 +5,8 @@
 /.idea/libraries
 .DS_Store
 /build
+/gradle
+/.idea
 /captures
+将删除 libs/
+将删除 src/main/res/drawable/

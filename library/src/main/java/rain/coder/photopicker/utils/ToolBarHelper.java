@@ -34,16 +34,6 @@ public class ToolBarHelper {
     //视图构造器
     private LayoutInflater mInflater;
 
-    /**
-     * toolbar两个属性
-     * toolbar是否悬浮在窗口之上
-     * toolbar的高度获取
-     */
-    private static int[] ATTRS = {
-            R.attr.windowActionBarOverlay,
-            R.attr.actionBarSize
-    };
-
     public ToolBarHelper(Context context, int layoutId) {
         this.mContext = context;
         mInflater = LayoutInflater.from(mContext);
@@ -62,7 +52,6 @@ public class ToolBarHelper {
                 ViewGroup.LayoutParams.MATCH_PARENT);
         mContentView.setOrientation(LinearLayout.VERTICAL);
         mContentView.setLayoutParams(params);
-
     }
 
     /**
@@ -83,17 +72,7 @@ public class ToolBarHelper {
      */
     private void initUserView(int id) {
         mUserView = mInflater.inflate(id, null);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        TypedArray typedArray = mContext.getTheme().obtainStyledAttributes(ATTRS);
-        //获取主题中定义的悬浮标志
-        boolean overly = typedArray.getBoolean(0, false);
-        //获取主题中定义的toolbar的高度
-        int toolBarSize = (int) typedArray.getDimension(1, (int) mContext.getResources().getDimension(R.dimen.abc_action_bar_default_height_material));
-        typedArray.recycle();
-        //如果是悬浮状态，则不需要设置间距
-        params.topMargin = overly ? 0 : toolBarSize;
-        mContentView.addView(mUserView, params);
-
+        mContentView.addView(mUserView);
     }
 
     public LinearLayout getContentView() {

@@ -49,5 +49,6 @@
     <dimen name="icon_size_40dp">40dp</dimen>
     <dimen name="icon_size_48dp">48dp</dimen>
     <dimen name="icon_size_56dp">56dp</dimen>
+    <dimen name="toolbar_height">56dp</dimen>
 
 </resources>
