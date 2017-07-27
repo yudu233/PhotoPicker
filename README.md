@@ -38,7 +38,7 @@ allprojects {
 在APP目录下的build.gradle中添加依赖
 
 ```java
-    compile 'com.github.yudu233:PhotoPicker:1.0.0'
+    compile 'com.github.yudu233:PhotoPicker:1.2.0'
     
 ```
 

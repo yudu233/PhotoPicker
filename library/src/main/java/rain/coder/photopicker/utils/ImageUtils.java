@@ -13,8 +13,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import rain.coder.library.R;
-
 /**
  * Describe :
  * Email:baossrain99@163.com
@@ -33,8 +31,8 @@ public class ImageUtils {
     public static String getImagePath(Context context, String dir) {
         String path = null;
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            String appName = context.getResources().getString(R.string.app_name);
-            path = Environment.getExternalStorageDirectory() + "/" + appName + dir;
+            String packageName = context.getPackageName();
+            path = Environment.getExternalStorageDirectory() + "/" + packageName + dir;
         }
         if (TextUtils.isEmpty(path))
             context.getCacheDir().getPath();
