@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">PhotoPicker</string>
+    <string name="file_provider_authorities">com.rain.photopicker.provider</string>
+</resources>

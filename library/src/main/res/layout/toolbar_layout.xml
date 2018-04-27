@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:toolbar="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:fitsSystemWindows="true"
+    android:minHeight="?attr/actionBarSize"
+    toolbar:navigationIcon="?attr/homeAsUpIndicator"
+    toolbar:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    toolbar:title="@string/app_name"
+    toolbar:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+    toolbar:titleTextAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+</android.support.v7.widget.Toolbar>
