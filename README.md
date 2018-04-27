@@ -38,55 +38,80 @@ allprojects {
 在APP目录下的build.gradle中添加依赖
 
 ```java
-    compile 'com.github.yudu233:PhotoPicker:1.2.0'
+    compile 'com.github.yudu233:PhotoPicker:1.5.0'
     
 ```
 
 ### AndroidManifest.xml 配置
 ```java
-        <activity
-            android:name=".ui.PhotoPickActivity"
-            android:theme="@style/PhoAppTheme.AppTheme" />
+       <activity
+                   android:name="com.rain.library.ui.PhotoPickActivity"
+                   android:theme="@style/PhoAppTheme.AppTheme"/>
 
-        <activity
-            android:name=".ui.PhotoPreviewActivity"
-            android:theme="@style/PhoAppTheme.AppTheme" />
+               <activity
+                   android:name="com.rain.library.ui.PhotoPreviewActivity"
+                   android:theme="@style/PhoAppTheme.AppTheme"/>
 
-        <activity
-            android:name="com.yalantis.ucrop.UCropActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+               <activity
+                   android:name="com.yalantis.ucrop.UCropActivity"
+                   android:screenOrientation="portrait"
+                   android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
-        <activity android:name=".lookBigImage.ViewBigImageActivity"
-                  android:screenOrientation="portrait"
-                  android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+               <activity
+                   android:name=".lookBigImage.ViewBigImageActivity"
+                   android:screenOrientation="portrait"
+                   android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+               //适配android7.0
+               <provider
+                   android:name="android.support.v4.content.FileProvider"
+                   android:authorities="@string/file_provider_authorities"
+                   android:exported="false"
+                   android:grantUriPermissions="true">
+                   <meta-data
+                       android:name="android.support.FILE_PROVIDER_PATHS"
+                       android:resource="@xml/file_provider_paths"/>
+               </provider>
                   
 ```
 
 ### 照片选择器配置
 ```java
-    new PhotoPickConfig.Builder(this)
-        .imageLoader(new GlideImageLoader())        //图片加载方式（必须）
-        .showCamera(true)                           //是否显示拍照按钮（默认false）
-        .clipPhoto(false)                           //是否裁剪图片（默认false）
-        .clipCircle(true)                           //裁剪方式（默认矩形）
-        .maxPickSize(9)                             //最多可选择图片个数（默认9张）
-        .pickMode(PhotoPickConfig.MODE_PICK_MORE)   //手动设置照片多选还是单选（1单选2多选）
-        .spanCount(3)                               //手动设置GridView列数（默认3列）
-        .build();
+   new PhotoPickConfig
+       .Builder(MainActivity.this)
+       .imageLoader(new GlideImageLoader())                //图片加载方式，支持任意第三方图片加载库
+       .spanCount(PhotoPickConfig.GRID_SPAN_COUNT)         //相册列表每列个数，默认为3
+       .pickMode(PhotoPickConfig.MODE_PICK_SINGLE)         //设置照片选择模式为单选，默认为单选
+       .maxPickSize(PhotoPickConfig.DEFAULT_CHOOSE_SIZE)   //多选时可以选择的图片数量，默认为1张
+       .showCamera(true)           //是否展示相机icon，默认展示
+       .clipPhoto(true)            //是否开启裁剪照片功能，默认关闭
+       .clipCircle(false)          //是否裁剪方式为圆形，默认为矩形
+       .build();
 
 ```
 
 ### 配置说明
->  imageLoader(new GlideImageLoader())        //图片加载方式
-    图片加载方式可以自定义支持Glide、Piscasso、Fresco
+>  imageLoader(new GlideImageLoader())
+    图片加载方式，可以自定义支持Glide、Piscasso、Fresco
 
-> clipCircle(true)                           //裁剪方式（默认矩形）
-    当打开裁剪功能时可选择裁剪方式，默认为矩形，设置为true时裁剪方式为圆形，适用于设置用户头像。
-    这里裁剪功能使用了开源的uCrop，暂时还未实现可自定义。
+> spanCount()
+    设置相册列表每列展示个数，默认为3列
 
-> 其他相关配置就不做过多介绍了，使用起来很方便，源码阅读起来也很简单
-    完全可以自己修改成自己需要的样子。
+> pickMode()
+    设置照片选择模式(单选、多选)，默认为单选
+> maxPickSize()
+    多选时可以选择的图片数量，当pickMode为多选时默认为9张，单选默认为1
+
+> showCamera()
+    是否展示相机icon，默认展示，当pickMode为多选时默认不展示
+
+> clipPhoto()
+    是否开启裁剪照片功能，默认关闭,需手动开启
+
+> clipCircle()
+    裁剪方式为是否圆形，默认为矩形，设置圆形适用于设置头像
+
+>
     
 ### 自定义主题颜色，同步App主题
 ```java
@@ -101,31 +126,47 @@ allprojects {
 ### Activity 回调
 ```java
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK) return;
+
         switch (requestCode) {
-            case PhotoPickConfig.PICK_REQUEST_CODE:
-                //如果是裁剪返回一张就不加入集合了所以这里多了判断
-                if (PhotoPickConfig.photoPickBean.isClipPhoto()){
-                    Uri resultUri = Uri.parse(data.getStringExtra(PhotoPickConfig.EXTRA_CLIP_PHOTO));
-                    //圆形图片加载
-                    Glide.with(MainActivity.this).load(resultUri)
-                            .transform(new GlideCircleTransform(this))
-                            .into(mPic);
-                }else {
-                    ArrayList<String> photoLists = data.getStringArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST);
-                    if (photoLists != null && !photoLists.isEmpty()) {
-                        for (int i = 0; i < photoLists.size(); i++)
-                            if (mImagePaths.size() < 9)
-                                mImagePaths.add(photoLists.get(i));
+            case PhotoPickConfig.PICK_SINGLE_REQUEST_CODE:      //单选不裁剪
+                String path = data.getStringExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO);
+                Log.e("单选", path);
+                mContent.setText(path);
+                break;
+            case PhotoPickConfig.PICK_MORE_REQUEST_CODE:        //多选
+                ArrayList<String> photoLists = data.getStringArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST);
+                if (photoLists != null && !photoLists.isEmpty()) {
+                    for (int i = 0; i < photoLists.size(); i++) {
+                        Log.e("多选", photoLists.get(i) + "========");
+                        mContent.setText(builder.append(photoLists.get(i) + "\n"));
                     }
-                    mAddPicture.setPaths(mImagePaths);
+                }
+                break;
+
+            case PhotoPickConfig.PICK_CLIP_REQUEST_CODE:    //裁剪
+                Uri resultUri = Uri.parse(data.getStringExtra(PhotoPickConfig.EXTRA_CLIP_PHOTO));
+                try {
+                    InputStream input = getContentResolver().openInputStream(resultUri);
+                    int size = input.available();
+                    Log.e("裁剪", resultUri.toString() + "========" + FileSizeUtils.FormetFileSize(size));
+                    mContent.setText(resultUri.toString() + FileSizeUtils.FormetFileSize(size));
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 break;
         }
     }
     
 ```
+
+### 使用的第三方库
+[PhotoView](https://github.com/chrisbanes/PhotoView)
+[slidinguppanel](https://github.com/umano/AndroidSlidingUpPanel)
+[ucrop](https://github.com/Yalantis/uCrop)
+
 有问题可以添加QQ：19880794 
 
 
