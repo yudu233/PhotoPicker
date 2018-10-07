@@ -248,7 +248,7 @@ public class PhotoPickActivity extends BaseActivity {
         // Android7.0以上URI
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             //通过FileProvider创建一个content类型的Uri
-            cameraUri = FileProvider.getUriForFile(this, "com.rain.photopicker.provider", imageFile);
+            cameraUri = FileProvider.getUriForFile(this, PhotoPick.getAuthority(), imageFile);
             //添加这一句表示对目标应用临时授权该Uri所代表的文件,私有目录读写权限
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         } else {

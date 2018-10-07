@@ -21,6 +21,7 @@ public class MyApplication extends Application {
 
         context = this;
 
+        PhotoPick.setAuthority(getString(R.string.file_provider_authorities));
         PhotoPick.init(getApplicationContext());
     }
 

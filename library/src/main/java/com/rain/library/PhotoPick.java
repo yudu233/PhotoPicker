@@ -13,6 +13,7 @@ public final class PhotoPick {
     }
 
     private static int toolbarBackGround;
+    private static String authority;
     private static Context mContext;
 
 
@@ -26,6 +27,7 @@ public final class PhotoPick {
         if (mContext != null) return;
         toolbarBackGround = toolbarBackGroundId;
         mContext = context.getApplicationContext();
+
     }
 
     public static int getToolbarBackGround() {
@@ -39,6 +41,14 @@ public final class PhotoPick {
 
     public static void setToolbarBackGround(int toolbarBackGroundId) {
         toolbarBackGround = toolbarBackGroundId;
+    }
+
+    public static String getAuthority() {
+        return authority;
+    }
+
+    public static void setAuthority(String authorityPath) {
+        authority = authorityPath;
     }
 
 
