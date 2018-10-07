@@ -7,7 +7,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.1.3'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0' // Add this line
 
 
@@ -25,9 +25,9 @@ allprojects {
 }
 
 ext {
-    sdkVersion = 26
-    buildToolsVersion = '26.0.2'
-    supportLibVersion = '26.1.0'
+    sdkVersion = 27
+    buildToolsVersion = '27.0.3'
+    supportLibVersion = '27.1.0'
 }
 
 task clean(type: Delete) {

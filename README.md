@@ -114,7 +114,10 @@ allprojects {
 >
     
 ### 自定义主题颜色，同步App主题
+### 自定义FileProvider地址
 ```java
+        //自定义FileProvider地址（同一地址一部手机唯一）
+        PhotoPick.setAuthority(getString(R.string.file_provider_authorities));
         在Application里初始化PhotoPick
         //默认颜色：橘色android.R.color.holo_red_light
         PhotoPick.init(getApplicationContext());
