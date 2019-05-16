@@ -19,8 +19,6 @@ import com.rain.photopicker.R;
 
 public class GlideImageLoader implements ImageLoader {
 
-    private final static String TAG = "GlideImageLoader";
-
     @Override
     public void displayImage(Context context, String originalImagePath, String thumbnailsImagePath, ImageView imageView, boolean resize, boolean loadThumbnailsImage) {
         DrawableRequestBuilder builder;
