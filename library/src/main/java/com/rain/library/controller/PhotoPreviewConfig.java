@@ -7,7 +7,9 @@ import android.os.Bundle;
 import com.rain.library.PhotoPick;
 import com.rain.library.R;
 import com.rain.library.bean.Photo;
+import com.rain.library.bean.PhotoPickBean;
 import com.rain.library.bean.PhotoPreviewBean;
+import com.rain.library.impl.PhotoSelectCallback;
 import com.rain.library.ui.PhotoPreviewActivity;
 
 import java.util.ArrayList;
@@ -94,14 +96,25 @@ public class PhotoPreviewConfig {
             return this;
         }
 
+        public Builder setSelectPhotosInfo(ArrayList<Photo> selectPhotosInfo) {
+            bean.setSelectPhotosInfo(selectPhotosInfo);
+            return this;
+        }
+
         public Builder setMaxPickSize(int maxPickSize) {
             bean.setMaxPickSize(maxPickSize);
+            return this;
+        }
+
+        public Builder setCallback(PhotoSelectCallback callback) {
+            bean.setCallback(callback);
             return this;
         }
 
         public PhotoPreviewConfig build() {
             return new PhotoPreviewConfig(context, this);
         }
+
 
     }
 }

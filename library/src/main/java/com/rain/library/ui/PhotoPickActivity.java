@@ -8,15 +8,14 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,19 +25,22 @@ import com.rain.library.BaseActivity;
 import com.rain.library.PhotoGalleryAdapter;
 import com.rain.library.PhotoPick;
 import com.rain.library.PhotoPickAdapter;
+import com.rain.library.PhotoPickOptions;
 import com.rain.library.R;
 import com.rain.library.bean.Photo;
 import com.rain.library.bean.PhotoDirectory;
 import com.rain.library.bean.PhotoPickBean;
 import com.rain.library.controller.PhotoPickConfig;
 import com.rain.library.controller.PhotoPreviewConfig;
+import com.rain.library.impl.CommonResult;
 import com.rain.library.loader.MediaStoreHelper;
-import com.rain.library.utils.FileUtils;
+import com.rain.library.utils.Rlog;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -92,6 +94,7 @@ public class PhotoPickActivity extends BaseActivity {
         //设置ToolBar
         toolbar.setTitle(R.string.select_photo);
         toolbar.setBackgroundColor(PhotoPick.getToolbarBackGround());
+        toolbar.setNavigationIcon(PhotoPickOptions.DEFAULT.backIcon);
 
         //全部相册照片列表
         RecyclerView recyclerView = (RecyclerView) this.findViewById(R.id.recyclerView);
@@ -200,7 +203,7 @@ public class PhotoPickActivity extends BaseActivity {
             }
         } else if (requestCode == REQUEST_CODE_CAMERA) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                selectPicFromCamera();
+                adapter.selectPicFromCamera();
             } else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("温馨提示");
@@ -225,39 +228,6 @@ public class PhotoPickActivity extends BaseActivity {
         }
     }
 
-
-    /**
-     * 启动Camera拍照
-     */
-    public void selectPicFromCamera() {
-        if (!android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-            Toast.makeText(this, R.string.cannot_take_pic, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        // 直接将拍到的照片存到手机默认的文件夹
-       /* Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        ContentValues values = new ContentValues();
-        cameraUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
-        startActivityForResult(intent, REQUEST_CODE_CAMERA);*/
-
-        //保存到自定义目录
-
-        File imageFile = FileUtils.createImageFile(this, "/images");
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Android7.0以上URI
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            //通过FileProvider创建一个content类型的Uri
-            cameraUri = FileProvider.getUriForFile(this, PhotoPick.getAuthority(), imageFile);
-            //添加这一句表示对目标应用临时授权该Uri所代表的文件,私有目录读写权限
-            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        } else {
-            cameraUri = Uri.fromFile(imageFile);
-        }
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
-        startActivityForResult(intent, PhotoPickActivity.REQUEST_CODE_SHOW_CAMERA);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (!pickBean.isClipPhoto()) {
@@ -266,17 +236,65 @@ public class PhotoPickActivity extends BaseActivity {
         return true;
     }
 
+    private ArrayList<String> imageFilePath = new ArrayList<>();
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.ok) {
-            Intent intent = new Intent();
+            final Intent intent = new Intent();
             if (adapter != null && !adapter.getSelectPhotos().isEmpty()) {
-                if (adapter.getSelectPhotos().size() != 1) {
-                    intent.putStringArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST, adapter.getSelectPhotos());
-                } else
-                    intent.putExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO, adapter.getSelectPhotos().get(0));
-                setResult(Activity.RESULT_OK, intent);
-                finish();
+
+                if (pickBean.isStartCompression()) {
+                    PhotoPick.startCompression(PhotoPickActivity.this, adapter.getSelectPhotos(), new CommonResult<File>() {
+                        @Override
+                        public void onSuccess(File file) {
+                            if (file.exists()) {
+
+                                Rlog.e("Rain", "Luban compression success:" + file.getAbsolutePath() + " ; image length = " + file.length());
+                                adapter.getSelectPhotosInfo().get(imageFilePath.size()).setCompressionImagePath(file.getAbsolutePath());
+                                imageFilePath.add(file.getAbsolutePath());
+                                if (imageFilePath != null && imageFilePath.size() > 0 && imageFilePath.size() == adapter.getSelectPhotos().size()) {
+                                    Rlog.e("Rain", "所有图片压缩完成!");
+
+
+                                    if (adapter.getSelectPhotos().size() != 1) {
+                                        if (pickBean.getCallback() != null)
+                                            pickBean.getCallback().moreSelect(adapter.getSelectPhotosInfo());
+                                        else
+                                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST, adapter.getSelectPhotosInfo());
+                                        // intent.putStringArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST, imageFilePath);
+                                    } else {
+                                        if (pickBean.getCallback() != null)
+                                            pickBean.getCallback().singleSelect(adapter.getSelectPhotosInfo());
+                                        else
+                                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO, adapter.getSelectPhotosInfo());
+                                        //intent.putExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO, imageFilePath.get(0));
+                                    }
+                                    setResult(Activity.RESULT_OK, intent);
+                                    finish();
+                                }
+                            }
+                        }
+                    });
+
+                } else {
+                    //不做压缩处理 直接发送原图信息
+                    if (adapter.getSelectPhotos().size() != 1) {
+                        if (pickBean.getCallback() != null)
+                            pickBean.getCallback().moreSelect(adapter.getSelectPhotosInfo());
+                        else
+                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST, adapter.getSelectPhotosInfo());
+                        // intent.putStringArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST, imageFilePath);
+                    } else {
+                        if (pickBean.getCallback() != null)
+                            pickBean.getCallback().singleSelect(adapter.getSelectPhotosInfo());
+                        else
+                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO, adapter.getSelectPhotosInfo());
+                        //intent.putExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO, imageFilePath.get(0));
+                    }
+                    setResult(Activity.RESULT_OK, intent);
+                    finish();
+                }
             }
             return true;
         }
@@ -302,10 +320,10 @@ public class PhotoPickActivity extends BaseActivity {
         }
         switch (requestCode) {
             case REQUEST_CODE_SHOW_CAMERA://相机
-                findPhoto(adapter.getCameraUri());
+                findPhoto();
                 break;
             case UCrop.REQUEST_CROP:    //裁剪
-                findClipPhoto(UCrop.getOutput(data));
+                findClipPhoto();
                 break;
             case UCrop.RESULT_ERROR:
                 Throwable cropError = UCrop.getError(data);
@@ -343,27 +361,54 @@ public class PhotoPickActivity extends BaseActivity {
         }
     }
 
-    private void findClipPhoto(Uri uri) {
-        Intent intent = new Intent();
-        intent.putExtra(PhotoPickConfig.EXTRA_CLIP_PHOTO, uri.toString());
-        setResult(Activity.RESULT_OK, intent);
+    private void findClipPhoto() {
+        adapter.getSelectPhotosInfo().add(new Photo(adapter.getClipImagePath(), 1));
+        if (pickBean.getCallback() != null) {
+            pickBean.getCallback().clipImage(adapter.getSelectPhotosInfo());
+        } else {
+            Intent intent = new Intent();
+            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_CLIP_PHOTO, adapter.getSelectPhotosInfo());
+            setResult(Activity.RESULT_OK, intent);
+        }
         finish();
     }
 
 
-    private void findPhoto(Uri imageUri) {
-
+    private void findPhoto() {
         // String filePath = UtilsHelper.getRealPathFromURI(imageUri, this);
-        if (imageUri == null) {
+        if (adapter.getCameraUri() == null || TextUtils.isEmpty(adapter.getCameraImagePath())) {
             Toast.makeText(this, R.string.unable_find_pic, Toast.LENGTH_LONG).show();
         } else {
             if (pickBean.isClipPhoto()) {//拍完照之后，如果要启动裁剪，则去裁剪再把地址传回来
-                adapter.startClipPic(FileUtils.getImagePath());
+                adapter.startClipPic(adapter.getCameraImagePath());
             } else {
-                Intent intent = new Intent();
-                intent.putExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO, FileUtils.getImagePath());
-                setResult(Activity.RESULT_OK, intent);
-                finish();
+                if (pickBean.isStartCompression()) {
+                    PhotoPick.startCompression(PhotoPickActivity.this, new ArrayList<>(Arrays.asList(adapter.getCameraImagePath())), new CommonResult<File>() {
+                        @Override
+                        public void onSuccess(File data) {
+                            adapter.getSelectPhotosInfo().add(new Photo(data.getAbsolutePath(), 0));
+                            if (pickBean.getCallback() != null) {
+                                pickBean.getCallback().cameraImage(adapter.getSelectPhotosInfo());
+                            } else {
+                                Intent intent = new Intent();
+                                intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO, adapter.getSelectPhotosInfo());
+                                setResult(Activity.RESULT_OK, intent);
+                            }
+                            finish();
+                        }
+                    });
+                } else {
+                    adapter.getSelectPhotosInfo().add(new Photo(adapter.getCameraImagePath(), 3));
+
+                    if (pickBean.getCallback() != null) {
+                        pickBean.getCallback().singleSelect(adapter.getSelectPhotosInfo());
+                    } else {
+                        Intent intent = new Intent();
+                        intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO, adapter.getSelectPhotosInfo());
+                        setResult(Activity.RESULT_OK, intent);
+                    }
+                    finish();
+                }
             }
         }
     }

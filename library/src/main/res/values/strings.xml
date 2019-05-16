@@ -18,6 +18,7 @@
     <string name="send">发送</string>
     <string name="sends" formatted="false">发送(%s/%s)</string>
     <string name="image_size">原图(%s)</string>
+    <string name="original_image">原图</string>
 
     <!-- android 6.0权限-->
     <string name="permission_tip_camera">缺少(相机)权限，无法使用该功能，点击"设置"去开启此权限\n您可在“设置”>“应用”>“权限”中配置权限</string>

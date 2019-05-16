@@ -3,6 +3,7 @@ package com.rain.library.loader;
 import android.content.Context;
 import android.net.Uri;
 import android.provider.MediaStore.Images.Media;
+import android.provider.MediaStore.Images.Thumbnails;
 import android.support.v4.content.CursorLoader;
 
 import static android.provider.MediaStore.MediaColumns.MIME_TYPE;
@@ -19,11 +20,12 @@ public class PhotoDirectoryLoader extends CursorLoader {
             Media.BUCKET_ID,
             Media.BUCKET_DISPLAY_NAME,
             Media.DATE_ADDED,
-            Media.SIZE
+            Media.SIZE,
+            Thumbnails.DATA
     };
 
-    public PhotoDirectoryLoader(Context context){
-        this(context,false);
+    public PhotoDirectoryLoader(Context context) {
+        this(context, false);
     }
 
     public PhotoDirectoryLoader(Context context, boolean showGif) {

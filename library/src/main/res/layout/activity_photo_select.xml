@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:checked="false"
-            android:text="@string/image_size"
+            android:text="@string/original_image"
             android:textColor="@android:color/white"/>
 
         <CheckBox

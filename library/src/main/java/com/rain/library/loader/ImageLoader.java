@@ -12,7 +12,10 @@ import java.io.Serializable;
  * Created by Rain on 17-5-3.
  */
 public interface ImageLoader extends Serializable {
-    void displayImage(Context context, String path, ImageView imageView, boolean resize);
+    void displayImage(Context context, String originalImagePath, String thumbnailsImagePath, ImageView imageView, boolean resize, boolean loadThumbnailsImage);
+
+    void displayImage(Context context, String originalImagePath, ImageView imageView, boolean resize);
+
 
     void clearMemoryCache();
 

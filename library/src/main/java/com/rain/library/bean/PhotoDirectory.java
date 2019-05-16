@@ -76,7 +76,7 @@ public class PhotoDirectory {
     public List<String> getPhotoPaths() {
         List<String> paths = new ArrayList<>(photos.size());
         for (Photo photo : photos) {
-            paths.add(photo.getPath());
+            paths.add(photo.getOriginalImagePath());
         }
         return paths;
     }
@@ -85,8 +85,8 @@ public class PhotoDirectory {
         photos.add(new Photo(id, path));
     }
 
-    public void addPhoto(int id, String path, long size) {
-        photos.add(new Photo(id, path, size));
+    public void addPhoto(int originalImageId, String originalImagePath, long originalImageSize,String thumbnailsImagePath) {
+        photos.add(new Photo(originalImageId, originalImagePath, originalImageSize,thumbnailsImagePath));
     }
 
 }

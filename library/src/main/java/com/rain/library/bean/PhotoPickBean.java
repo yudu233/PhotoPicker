@@ -3,6 +3,7 @@ package com.rain.library.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.rain.library.impl.PhotoSelectCallback;
 import com.rain.library.loader.ImageLoader;
 
 
@@ -21,50 +22,13 @@ public class PhotoPickBean implements Parcelable {
     private boolean showCamera;         //是否展示拍照icon
     private boolean clipPhoto;          //是否启动裁剪图片
     private boolean originalPicture;    //是否选择的是原图
+    private boolean startCompression;   //是否开启图片压缩
     private ImageLoader imageLoader;    //加载方式
+    private PhotoSelectCallback callback;
 
     public PhotoPickBean() {
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.maxPickSize);
-        dest.writeInt(this.pickMode);
-        dest.writeInt(this.spanCount);
-        dest.writeInt(this.showClipCircle ? (byte) 1 : (byte) 0);
-        dest.writeByte(this.showCamera ? (byte) 1 : (byte) 0);
-        dest.writeByte(this.clipPhoto ? (byte) 1 : (byte) 0);
-        dest.writeByte(this.originalPicture ? (byte) 1 : (byte) 0);
-        dest.writeSerializable(this.imageLoader);
-    }
-
-    protected PhotoPickBean(Parcel in) {
-        this.maxPickSize = in.readInt();
-        this.pickMode = in.readInt();
-        this.spanCount = in.readInt();
-        this.showClipCircle = in.readByte() != 0;
-        this.showCamera = in.readByte() != 0;
-        this.clipPhoto = in.readByte() != 0;
-        this.originalPicture = in.readByte() != 0;
-        this.imageLoader = (ImageLoader) in.readSerializable();
-    }
-
-    public static final Creator<PhotoPickBean> CREATOR = new Creator<PhotoPickBean>() {
-        @Override
-        public PhotoPickBean createFromParcel(Parcel source) {
-            return new PhotoPickBean(source);
-        }
-
-        @Override
-        public PhotoPickBean[] newArray(int size) {
-            return new PhotoPickBean[size];
-        }
-    };
 
     public int getMaxPickSize() {
         return maxPickSize;
@@ -110,6 +74,14 @@ public class PhotoPickBean implements Parcelable {
         return originalPicture;
     }
 
+    public boolean isStartCompression() {
+        return startCompression;
+    }
+
+    public void setStartCompression(boolean startCompression) {
+        this.startCompression = startCompression;
+    }
+
     public boolean getClipMode() {
         return showClipCircle;
     }
@@ -130,4 +102,55 @@ public class PhotoPickBean implements Parcelable {
         this.originalPicture = originalPicture;
     }
 
+    public PhotoSelectCallback getCallback() {
+        return callback;
+    }
+
+    public void setCallback(PhotoSelectCallback callback) {
+        this.callback = callback;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.maxPickSize);
+        dest.writeInt(this.pickMode);
+        dest.writeInt(this.spanCount);
+        dest.writeByte(this.showClipCircle ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.showCamera ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.clipPhoto ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.originalPicture ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.startCompression ? (byte) 1 : (byte) 0);
+        dest.writeSerializable(this.imageLoader);
+        dest.writeParcelable(this.callback, flags);
+    }
+
+    protected PhotoPickBean(Parcel in) {
+        this.maxPickSize = in.readInt();
+        this.pickMode = in.readInt();
+        this.spanCount = in.readInt();
+        this.showClipCircle = in.readByte() != 0;
+        this.showCamera = in.readByte() != 0;
+        this.clipPhoto = in.readByte() != 0;
+        this.originalPicture = in.readByte() != 0;
+        this.startCompression = in.readByte() != 0;
+        this.imageLoader = (ImageLoader) in.readSerializable();
+        this.callback = in.readParcelable(PhotoSelectCallback.class.getClassLoader());
+    }
+
+    public static final Creator<PhotoPickBean> CREATOR = new Creator<PhotoPickBean>() {
+        @Override
+        public PhotoPickBean createFromParcel(Parcel source) {
+            return new PhotoPickBean(source);
+        }
+
+        @Override
+        public PhotoPickBean[] newArray(int size) {
+            return new PhotoPickBean[size];
+        }
+    };
 }

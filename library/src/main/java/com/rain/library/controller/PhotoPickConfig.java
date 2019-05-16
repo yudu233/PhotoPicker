@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.rain.library.R;
 import com.rain.library.bean.PhotoPickBean;
+import com.rain.library.impl.PhotoSelectCallback;
 import com.rain.library.loader.ImageLoader;
 import com.rain.library.ui.PhotoPickActivity;
 
@@ -32,7 +33,13 @@ public class PhotoPickConfig {
 
     public static boolean DEFAULT_SHOW_CLIP = false;   //默认开启裁剪图片功能
 
+    public static boolean DEFAULT_SHOW_ORIGINAL = true; //默认打开原图选项
+
+    public static boolean DEFAULT_START_COMPRESSION = true; //默认开启图片压缩
+
     public static ImageLoader imageLoader;              //图片加载方式
+
+    public static PhotoSelectCallback callback;         //回调
 
     public static PhotoPickBean photoPickBean;
 
@@ -49,6 +56,7 @@ public class PhotoPickConfig {
 
     public PhotoPickConfig(Activity activity, Builder builder) {
         imageLoader = builder.imageLoader;
+        callback = builder.callback;
         if (builder.pickBean == null) {
             throw new NullPointerException("builder#pickBean is null");
         }
@@ -70,6 +78,7 @@ public class PhotoPickConfig {
         private Activity activity;
         private PhotoPickBean pickBean;
         private ImageLoader imageLoader;
+        private PhotoSelectCallback callback;
 
         public Builder(Activity activity) {
             if (activity == null) {
@@ -83,6 +92,8 @@ public class PhotoPickConfig {
             pickBean.setShowCamera(DEFAULT_SHOW_CAMERA);        //默认展示拍照那个icon
             pickBean.setClipPhoto(DEFAULT_SHOW_CLIP);           //默认关闭图片裁剪
             pickBean.setClipMode(CLIP_CIRCLE);                  //默认裁剪方式矩形
+            pickBean.setOriginalPicture(DEFAULT_SHOW_ORIGINAL); //默认显示选择原图选项
+            pickBean.setStartCompression(DEFAULT_START_COMPRESSION);    //默认启动图片压缩
         }
 
         /**
@@ -182,6 +193,37 @@ public class PhotoPickConfig {
             pickBean.setClipMode(showClipCircle);
             return this;
         }
+
+        /**
+         * 显示原图选择功能
+         * 默认开启
+         *
+         * @param showOriginal
+         * @return
+         */
+        public Builder showOriginal(boolean showOriginal) {
+            pickBean.setOriginalPicture(showOriginal);
+            return this;
+        }
+
+        /**
+         * 启动图片压缩功能
+         * 默认开启
+         *
+         * @param compression
+         * @return
+         */
+        public Builder startCompression(boolean compression) {
+            pickBean.setStartCompression(compression);
+            return this;
+        }
+
+        public Builder setCallback(PhotoSelectCallback callback) {
+            this.callback = callback;
+            pickBean.setCallback(callback);
+            return this;
+        }
+
 
         public Builder setPhotoPickBean(PhotoPickBean bean) {
             this.pickBean = bean;

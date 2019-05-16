@@ -20,9 +20,7 @@ public class MyApplication extends Application {
         super.onCreate();
 
         context = this;
-
-        PhotoPick.setAuthority(getString(R.string.file_provider_authorities));
-        PhotoPick.init(getApplicationContext());
+        PhotoPick.init(getApplicationContext(), PhotoPickOptionsConfig.getPhotoPickOptions(context));
     }
 
     @Override

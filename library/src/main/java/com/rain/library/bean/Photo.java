@@ -9,28 +9,66 @@ import android.os.Parcelable;
  */
 public class Photo implements Parcelable {
 
-    private int id;
-    private String path;
-    private long size;//byte 字节
+    private int originalImageId;
+    private String originalImagePath;
+    private long originalImageSize;
+
+    private String thumbnailsImagePath;
+
+    private String compressionImagePath;
+
+    private String clipImagePath;
+
+    private String cameraImagePath;
 
     public Photo(int id, String path) {
-        this.id = id;
-        this.path = path;
+        this.originalImageId = id;
+        this.originalImagePath = path;
     }
 
-    public Photo(int id, String path, long size) {
-        this.id = id;
-        this.path = path;
-        this.size = size;
+    public Photo(String path, int type) {
+        switch (type) {
+            case 0:     //压缩图片路径
+                compressionImagePath = path;
+                break;
+            case 1:     //裁剪图片路径
+                clipImagePath = path;
+                break;
+            case 2:     //相机图片路径
+                cameraImagePath = path;
+                break;
+        }
+    }
+
+    public Photo(int id, String path, long size, String thumbnailsImagePath) {
+        this.originalImageId = id;
+        this.originalImagePath = path;
+        this.originalImageSize = size;
+        this.thumbnailsImagePath = thumbnailsImagePath;
     }
 
     public Photo() {
     }
 
     private Photo(Parcel in) {
-        id = in.readInt();
-        path = in.readString();
-        size = in.readLong();
+        originalImageId = in.readInt();
+        originalImagePath = in.readString();
+        originalImageSize = in.readLong();
+        thumbnailsImagePath = in.readString();
+        compressionImagePath = in.readString();
+        clipImagePath = in.readString();
+        cameraImagePath = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(originalImageId);
+        dest.writeString(originalImagePath);
+        dest.writeLong(originalImageSize);
+        dest.writeString(thumbnailsImagePath);
+        dest.writeString(compressionImagePath);
+        dest.writeString(clipImagePath);
+        dest.writeString(cameraImagePath);
     }
 
     public static final Creator<Photo> CREATOR = new Creator<Photo>() {
@@ -52,36 +90,60 @@ public class Photo implements Parcelable {
 
         Photo photo = (Photo) o;
 
-        return id == photo.id;
+        return originalImageId == photo.originalImageId;
     }
 
     @Override
     public int hashCode() {
-        return id;
+        return originalImageId;
     }
 
-    public String getPath() {
-        return path;
+    public String getOriginalImagePath() {
+        return originalImagePath;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setOriginalImagePath(String path) {
+        this.originalImagePath = path;
     }
 
-    public int getId() {
-        return id;
+    public int getOriginalImageId() {
+        return originalImageId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setOriginalImageId(int id) {
+        this.originalImageId = id;
     }
 
-    public long getSize() {
-        return size;
+    public long getOriginalImageSize() {
+        return originalImageSize;
     }
 
-    public void setSize(long size) {
-        this.size = size;
+    public void setOriginalImageSize(long size) {
+        this.originalImageSize = size;
+    }
+
+    public String getThumbnailsImagePath() {
+        return thumbnailsImagePath;
+    }
+
+    public void setThumbnailsImagePath(String thumbnailsImagePath) {
+        this.thumbnailsImagePath = thumbnailsImagePath;
+    }
+
+    public String getCompressionImagePath() {
+        return compressionImagePath;
+    }
+
+    public void setCompressionImagePath(String compressionImagePath) {
+        this.compressionImagePath = compressionImagePath;
+    }
+
+    public String getClipImagePath() {
+        return clipImagePath;
+    }
+
+    public void setClipImagePath(String clipImagePath) {
+        this.clipImagePath = clipImagePath;
     }
 
     @Override
@@ -89,10 +151,5 @@ public class Photo implements Parcelable {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(path);
-        dest.writeLong(size);
-    }
+
 }

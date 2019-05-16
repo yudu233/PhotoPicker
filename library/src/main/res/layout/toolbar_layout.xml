@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.Toolbar
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:toolbar="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
@@ -8,9 +7,8 @@
     android:background="@color/colorPrimary"
     android:fitsSystemWindows="true"
     android:minHeight="?attr/actionBarSize"
-    toolbar:navigationIcon="?attr/homeAsUpIndicator"
-    toolbar:popupTheme="@style/ThemeOverlay.AppCompat.Light"
     toolbar:title="@string/app_name"
+    toolbar:contentInsetStartWithNavigation="0dp"
+    toolbar:popupTheme="@style/ThemeOverlay.AppCompat.Light"
     toolbar:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-    toolbar:titleTextAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
-</android.support.v7.widget.Toolbar>
+    toolbar:titleTextAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"></android.support.v7.widget.Toolbar>

@@ -2,6 +2,7 @@ package com.rain.library.data;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.provider.MediaStore;
 
 import com.rain.library.R;
 import com.rain.library.bean.PhotoDirectory;
@@ -27,26 +28,34 @@ public class Data {
 
         while (data.moveToNext()) {
 
-            int imageId = data.getInt(data.getColumnIndexOrThrow(_ID));
+            //Original image id
+            int originalImageId = data.getInt(data.getColumnIndexOrThrow(_ID));
+            //BucketId：equals path.toLowerCase.hashCode(), see MediaProvider.computeBucketValues()
             String bucketId = data.getString(data.getColumnIndexOrThrow(BUCKET_ID));
-            String name = data.getString(data.getColumnIndexOrThrow(BUCKET_DISPLAY_NAME));
-            String path = data.getString(data.getColumnIndexOrThrow(DATA));
-            long size = data.getLong(data.getColumnIndexOrThrow(SIZE));
+            //Original image directory name
+            String directoryName = data.getString(data.getColumnIndexOrThrow(BUCKET_DISPLAY_NAME));
+            //Original image path (absolute path)
+            String originalImagePath = data.getString(data.getColumnIndexOrThrow(DATA));
+            //Byte is the size unit of the original file
+            long originalImageSize = data.getLong(data.getColumnIndexOrThrow(SIZE));
+
+            //Thumbnails image path(absolute path)
+            String thumbnailsImagePath = data.getString(data.getColumnIndexOrThrow(MediaStore.Images.Thumbnails.DATA));
 
             if (checkImageStatus) {
                 PhotoDirectory photoDirectory = new PhotoDirectory();
                 photoDirectory.setId(bucketId);
-                photoDirectory.setName(name);
+                photoDirectory.setName(directoryName);
 
                 if (!directories.contains(photoDirectory)) {
-                    photoDirectory.setCoverPath(path);
-                    photoDirectory.addPhoto(imageId, path);
+                    photoDirectory.setCoverPath(originalImagePath);
+                    photoDirectory.addPhoto(originalImageId, originalImagePath);
                     photoDirectory.setDateAdded(data.getLong(data.getColumnIndexOrThrow(DATE_ADDED)));
                     directories.add(photoDirectory);
                 } else {
-                    directories.get(directories.indexOf(photoDirectory)).addPhoto(imageId, path, size);
+                    directories.get(directories.indexOf(photoDirectory)).addPhoto(originalImageId, originalImagePath, originalImageSize,thumbnailsImagePath);
                 }
-                photoDirectoryAll.addPhoto(imageId, path, size);
+                photoDirectoryAll.addPhoto(originalImageId, originalImagePath, originalImageSize,thumbnailsImagePath);
             }
         }
         if (photoDirectoryAll.getPhotoPaths().size() > 0) {

@@ -24,9 +24,9 @@ import com.rain.library.bean.Photo;
 import com.rain.library.bean.PhotoPickBean;
 import com.rain.library.controller.PhotoPickConfig;
 import com.rain.library.controller.PhotoPreviewConfig;
+import com.rain.library.impl.PhotoSelectCallback;
 import com.rain.library.loader.ImageLoader;
 import com.rain.library.ui.PhotoPickActivity;
-import com.rain.library.utils.FileUtils;
 import com.rain.library.utils.UCropUtils;
 import com.rain.library.weidget.GalleryImageView;
 
@@ -43,6 +43,8 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
     private Context context;
     private ArrayList<Photo> photos = new ArrayList<>();
     private ArrayList<String> selectPhotos = new ArrayList<>();
+    private ArrayList<Photo> selectPhotosInfo = new ArrayList<>();
+
     private int maxPickSize;
     private int pickMode;
     private int imageSize;
@@ -51,7 +53,11 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
     private boolean isClipPhoto;
     private boolean isOriginalPicture;
     private ImageLoader imageLoader;
+    private PhotoSelectCallback callback;
+
     private Uri cameraUri;
+    private String cameraImagePath;
+    private String clipImagePath;
 
     public PhotoPickAdapter(Context context, PhotoPickBean pickBean) {
         this.context = context;
@@ -66,6 +72,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
         this.isClipPhoto = pickBean.isClipPhoto();
         this.isOriginalPicture = pickBean.isOriginalPicture();
         this.imageLoader = pickBean.getImageLoader();
+        this.callback = pickBean.getCallback();
     }
 
     public void refresh(List<Photo> photos) {
@@ -120,10 +127,9 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
                     checkbox.setVisibility(View.GONE);
                 } else {
                     checkbox.setVisibility(View.VISIBLE);
-                    checkbox.setChecked(selectPhotos.contains(photo.getPath()));
+                    checkbox.setChecked(selectPhotos.contains(photo.getOriginalImagePath()));
                 }
-                String url = photo.getPath();
-                imageLoader.displayImage(context, url, imageView, true);
+                imageLoader.displayImage(context, photo.getOriginalImagePath(), photo.getThumbnailsImagePath(), imageView, true, true);
             }
         }
 
@@ -131,16 +137,17 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
         public void onClick(View view) {
             int position = getAdapterPosition();
             if (view.getId() == R.id.checkbox) {
-                if (selectPhotos.contains(getItem(position).getPath())) {
+                if (selectPhotos.contains(getItem(position).getOriginalImagePath())) {
                     checkbox.setChecked(false);
-                    selectPhotos.remove(getItem(position).getPath());
+                    selectPhotos.remove(getItem(position).getOriginalImagePath());
                 } else {
                     if (selectPhotos.size() == maxPickSize) {
                         checkbox.setChecked(false);
                         return;
                     } else {
                         checkbox.setChecked(true);
-                        selectPhotos.add(getItem(position).getPath());
+                        selectPhotos.add(getItem(position).getOriginalImagePath());
+                        selectPhotosInfo.add(getItem(position));
                     }
                 }
                 if (onUpdateListener != null) {
@@ -156,7 +163,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
                     }
                 } else if (isClipPhoto) {
                     //头像裁剪
-                    startClipPic(getItem(position).getPath());
+                    startClipPic(getItem(position).getOriginalImagePath());
                 } else {
                     //查看大图
                     new PhotoPreviewConfig.Builder((Activity) context)
@@ -164,7 +171,9 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
                             .setMaxPickSize(maxPickSize)
                             .setPhotos(photos)
                             .setSelectPhotos(selectPhotos)
+                            .setSelectPhotosInfo(selectPhotosInfo)
                             .setOriginalPicture(isOriginalPicture)
+                            .setCallback(callback)
                             .build();
                 }
             }
@@ -178,8 +187,9 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
      * @param picPath
      */
     public void startClipPic(String picPath) {
-        File corpFile = FileUtils.createImageFile(context, "/clip");
-        UCropUtils.start((Activity) context, new File(picPath), corpFile, clipCircle);
+        File clipImage = new File(PhotoPickOptions.DEFAULT.imagePath, PhotoPickOptions.DEFAULT.clipImageName);
+        clipImagePath = clipImage.getAbsolutePath();
+        UCropUtils.start((Activity) context, new File(picPath), clipImage, clipCircle);
     }
 
     /**
@@ -191,20 +201,20 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
             return;
         }
         // 直接将拍到的照片存到手机默认的文件夹
-/*        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+       /* Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         ContentValues values = new ContentValues();
-        cameraUri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        cameraUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
-        ((Activity) context).startActivityForResult(intent, PhotoPickActivity.REQUEST_CODE_SHOW_CAMERA);*/
+        startActivityForResult(intent, REQUEST_CODE_CAMERA);*/
 
         //保存到自定义目录
-
-        File imageFile = FileUtils.createImageFile(context, "/images");
+        File imageFile = new File(PhotoPickOptions.DEFAULT.imagePath, PhotoPickOptions.DEFAULT.cameraImageName);
+        cameraImagePath = imageFile.getAbsolutePath();
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Android7.0以上URI
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             //通过FileProvider创建一个content类型的Uri
-            cameraUri = FileProvider.getUriForFile(context, PhotoPick.getAuthority(), imageFile);
+            cameraUri = FileProvider.getUriForFile(context, PhotoPickOptions.DEFAULT.photoPickAuthority, imageFile);
             //添加这一句表示对目标应用临时授权该Uri所代表的文件,私有目录读写权限
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         } else {
@@ -212,10 +222,6 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
         }
         intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
         ((Activity) context).startActivityForResult(intent, PhotoPickActivity.REQUEST_CODE_SHOW_CAMERA);
-    }
-
-    public Uri getCameraUri() {
-        return cameraUri;
     }
 
     //如果是多选title才会变化，要不然单选的没有变
@@ -228,13 +234,46 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
     }
 
     /**
-     * 获取已经选择了的图片
+     * get selected photos path
      *
      * @return selected photos
      */
     public ArrayList<String> getSelectPhotos() {
         return selectPhotos;
     }
+
+    /**
+     * get selected photos info
+     * @return
+     */
+    public ArrayList<Photo> getSelectPhotosInfo() {
+        return selectPhotosInfo;
+    }
+
+    /**
+     * get camera image uri
+     * @return
+     */
+    public Uri getCameraUri() {
+        return cameraUri;
+    }
+
+    /**
+     * get clip image path
+     * @return
+     */
+    public String getClipImagePath() {
+        return clipImagePath;
+    }
+
+    /**
+     * get camera image path
+     * @return
+     */
+    public String getCameraImagePath() {
+        return cameraImagePath;
+    }
+
 
     private OnUpdateListener onUpdateListener;
 
