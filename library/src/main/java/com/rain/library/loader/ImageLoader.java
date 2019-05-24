@@ -1,6 +1,7 @@
 package com.rain.library.loader;
 
 import android.content.Context;
+import android.view.View;
 import android.widget.ImageView;
 
 import java.io.Serializable;

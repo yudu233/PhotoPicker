@@ -94,8 +94,11 @@ public class PhotoDirectory {
         photos.add(new Photo(id, path));
     }
 
-    public void addPhoto(int originalImageId, String originalImagePath, long originalImageSize,String thumbnailsImagePath) {
-        photos.add(new Photo(originalImageId, originalImagePath, originalImageSize,thumbnailsImagePath));
+    public void addPhoto(Photo photo) {
+        photos.add(photo);
     }
 
+    public void addPhoto(int originalImageId, String originalImagePath, long originalImageSize, String thumbnailsImagePath) {
+        photos.add(new Photo(originalImageId, originalImagePath, originalImageSize, thumbnailsImagePath));
+    }
 }

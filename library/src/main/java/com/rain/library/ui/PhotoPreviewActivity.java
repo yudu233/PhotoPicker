@@ -2,6 +2,7 @@ package com.rain.library.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -17,6 +18,9 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.ImageViewState;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.github.chrisbanes.photoview.OnPhotoTapListener;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.rain.library.BaseActivity;
@@ -24,7 +28,6 @@ import com.rain.library.PhotoPick;
 import com.rain.library.PhotoPickOptions;
 import com.rain.library.R;
 import com.rain.library.bean.Photo;
-import com.rain.library.bean.PhotoDirectory;
 import com.rain.library.bean.PhotoPreviewBean;
 import com.rain.library.controller.PhotoPickConfig;
 import com.rain.library.controller.PhotoPreviewConfig;
@@ -59,6 +62,11 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
     private boolean isChecked = false;
     private boolean originalPicture;    //是否选择的是原图
     private PhotoSelectCallback callback;
+    private int screenHeight;
+    private int screenWidth;
+
+    private static final int MAX_SIZE = 4096;
+    private static final int MAX_SCALE = 8;
 
     @Override
     protected void onCreate(Bundle arg0) {
@@ -93,6 +101,9 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         toolbar.setTitle((beginPosition + 1) + "/" + photos.size());
         toolbar.setNavigationIcon(PhotoPickOptions.DEFAULT.backIcon);
         setSupportActionBar(toolbar);
+
+        screenHeight = UtilsHelper.getScreenHeight(this);
+        screenWidth = UtilsHelper.getScreenWidth(this);
 
         //照片滚动监听，更改ToolBar数据
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -296,18 +307,29 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
 
         @Override
         public View instantiateItem(ViewGroup container, int position) {
+            View view;
+            View longView = LayoutInflater.from(PhotoPreviewActivity.this).inflate(R.layout.item_photo_preview_long, container, false);
+            View simpleView = LayoutInflater.from(PhotoPreviewActivity.this).inflate(R.layout.item_photo_preview, container, false);
 
             String originalImagePath = photos.get(position).getOriginalImagePath();
             String thumbnailsImagePath = photos.get(position).getThumbnailsImagePath();
+            int imageWidth = Integer.parseInt(photos.get(position).getImageWidth());
+            int imageHeight = Integer.parseInt(photos.get(position).getImageHeight());
 
-            View view = LayoutInflater.from(PhotoPreviewActivity.this).inflate(R.layout.item_photo_preview, container, false);
-            PhotoView imageView = (PhotoView) view.findViewById(R.id.iv_media_image);
-            imageView.setMaximumScale(100);
-            imageView.setOnPhotoTapListener(PhotoPreviewActivity.this);
-            PhotoPickConfig.imageLoader.displayImage(PhotoPreviewActivity.this, originalImagePath, thumbnailsImagePath, imageView, false, true);
-
+            if (imageHeight > MAX_SIZE || imageHeight / imageWidth > MAX_SCALE) {
+                //加载长截图
+                view = longView;
+                SubsamplingScaleImageView imageView = longView.findViewById(R.id.iv_media_image);
+                float scale = UtilsHelper.getImageScale(PhotoPreviewActivity.this, originalImagePath);
+                imageView.setImage(ImageSource.uri(originalImagePath),
+                        new ImageViewState(scale, new PointF(0, 0), 0));
+            } else {
+                view = simpleView;
+                PhotoView imageView = (PhotoView) simpleView.findViewById(R.id.iv_media_image);
+                imageView.setOnPhotoTapListener(PhotoPreviewActivity.this);
+                PhotoPickConfig.imageLoader.displayImage(PhotoPreviewActivity.this, originalImagePath, thumbnailsImagePath, imageView, false, true);
+            }
             container.addView(view, 0);
-
             return view;
         }
 

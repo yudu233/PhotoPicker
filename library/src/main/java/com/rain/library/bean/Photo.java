@@ -10,7 +10,9 @@ import android.os.Parcelable;
 public class Photo implements Parcelable {
 
     private int originalImageId;
+
     private String originalImagePath;
+
     private long originalImageSize;
 
     private String thumbnailsImagePath;
@@ -20,6 +22,10 @@ public class Photo implements Parcelable {
     private String clipImagePath;
 
     private String cameraImagePath;
+
+    private String imageWidth;
+
+    private String imageHeight;
 
     public Photo(int id, String path) {
         this.originalImageId = id;
@@ -49,39 +55,6 @@ public class Photo implements Parcelable {
 
     public Photo() {
     }
-
-    private Photo(Parcel in) {
-        originalImageId = in.readInt();
-        originalImagePath = in.readString();
-        originalImageSize = in.readLong();
-        thumbnailsImagePath = in.readString();
-        compressionImagePath = in.readString();
-        clipImagePath = in.readString();
-        cameraImagePath = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(originalImageId);
-        dest.writeString(originalImagePath);
-        dest.writeLong(originalImageSize);
-        dest.writeString(thumbnailsImagePath);
-        dest.writeString(compressionImagePath);
-        dest.writeString(clipImagePath);
-        dest.writeString(cameraImagePath);
-    }
-
-    public static final Creator<Photo> CREATOR = new Creator<Photo>() {
-        @Override
-        public Photo createFromParcel(Parcel in) {
-            return new Photo(in);
-        }
-
-        @Override
-        public Photo[] newArray(int size) {
-            return new Photo[size];
-        }
-    };
 
     @Override
     public boolean equals(Object o) {
@@ -146,10 +119,61 @@ public class Photo implements Parcelable {
         this.clipImagePath = clipImagePath;
     }
 
+    public String getImageWidth() {
+        return imageWidth;
+    }
+
+    public void setImageWidth(String imageWidth) {
+        this.imageWidth = imageWidth;
+    }
+
+    public String getImageHeight() {
+        return imageHeight;
+    }
+
+    public void setImageHeight(String imageHeight) {
+        this.imageHeight = imageHeight;
+    }
+
     @Override
     public int describeContents() {
         return 0;
     }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.originalImageId);
+        dest.writeString(this.originalImagePath);
+        dest.writeLong(this.originalImageSize);
+        dest.writeString(this.thumbnailsImagePath);
+        dest.writeString(this.compressionImagePath);
+        dest.writeString(this.clipImagePath);
+        dest.writeString(this.cameraImagePath);
+        dest.writeString(this.imageWidth);
+        dest.writeString(this.imageHeight);
+    }
 
+    protected Photo(Parcel in) {
+        this.originalImageId = in.readInt();
+        this.originalImagePath = in.readString();
+        this.originalImageSize = in.readLong();
+        this.thumbnailsImagePath = in.readString();
+        this.compressionImagePath = in.readString();
+        this.clipImagePath = in.readString();
+        this.cameraImagePath = in.readString();
+        this.imageWidth = in.readString();
+        this.imageHeight = in.readString();
+    }
+
+    public static final Creator<Photo> CREATOR = new Creator<Photo>() {
+        @Override
+        public Photo createFromParcel(Parcel source) {
+            return new Photo(source);
+        }
+
+        @Override
+        public Photo[] newArray(int size) {
+            return new Photo[size];
+        }
+    };
 }

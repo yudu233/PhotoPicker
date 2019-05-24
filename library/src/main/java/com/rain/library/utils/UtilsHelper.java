@@ -1,12 +1,16 @@
 package com.rain.library.utils;
 
+import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
@@ -54,6 +58,7 @@ public class UtilsHelper {
 
     /**
      * 判断文件是否存在
+     *
      * @param path
      * @return
      */
@@ -65,12 +70,36 @@ public class UtilsHelper {
         return true;
     }
 
+    /**
+     * @param context 上下文
+     * @return DisplayMetrics对象
+     */
     public static DisplayMetrics getScreenSize(Context context) {
         DisplayMetrics displaysMetrics = new DisplayMetrics();
         context.getResources().getDisplayMetrics();
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         wm.getDefaultDisplay().getMetrics(displaysMetrics);
         return displaysMetrics;
+    }
+
+    /**
+     * 获取屏幕分辨率-宽
+     *
+     * @param context
+     * @return 宽
+     */
+    public static int getScreenWidth(Context context) {
+        return context.getResources().getDisplayMetrics().widthPixels;
+    }
+
+    /**
+     * 获取屏幕分辨率-高
+     *
+     * @param context
+     * @return 高
+     */
+    public static int getScreenHeight(Context context) {
+        return context.getResources().getDisplayMetrics().heightPixels;
     }
 
     /**
@@ -84,7 +113,59 @@ public class UtilsHelper {
     }
 
     /**
+     * 计算出图片初次显示需要放大倍数
+     * @param imagePath 图片的绝对路径
+     */
+    public static float getImageScale(Context context, String imagePath){
+        if(TextUtils.isEmpty(imagePath)) {
+            return 2.0f;
+        }
+
+        Bitmap bitmap = null;
+
+        try {
+            bitmap = BitmapFactory.decodeFile(imagePath);
+        } catch (OutOfMemoryError error) {
+            error.printStackTrace();
+        }
+
+        if(bitmap == null) {
+            return 2.0f;
+        }
+
+        // 拿到图片的宽和高
+        int dw = bitmap.getWidth();
+        int dh = bitmap.getHeight();
+
+        WindowManager wm = ((Activity)context).getWindowManager();
+        int width = wm.getDefaultDisplay().getWidth();
+        int height = wm.getDefaultDisplay().getHeight();
+
+        float scale = 1.0f;
+        //图片宽度大于屏幕，但高度小于屏幕，则缩小图片至填满屏幕宽
+        if (dw > width && dh <= height) {
+            scale = width * 1.0f / dw;
+        }
+        //图片宽度小于屏幕，但高度大于屏幕，则放大图片至填满屏幕宽
+        if (dw <= width && dh > height) {
+            scale = width * 1.0f / dw;
+        }
+        //图片高度和宽度都小于屏幕，则放大图片至填满屏幕宽
+        if (dw < width && dh < height) {
+            scale = width * 1.0f / dw;
+        }
+        //图片高度和宽度都大于屏幕，则缩小图片至填满屏幕宽
+        if (dw > width && dh > height) {
+            scale = width * 1.0f / dw;
+        }
+        bitmap.recycle();
+        return scale;
+    }
+
+
+    /**
      * 根据Uri获取真实路径
+     *
      * @param uri
      * @param context
      * @return
