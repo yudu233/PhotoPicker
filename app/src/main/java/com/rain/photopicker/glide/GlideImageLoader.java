@@ -1,13 +1,14 @@
 package com.rain.photopicker.glide;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
-import com.bumptech.glide.DrawableRequestBuilder;
-import com.bumptech.glide.DrawableTypeRequest;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
 import com.rain.library.loader.ImageLoader;
 import com.rain.photopicker.R;
 
@@ -20,23 +21,19 @@ import com.rain.photopicker.R;
 public class GlideImageLoader implements ImageLoader {
 
     @Override
-    public void displayImage(Context context, String originalImagePath, String thumbnailsImagePath, ImageView imageView, boolean resize, boolean loadThumbnailsImage) {
-        DrawableRequestBuilder builder;
+    public void displayImage(Context context, String originalImagePath, String thumbnailsImagePath, final ImageView imageView, boolean resize, boolean loadThumbnailsImage) {
+        RequestOptions options = new RequestOptions();
+        RequestBuilder<Drawable> load;
         if (loadThumbnailsImage && !TextUtils.isEmpty(thumbnailsImagePath)) {
-            DrawableTypeRequest<String> load = Glide.with(context).load(thumbnailsImagePath);
-            if (resize) load.centerCrop();
-            builder = Glide.with(context)
-                    .load(originalImagePath)
-                    .thumbnail(load);
+            if (resize) options.centerCrop();
+            load = Glide.with(context).load(originalImagePath).thumbnail(Glide.with(context).load(thumbnailsImagePath).apply(options));
         } else {
-            builder = Glide.with(context)
-                    .load(originalImagePath);
+            load = Glide.with(context).load(originalImagePath);
         }
-        if (resize) builder.centerCrop();
-        builder.crossFade()
-                .error(context.getResources().getDrawable(R.mipmap.error_image))
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(imageView);
+
+        if (resize) options.centerCrop();
+        options.error(context.getResources().getDrawable(R.mipmap.error_image));
+        load.apply(options).transition(DrawableTransitionOptions.withCrossFade()).into(imageView);
     }
 
     @Override
