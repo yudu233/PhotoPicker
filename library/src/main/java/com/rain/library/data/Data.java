@@ -6,7 +6,9 @@ import android.provider.MediaStore;
 
 import com.rain.library.R;
 import com.rain.library.bean.PhotoDirectory;
+import com.rain.library.utils.Rlog;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +40,8 @@ public class Data {
             String originalImagePath = data.getString(data.getColumnIndexOrThrow(DATA));
             //Byte is the size unit of the original file
             long originalImageSize = data.getLong(data.getColumnIndexOrThrow(SIZE));
-
+            String photoDirectoryPath = originalImagePath.substring(0, originalImagePath.lastIndexOf(File.separator));
+            Rlog.e("Rain","------------" + photoDirectoryPath);
             //Thumbnails image path(absolute path)
             String thumbnailsImagePath = data.getString(data.getColumnIndexOrThrow(MediaStore.Images.Thumbnails.DATA));
 
@@ -46,16 +49,16 @@ public class Data {
                 PhotoDirectory photoDirectory = new PhotoDirectory();
                 photoDirectory.setId(bucketId);
                 photoDirectory.setName(directoryName);
-
+                photoDirectory.setDirPath(photoDirectoryPath);
                 if (!directories.contains(photoDirectory)) {
                     photoDirectory.setCoverPath(originalImagePath);
                     photoDirectory.addPhoto(originalImageId, originalImagePath);
                     photoDirectory.setDateAdded(data.getLong(data.getColumnIndexOrThrow(DATE_ADDED)));
                     directories.add(photoDirectory);
                 } else {
-                    directories.get(directories.indexOf(photoDirectory)).addPhoto(originalImageId, originalImagePath, originalImageSize,thumbnailsImagePath);
+                    directories.get(directories.indexOf(photoDirectory)).addPhoto(originalImageId, originalImagePath, originalImageSize, thumbnailsImagePath);
                 }
-                photoDirectoryAll.addPhoto(originalImageId, originalImagePath, originalImageSize,thumbnailsImagePath);
+                photoDirectoryAll.addPhoto(originalImageId, originalImagePath, originalImageSize, thumbnailsImagePath);
             }
         }
         if (photoDirectoryAll.getPhotoPaths().size() > 0) {
@@ -65,4 +68,6 @@ public class Data {
 
         return directories;
     }
+
+
 }

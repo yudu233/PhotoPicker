@@ -24,7 +24,7 @@ public class PhotoPickOptions {
     /**
      * App图片文件夹名称
      */
-    public String imagePath = filePath + "cytx/";
+    public String imagePath = filePath + "cytx";
 
     /**
      * 相机图片名称

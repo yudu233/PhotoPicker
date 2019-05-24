@@ -35,6 +35,7 @@ import com.rain.library.controller.PhotoPreviewConfig;
 import com.rain.library.impl.CommonResult;
 import com.rain.library.loader.MediaStoreHelper;
 import com.rain.library.utils.Rlog;
+import com.rain.library.utils.UtilsHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.yalantis.ucrop.UCrop;
 
@@ -65,6 +66,10 @@ public class PhotoPickActivity extends BaseActivity {
     private PhotoPickAdapter adapter;
     private PhotoPickBean pickBean;
     private Uri cameraUri;
+
+
+    private ArrayList<Photo> photoList = new ArrayList<>();
+    private ArrayList<PhotoDirectory> photoDirectoryList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,8 +124,9 @@ public class PhotoPickActivity extends BaseActivity {
         //相册列表item选择的时候关闭slidingUpPanelLayout并更新照片adapter
         galleryAdapter.setOnItemClickListener(new PhotoGalleryAdapter.OnItemClickListener() {
             @Override
-            public void onClick(List<Photo> photos) {
+            public void onClick(ArrayList<Photo> photos) {
                 if (adapter != null) {
+                    PhotoPreviewConfig.setPreviewPhotos(photos);
                     slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                     adapter.refresh(photos);
                 }
@@ -133,8 +139,20 @@ public class PhotoPickActivity extends BaseActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        adapter.refresh(directories.get(0).getPhotos());
-                        galleryAdapter.refresh(directories);
+                        List<Photo> photos = directories.get(0).getPhotos();
+                        for (int i = 0; i < photos.size(); i++) {
+                            if (UtilsHelper.isFileExist(photos.get(i).getOriginalImagePath()))
+                                photoList.add(photos.get(i));
+                        }
+                        photoDirectoryList.add(directories.get(0));
+                        for (int i = 1; i < directories.size(); i++) {
+                            if (UtilsHelper.isFileExist(directories.get(i).getDirPath())){
+                                photoDirectoryList.add(directories.get(i));
+                            }
+                        }
+                        PhotoPreviewConfig.setPreviewPhotos(photoList);
+                        adapter.refresh(photoList);
+                        galleryAdapter.refresh(photoDirectoryList);
                     }
                 });
             }
@@ -254,9 +272,7 @@ public class PhotoPickActivity extends BaseActivity {
                                 adapter.getSelectPhotosInfo().get(imageFilePath.size()).setCompressionImagePath(file.getAbsolutePath());
                                 imageFilePath.add(file.getAbsolutePath());
                                 if (imageFilePath != null && imageFilePath.size() > 0 && imageFilePath.size() == adapter.getSelectPhotos().size()) {
-                                    Rlog.e("Rain", "所有图片压缩完成!");
-
-
+                                    Rlog.e("Rain", "all select image compression success!");
                                     if (adapter.getSelectPhotos().size() != 1) {
                                         if (pickBean.getCallback() != null)
                                             pickBean.getCallback().moreSelect(adapter.getSelectPhotosInfo());

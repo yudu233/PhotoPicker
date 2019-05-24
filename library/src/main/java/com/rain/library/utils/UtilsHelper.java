@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -49,6 +50,19 @@ public class UtilsHelper {
             fileSizeString = df.format((double) fileS / 1073741824) + "GB";
         }
         return fileSizeString;
+    }
+
+    /**
+     * 判断文件是否存在
+     * @param path
+     * @return
+     */
+    public static boolean isFileExist(String path) {
+        File file = new File(path);
+        if (file == null || !file.exists()) {
+            return false;
+        }
+        return true;
     }
 
     public static DisplayMetrics getScreenSize(Context context) {

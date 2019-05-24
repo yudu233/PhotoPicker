@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.rain.library.bean.Photo;
 import com.rain.library.bean.PhotoDirectory;
 import com.rain.library.controller.PhotoPickConfig;
+import com.rain.library.utils.UtilsHelper;
 import com.rain.library.weidget.GalleryImageView;
 
 import java.util.ArrayList;
@@ -28,7 +29,8 @@ public class PhotoGalleryAdapter extends RecyclerView.Adapter {
 
     private Context context;
     private int selected;
-    private List<PhotoDirectory> directories = new ArrayList<>();
+    private ArrayList<PhotoDirectory> directories = new ArrayList<>();
+    private ArrayList<Photo> photoList = new ArrayList<>();
     private int imageSize;
 
     public PhotoGalleryAdapter(Context context) {
@@ -108,7 +110,14 @@ public class PhotoGalleryAdapter extends RecyclerView.Adapter {
             if (view.getId() == R.id.photo_gallery_rl) {
                 if (onItemClickListener != null) {
                     changeSelect(position);
-                    onItemClickListener.onClick(getItem(position).getPhotos());
+                    photoList.clear();
+                    List<Photo> photos = getItem(position).getPhotos();
+                    for (int i = 0; i < photos.size(); i++) {
+                        if (UtilsHelper.isFileExist(photos.get(i).getOriginalImagePath())) {
+                            photoList.add(photos.get(i));
+                        }
+                    }
+                    onItemClickListener.onClick(photoList);
                 }
             }
         }
@@ -121,6 +130,6 @@ public class PhotoGalleryAdapter extends RecyclerView.Adapter {
     }
 
     public interface OnItemClickListener {
-        void onClick(List<Photo> photos);
+        void onClick(ArrayList<Photo> photos);
     }
 }

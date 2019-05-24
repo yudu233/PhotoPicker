@@ -169,7 +169,6 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
                     new PhotoPreviewConfig.Builder((Activity) context)
                             .setPosition(showCamera ? position - 1 : position)
                             .setMaxPickSize(maxPickSize)
-                            .setPhotos(photos)
                             .setSelectPhotos(selectPhotos)
                             .setSelectPhotosInfo(selectPhotosInfo)
                             .setOriginalPicture(isOriginalPicture)

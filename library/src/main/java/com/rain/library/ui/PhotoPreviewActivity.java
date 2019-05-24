@@ -24,6 +24,7 @@ import com.rain.library.PhotoPick;
 import com.rain.library.PhotoPickOptions;
 import com.rain.library.R;
 import com.rain.library.bean.Photo;
+import com.rain.library.bean.PhotoDirectory;
 import com.rain.library.bean.PhotoPreviewBean;
 import com.rain.library.controller.PhotoPickConfig;
 import com.rain.library.controller.PhotoPreviewConfig;
@@ -71,7 +72,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
             finish();
             return;
         }
-        photos = bean.getPhotos();
+        photos = PhotoPreviewConfig.getPhotos();
         if (photos == null || photos.isEmpty()) {
             finish();
             return;
@@ -301,6 +302,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
 
             View view = LayoutInflater.from(PhotoPreviewActivity.this).inflate(R.layout.item_photo_preview, container, false);
             PhotoView imageView = (PhotoView) view.findViewById(R.id.iv_media_image);
+            imageView.setMaximumScale(100);
             imageView.setOnPhotoTapListener(PhotoPreviewActivity.this);
             PhotoPickConfig.imageLoader.displayImage(PhotoPreviewActivity.this, originalImagePath, thumbnailsImagePath, imageView, false, true);
 

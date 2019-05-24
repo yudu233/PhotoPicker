@@ -13,6 +13,7 @@ import com.rain.library.impl.PhotoSelectCallback;
 import com.rain.library.ui.PhotoPreviewActivity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -34,9 +35,9 @@ public class PhotoPreviewConfig {
         if (photoPreviewBean == null) {
             throw new NullPointerException("Builder#photoPagerBean is null");
         }
-        if (photoPreviewBean.getPhotos() == null || photoPreviewBean.getPhotos().isEmpty()) {
-            throw new NullPointerException("photos is null or size is 0");
-        }
+//        if (photoPreviewBean.getPhotos() == null || photoPreviewBean.getPhotos().isEmpty()) {
+//            throw new NullPointerException("photos is null or size is 0");
+//        }
         if (photoPreviewBean.getSelectPhotos() != null && (photoPreviewBean.getSelectPhotos().size() > photoPreviewBean.getMaxPickSize())) {
             throw new IndexOutOfBoundsException("seleced photo size out maxPickSize size,select photo size = " + photoPreviewBean.getSelectPhotos().size() + ",maxPickSize size = " + photoPreviewBean.getMaxPickSize());
         }
@@ -114,8 +115,16 @@ public class PhotoPreviewConfig {
         public PhotoPreviewConfig build() {
             return new PhotoPreviewConfig(context, this);
         }
+    }
 
+    private static ArrayList<Photo> photoArrayList = new ArrayList<>();
 
+    public static void setPreviewPhotos(ArrayList<Photo> photos) {
+        photoArrayList = photos;
+    }
+
+    public static ArrayList<Photo> getPhotos() {
+        return photoArrayList;
     }
 }
 

@@ -77,7 +77,7 @@ public class ExternalStorage {
         if (root.exists() && !root.isDirectory()) {
             root.delete();
         }
-        result &= makeDirectory(sdkStorageRoot + PhotoPickOptions.DEFAULT.imagePath);
+        result &= makeDirectory(PhotoPickOptions.DEFAULT.imagePath);
         if (result) {
             createNoMediaFile(sdkStorageRoot);
         }

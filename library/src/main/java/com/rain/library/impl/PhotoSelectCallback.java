@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.rain.library.bean.Photo;
-import com.rain.library.utils.Rlog;
+import com.rain.library.controller.PhotoPickConfig;
 
 import java.util.ArrayList;
 
@@ -23,15 +23,19 @@ public class PhotoSelectCallback implements Parcelable {
     }
 
     public void singleSelect(ArrayList<Photo> photos) {
+        PhotoPickConfig.callback.singleSelect(photos);
     }
 
     public void moreSelect(ArrayList<Photo> photos) {
+        PhotoPickConfig.callback.moreSelect(photos);
     }
 
     public void clipImage(ArrayList<Photo> photos) {
+        PhotoPickConfig.callback.clipImage(photos);
     }
 
     public void cameraImage(ArrayList<Photo> photos) {
+        PhotoPickConfig.callback.cameraImage(photos);
     }
 
     @Override
