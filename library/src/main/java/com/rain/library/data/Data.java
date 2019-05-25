@@ -32,7 +32,6 @@ public class Data {
         photoDirectoryAll.setId("ALL");
 
         while (data.moveToNext()) {
-
             //Original image id
             int originalImageId = data.getInt(data.getColumnIndexOrThrow(_ID));
             //BucketId：equals path.toLowerCase.hashCode(), see MediaProvider.computeBucketValues()

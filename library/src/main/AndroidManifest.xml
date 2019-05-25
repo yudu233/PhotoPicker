@@ -6,9 +6,18 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application>
+        <activity
+            android:name="com.rain.library.ui.PhotoPickActivity"
+            android:theme="@style/PhoAppTheme.AppTheme"/>
 
-        <activity android:name=".ui.PhotoPickActivity"/>
-        <activity android:name=".ui.PhotoPreviewActivity"/>
+        <activity
+            android:name="com.rain.library.ui.PhotoPreviewActivity"
+            android:theme="@style/PhoAppTheme.AppTheme"/>
+
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
     </application>
 
 </manifest>

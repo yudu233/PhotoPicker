@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +35,8 @@ public class MediaStoreHelper {
                 PhotoCursorLoader loader = new PhotoCursorLoader();
                 ContentResolver contentResolver = context.getContentResolver();
                 Cursor cursor = contentResolver.query(loader.getUri(), loader.getProjection(), loader.getSelection(), loader.getSelectionArgs(), loader.getSortOrder());
+
+                Cursor thumbnailCursor = contentResolver.query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, new String[]{MediaStore.Images.Thumbnails.IMAGE_ID, MediaStore.Images.Thumbnails.DATA}, null, null, null);
                 if (cursor == null) return;
 
                 List<PhotoDirectory> directories = Data.getDataFromCursor(context, cursor, checkImageStatus);

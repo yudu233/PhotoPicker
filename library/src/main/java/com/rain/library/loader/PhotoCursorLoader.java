@@ -34,6 +34,14 @@ public class PhotoCursorLoader {
 //        setSortOrder(MediaStore.Images.Media.DATE_MODIFIED);
     }
 
+    /**
+     * 图片缩略图
+     * @param uri       EXTERNAL_CONTENT_URI
+     * @param projection    new String[]{Thumbnails.IMAGE_ID,Thumbnails.DATA}
+     * @param selection     null
+     * @param selectionArgs null
+     * @param sortOrder     null
+     */
     public PhotoCursorLoader(@NonNull Uri uri, @Nullable String[] projection,
                              @Nullable String selection, @Nullable String[] selectionArgs,
                              @Nullable String sortOrder) {
@@ -49,6 +57,7 @@ public class PhotoCursorLoader {
     private final static String IMAGE_GIF = "image/gif";
 
     private final String[] IMAGE_PROJECTION = {
+            MediaStore.Images.Thumbnails.DATA,
             MediaStore.Images.Media._ID,
             MediaStore.Images.Media.DATA,
             MediaStore.Images.Media.BUCKET_ID,

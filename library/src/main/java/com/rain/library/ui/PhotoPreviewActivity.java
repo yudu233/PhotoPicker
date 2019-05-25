@@ -62,11 +62,11 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
     private boolean isChecked = false;
     private boolean originalPicture;    //是否选择的是原图
     private PhotoSelectCallback callback;
-    private int screenHeight;
-    private int screenWidth;
 
     private static final int MAX_SIZE = 4096;
     private static final int MAX_SCALE = 8;
+    public static final String DEFAULT_WIDTH = "720";
+    public static final String DEFAULT_HEIGHT = "1080";
 
     @Override
     protected void onCreate(Bundle arg0) {
@@ -101,9 +101,6 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         toolbar.setTitle((beginPosition + 1) + "/" + photos.size());
         toolbar.setNavigationIcon(PhotoPickOptions.DEFAULT.backIcon);
         setSupportActionBar(toolbar);
-
-        screenHeight = UtilsHelper.getScreenHeight(this);
-        screenWidth = UtilsHelper.getScreenWidth(this);
 
         //照片滚动监听，更改ToolBar数据
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -210,8 +207,6 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.ok && !selectPhotos.isEmpty()) {
             if (isChecked) {
-
-
                 Intent intent = new Intent();
                 if (selectPhotos.size() != 1) {
                     if (callback != null) {
@@ -233,10 +228,11 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                     @Override
                     public void onSuccess(File file) {
                         if (file.exists()) {
-                            Rlog.e("Rain", "onSuccess:" + file.getAbsolutePath() + "--- length = " + file.length());
+                            Rlog.e("Rain", "Luban compression success:" + file.getAbsolutePath() + " ; image length = " + file.length());
+                            selectPhotosInfo.get(imageFilePath.size()).setCompressionImagePath(file.getAbsolutePath());
                             imageFilePath.add(file.getAbsolutePath());
                             if (imageFilePath != null && imageFilePath.size() > 0 && imageFilePath.size() == selectPhotos.size()) {
-                                Rlog.e("Rain", "所有图片压缩完成!");
+                                Rlog.e("Rain", "all select image compression success!");
                                 Intent intent = new Intent();
                                 if (selectPhotos.size() != 1) {
                                     if (callback != null) {
@@ -313,8 +309,8 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
 
             String originalImagePath = photos.get(position).getOriginalImagePath();
             String thumbnailsImagePath = photos.get(position).getThumbnailsImagePath();
-            int imageWidth = Integer.parseInt(photos.get(position).getImageWidth());
-            int imageHeight = Integer.parseInt(photos.get(position).getImageHeight());
+            int imageWidth = Integer.parseInt(photos.get(position).getImageWidth() == null ? DEFAULT_WIDTH : photos.get(position).getImageWidth());
+            int imageHeight = Integer.parseInt(photos.get(position).getImageHeight() == null ? DEFAULT_HEIGHT : photos.get(position).getImageHeight());
 
             if (imageHeight > MAX_SIZE || imageHeight / imageWidth > MAX_SCALE) {
                 //加载长截图
