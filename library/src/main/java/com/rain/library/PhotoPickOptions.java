@@ -19,12 +19,12 @@ public class PhotoPickOptions {
     /**
      * App文件保存路径
      */
-    public String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "eWorld/";
+    public String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "PhotoPick/";
 
     /**
      * App图片文件夹名称
      */
-    public String imagePath = filePath + "cytx";
+    public String imagePath = filePath + "image";
 
     /**
      * 相机图片名称
