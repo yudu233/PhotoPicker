@@ -145,6 +145,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                 }
                 String path = photos.get(pos).getOriginalImagePath();
                 if (selectPhotos.contains(path)) {
+                    selectPhotosInfo.remove(photos.get(pos));
                     selectPhotos.remove(path);
                     checkbox.setChecked(false);
                 } else {
@@ -152,6 +153,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                         checkbox.setChecked(false);
                         return;
                     }
+                    selectPhotosInfo.add(photos.get(pos));
                     selectPhotos.add(path);
                     checkbox.setChecked(true);
                 }
@@ -229,7 +231,8 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                     public void onSuccess(File file) {
                         if (file.exists()) {
                             Rlog.e("Rain", "Luban compression success:" + file.getAbsolutePath() + " ; image length = " + file.length());
-                            selectPhotosInfo.get(imageFilePath.size()).setCompressionImagePath(file.getAbsolutePath());
+                            Photo photo = selectPhotosInfo.get(imageFilePath.size());
+                            photo.setCompressionImagePath(file.getAbsolutePath());
                             imageFilePath.add(file.getAbsolutePath());
                             if (imageFilePath != null && imageFilePath.size() > 0 && imageFilePath.size() == selectPhotos.size()) {
                                 Rlog.e("Rain", "all select image compression success!");
