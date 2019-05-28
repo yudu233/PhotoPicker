@@ -146,7 +146,7 @@ public class PhotoPickActivity extends BaseActivity {
                         }
                         photoDirectoryList.add(directories.get(0));
                         for (int i = 1; i < directories.size(); i++) {
-                            if (UtilsHelper.isFileExist(directories.get(i).getDirPath())){
+                            if (UtilsHelper.isFileExist(directories.get(i).getDirPath())) {
                                 photoDirectoryList.add(directories.get(i));
                             }
                         }
@@ -402,7 +402,10 @@ public class PhotoPickActivity extends BaseActivity {
                     PhotoPick.startCompression(PhotoPickActivity.this, new ArrayList<>(Arrays.asList(adapter.getCameraImagePath())), new CommonResult<File>() {
                         @Override
                         public void onSuccess(File data) {
-                            adapter.getSelectPhotosInfo().add(new Photo(data.getAbsolutePath(), 0));
+                            Photo photo = new Photo();
+                            photo.setCompressionImagePath(data.getAbsolutePath());
+                            photo.setOriginalImagePath(adapter.getCameraImagePath());
+                            adapter.getSelectPhotosInfo().add(photo);
                             if (pickBean.getCallback() != null) {
                                 pickBean.getCallback().cameraImage(adapter.getSelectPhotosInfo());
                             } else {

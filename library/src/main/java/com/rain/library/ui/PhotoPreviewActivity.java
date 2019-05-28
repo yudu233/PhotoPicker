@@ -90,7 +90,6 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         selectPhotos = bean.getSelectPhotos();
         selectPhotosInfo = bean.getSelectPhotosInfo();
         callback = bean.getCallback();
-        final int beginPosition = bean.getPosition();
         setContentView(R.layout.activity_photo_select);
 
         radioButton = (RadioButton) findViewById(R.id.radioButton);
@@ -98,7 +97,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         HackyViewPager viewPager = (HackyViewPager) findViewById(R.id.pager);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(PhotoPick.getToolbarBackGround());
-        toolbar.setTitle((beginPosition + 1) + "/" + photos.size());
+        toolbar.setTitle((bean.getPosition() + 1) + "/" + photos.size());
         toolbar.setNavigationIcon(PhotoPickOptions.DEFAULT.backIcon);
         setSupportActionBar(toolbar);
 
@@ -173,7 +172,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                     } else {
                         radioButton.setChecked(true);
                         isChecked = true;
-                        radioButton.setText(getString(R.string.image_size, UtilsHelper.formatFileSize(photos.get(beginPosition).getOriginalImageSize())));
+                        radioButton.setText(getString(R.string.image_size, UtilsHelper.formatFileSize(photos.get(pos).getOriginalImageSize())));
                     }
                 }
             });
@@ -182,7 +181,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         }
 
         viewPager.setAdapter(new ImagePagerAdapter());
-        viewPager.setCurrentItem(beginPosition);
+        viewPager.setCurrentItem(bean.getPosition());
     }
 
     private void updateMenuItemTitle() {
