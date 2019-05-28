@@ -186,7 +186,8 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
      * @param picPath
      */
     public void startClipPic(String picPath) {
-        File clipImage = new File(PhotoPickOptions.DEFAULT.imagePath, PhotoPickOptions.DEFAULT.clipImageName);
+        String clipImageName = "clip_" + (System.currentTimeMillis() / 1000) + ".jpg";
+        File clipImage = new File(PhotoPickOptions.DEFAULT.imagePath, clipImageName);
         clipImagePath = clipImage.getAbsolutePath();
         UCropUtils.start((Activity) context, new File(picPath), clipImage, clipCircle);
     }
@@ -207,7 +208,8 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
         startActivityForResult(intent, REQUEST_CODE_CAMERA);*/
 
         //保存到自定义目录
-        File imageFile = new File(PhotoPickOptions.DEFAULT.imagePath, PhotoPickOptions.DEFAULT.cameraImageName);
+        String cameraImageName = "camera_" + (System.currentTimeMillis() / 1000) + ".jpg";
+        File imageFile = new File(PhotoPickOptions.DEFAULT.imagePath, cameraImageName);
         cameraImagePath = imageFile.getAbsolutePath();
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Android7.0以上URI

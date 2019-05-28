@@ -26,20 +26,6 @@ public class PhotoPickOptions {
      */
     public String imagePath = filePath + "image";
 
-    /**
-     * 相机图片名称
-     */
-    public String cameraImageName = "camera_" + (System.currentTimeMillis() / 1000) + ".jpg";
-
-    /**
-     * 裁剪图片名称
-     */
-    public String clipImageName = "clip_" + (System.currentTimeMillis() / 1000) + ".jpg";
-
-    /**
-     * 手动保存的图片名称
-     */
-    public String saveImageName = "save_" + (System.currentTimeMillis() / 1000) + ".jpg";
 
     /**
      * 适配Android7.0文件共享
