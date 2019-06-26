@@ -140,6 +140,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
                 if (selectPhotos.contains(getItem(position).getOriginalImagePath())) {
                     checkbox.setChecked(false);
                     selectPhotos.remove(getItem(position).getOriginalImagePath());
+                    selectPhotosInfo.remove(getItem(position));
                 } else {
                     if (selectPhotos.size() == maxPickSize) {
                         checkbox.setChecked(false);
@@ -245,6 +246,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
 
     /**
      * get selected photos info
+     *
      * @return
      */
     public ArrayList<Photo> getSelectPhotosInfo() {
@@ -253,6 +255,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
 
     /**
      * get camera image uri
+     *
      * @return
      */
     public Uri getCameraUri() {
@@ -261,6 +264,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
 
     /**
      * get clip image path
+     *
      * @return
      */
     public String getClipImagePath() {
@@ -269,6 +273,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
 
     /**
      * get camera image path
+     *
      * @return
      */
     public String getCameraImagePath() {
