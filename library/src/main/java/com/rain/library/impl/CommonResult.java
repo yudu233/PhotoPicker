@@ -9,5 +9,5 @@ package com.rain.library.impl;
  * @describe :
  */
 public interface CommonResult<T> {
-    void onSuccess(T data);
+    void onSuccess(T data,boolean success);
 }

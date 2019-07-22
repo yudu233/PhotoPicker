@@ -55,11 +55,12 @@ public final class PhotoPick {
 
                     @Override
                     public void onSuccess(File file) {
-                        result.onSuccess(file);
+                        result.onSuccess(file, true);
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        result.onSuccess(null, false);
                         Rlog.e("Rain", "onError:" + e.getMessage());
 
                     }

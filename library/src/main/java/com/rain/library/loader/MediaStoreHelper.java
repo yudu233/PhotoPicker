@@ -123,7 +123,6 @@ public class MediaStoreHelper {
                     String duration = media.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
                     media_duration = Long.parseLong(duration);
                     media.release();
-
                 } else {
                     media_duration = 0;
                 }

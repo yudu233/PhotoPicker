@@ -266,51 +266,27 @@ public class PhotoPickActivity extends BaseActivity {
             if (adapter != null && !adapter.getSelectPhotosInfo().isEmpty()) {
 
                 if (pickBean.isStartCompression()) {
-                    PhotoPick.startCompression(PhotoPickActivity.this, adapter.getSelectPhotos(), new CommonResult<File>() {
-                        @Override
-                        public void onSuccess(File file) {
-                            if (file.exists()) {
-                                Rlog.e("Rain", "Luban compression success:" + file.getAbsolutePath() + " ; image length = " + file.length());
-                                adapter.getSelectPhotosInfo().get(imageFilePath.size()).setCompressionPath(file.getAbsolutePath());
-                                imageFilePath.add(file.getAbsolutePath());
-                                if (imageFilePath != null && imageFilePath.size() > 0 && imageFilePath.size() == adapter.getSelectPhotos().size()) {
-                                    Rlog.e("Rain", "all select image compression success!");
-                                    if (adapter.getSelectPhotos().size() != 1) {
-                                        if (pickBean.getCallback() != null)
-                                            pickBean.getCallback().moreSelect(adapter.getSelectPhotosInfo());
-                                        else
-                                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST, adapter.getSelectPhotosInfo());
-                                        // intent.putStringArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST, imageFilePath);
-                                    } else {
-                                        if (pickBean.getCallback() != null)
-                                            pickBean.getCallback().singleSelect(adapter.getSelectPhotosInfo());
-                                        else
-                                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO, adapter.getSelectPhotosInfo());
-                                        //intent.putExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO, imageFilePath.get(0));
-                                    }
-                                    setResult(Activity.RESULT_OK, intent);
-                                    finish();
-                                }
-                            }
-                        }
-                    });
+                    PhotoPick.startCompression(PhotoPickActivity.this, adapter.getSelectPhotos(), compressResult);
 
                 } else {
                     //不做压缩处理 直接发送原图信息
                     if (adapter.getSelectPhotos().size() != 1) {
                         if (pickBean.getCallback() != null)
                             pickBean.getCallback().moreSelect(adapter.getSelectPhotosInfo());
-                        else
+                        else{
                             intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST, adapter.getSelectPhotosInfo());
+                            setResult(Activity.RESULT_OK, intent);
+                        }
                         // intent.putStringArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST, imageFilePath);
                     } else {
                         if (pickBean.getCallback() != null)
                             pickBean.getCallback().singleSelect(adapter.getSelectPhotosInfo());
-                        else
+                        else{
+                            setResult(Activity.RESULT_OK, intent);
                             intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO, adapter.getSelectPhotosInfo());
+                        }
                         //intent.putExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO, imageFilePath.get(0));
                     }
-                    setResult(Activity.RESULT_OK, intent);
                     finish();
                 }
             }
@@ -318,6 +294,40 @@ public class PhotoPickActivity extends BaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private int index = 0;
+
+    private CommonResult<File> compressResult = new CommonResult<File>() {
+        @Override
+        public void onSuccess(File file, boolean success) {
+            if (success && file.exists()) {
+                Rlog.e("Rain", "Luban compression success:" + file.getAbsolutePath() + " ; image length = " + file.length());
+                adapter.getSelectPhotosInfo().get(imageFilePath.size()).setCompressionPath(file.getAbsolutePath());
+                index++;
+                if (index > 0 && index == adapter.getSelectPhotosInfo().size()) {
+                    Rlog.e("Rain", "all select image compression success!");
+                    Intent intent = new Intent();
+                    if (adapter.getSelectPhotosInfo().size() != 1) {
+                        if (pickBean.getCallback() != null)
+                            pickBean.getCallback().moreSelect(adapter.getSelectPhotosInfo());
+                        else
+                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST, adapter.getSelectPhotosInfo());
+                    } else {
+                        if (pickBean.getCallback() != null)
+                            pickBean.getCallback().singleSelect(adapter.getSelectPhotosInfo());
+                        else
+                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO, adapter.getSelectPhotosInfo());
+                    }
+                    setResult(Activity.RESULT_OK, intent);
+                    finish();
+                }
+            } else {
+                index++;
+                MediaData photo = adapter.getSelectPhotosInfo().get(index);
+                photo.setCompressionPath(photo.getOriginalPath());
+            }
+        }
+    };
 
     @Override
     public void onBackPressed() {
@@ -403,10 +413,16 @@ public class PhotoPickActivity extends BaseActivity {
                 if (pickBean.isStartCompression()) {
                     PhotoPick.startCompression(PhotoPickActivity.this, new ArrayList<>(Arrays.asList(adapter.getCameraImagePath())), new CommonResult<File>() {
                         @Override
-                        public void onSuccess(File data) {
+                        public void onSuccess(File data, boolean success) {
                             MediaData photo = new MediaData();
-                            photo.setCompressionPath(data.getAbsolutePath());
-                            photo.setOriginalPath(adapter.getCameraImagePath());
+                            if (success) {
+                                photo.setCompressionPath(data.getAbsolutePath());
+                                photo.setOriginalPath(adapter.getCameraImagePath());
+
+                            } else {
+                                photo.setCompressionPath(adapter.getCameraImagePath());
+                                photo.setOriginalPath(adapter.getCameraImagePath());
+                            }
                             adapter.getSelectPhotosInfo().add(photo);
                             if (pickBean.getCallback() != null) {
                                 pickBean.getCallback().cameraImage(adapter.getSelectPhotosInfo());

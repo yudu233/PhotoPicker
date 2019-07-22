@@ -19,7 +19,6 @@ public class PhotoPreviewBean implements Parcelable {
 
     public PhotoPreviewBean(){}
 
-
     public int getPosition() {
         return position;
     }
@@ -76,36 +75,36 @@ public class PhotoPreviewBean implements Parcelable {
         this.callback = callback;
     }
 
+    protected PhotoPreviewBean(Parcel in) {
+        position = in.readInt();
+        photos = in.createTypedArrayList(MediaData.CREATOR);
+        selectPhotos = in.createStringArrayList();
+        selectPhotosInfo = in.createTypedArrayList(MediaData.CREATOR);
+        maxPickSize = in.readInt();
+        originalPicture = in.readByte() != 0;
+        callback = in.readParcelable(PhotoSelectCallback.class.getClassLoader());
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(position);
+        dest.writeTypedList(photos);
+        dest.writeStringList(selectPhotos);
+        dest.writeTypedList(selectPhotosInfo);
+        dest.writeInt(maxPickSize);
+        dest.writeByte((byte) (originalPicture ? 1 : 0));
+        dest.writeParcelable(callback, flags);
+    }
+
     @Override
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.position);
-        dest.writeTypedList(this.photos);
-        dest.writeStringList(this.selectPhotos);
-        dest.writeTypedList(this.selectPhotosInfo);
-        dest.writeInt(this.maxPickSize);
-        dest.writeByte(this.originalPicture ? (byte) 1 : (byte) 0);
-        dest.writeParcelable(this.callback, flags);
-    }
-
-    protected PhotoPreviewBean(Parcel in) {
-        this.position = in.readInt();
-        this.photos = in.createTypedArrayList(MediaData.CREATOR);
-        this.selectPhotos = in.createStringArrayList();
-        this.selectPhotosInfo = in.createTypedArrayList(MediaData.CREATOR);
-        this.maxPickSize = in.readInt();
-        this.originalPicture = in.readByte() != 0;
-        this.callback = in.readParcelable(PhotoSelectCallback.class.getClassLoader());
-    }
-
     public static final Creator<PhotoPreviewBean> CREATOR = new Creator<PhotoPreviewBean>() {
         @Override
-        public PhotoPreviewBean createFromParcel(Parcel source) {
-            return new PhotoPreviewBean(source);
+        public PhotoPreviewBean createFromParcel(Parcel in) {
+            return new PhotoPreviewBean(in);
         }
 
         @Override

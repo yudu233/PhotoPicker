@@ -94,20 +94,6 @@ public class MediaData implements Parcelable {
     public MediaData() {
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MediaData)) return false;
-
-        MediaData mediaData = (MediaData) o;
-
-        return mediaId == mediaData.mediaId;
-    }
-
-    @Override
-    public int hashCode() {
-        return mediaId;
-    }
 
     public int getMediaId() {
         return mediaId;
@@ -173,6 +159,14 @@ public class MediaData implements Parcelable {
         this.imageHeight = imageHeight;
     }
 
+    public long getMediaSize() {
+        return mediaSize;
+    }
+
+    public void setMediaSize(long mediaSize) {
+        this.mediaSize = mediaSize;
+    }
+
     public int getMimeType() {
         return mimeType;
     }
@@ -189,14 +183,6 @@ public class MediaData implements Parcelable {
         this.imageType = imageType;
     }
 
-    public long getMediaSize() {
-        return mediaSize;
-    }
-
-    public void setMediaSize(long mediaSize) {
-        this.mediaSize = mediaSize;
-    }
-
     public long getDuration() {
         return duration;
     }
@@ -204,6 +190,22 @@ public class MediaData implements Parcelable {
     public void setDuration(long duration) {
         this.duration = duration;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MediaData)) return false;
+
+        MediaData mediaData = (MediaData) o;
+
+        return mediaId == mediaData.mediaId;
+    }
+
+    @Override
+    public int hashCode() {
+        return mediaId;
+    }
+
 
     @Override
     public int describeContents() {
@@ -221,6 +223,8 @@ public class MediaData implements Parcelable {
         dest.writeInt(this.imageWidth);
         dest.writeInt(this.imageHeight);
         dest.writeLong(this.mediaSize);
+        dest.writeInt(this.mimeType);
+        dest.writeString(this.imageType);
         dest.writeLong(this.duration);
     }
 
@@ -234,6 +238,8 @@ public class MediaData implements Parcelable {
         this.imageWidth = in.readInt();
         this.imageHeight = in.readInt();
         this.mediaSize = in.readLong();
+        this.mimeType = in.readInt();
+        this.imageType = in.readString();
         this.duration = in.readLong();
     }
 
