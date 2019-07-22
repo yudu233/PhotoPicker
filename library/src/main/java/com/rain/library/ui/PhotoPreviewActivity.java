@@ -27,7 +27,8 @@ import com.rain.library.BaseActivity;
 import com.rain.library.PhotoPick;
 import com.rain.library.PhotoPickOptions;
 import com.rain.library.R;
-import com.rain.library.bean.Photo;
+import com.rain.library.bean.MediaData;
+import com.rain.library.bean.PhotoPickBean;
 import com.rain.library.bean.PhotoPreviewBean;
 import com.rain.library.controller.PhotoPickConfig;
 import com.rain.library.controller.PhotoPreviewConfig;
@@ -51,9 +52,9 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
 
     private static final String TAG = "PhotoPreviewActivity";
 
-    private ArrayList<Photo> photos;    //全部图片集合
+    private ArrayList<MediaData> photos;    //全部图片集合
     private ArrayList<String> selectPhotos;     //选中的图片集合
-    private ArrayList<Photo> selectPhotosInfo;     //选中的图片集合信息
+    private ArrayList<MediaData> selectPhotosInfo;     //选中的图片集合信息
 
     private CheckBox checkbox;
     private RadioButton radioButton;
@@ -65,8 +66,8 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
 
     private static final int MAX_SIZE = 4096;
     private static final int MAX_SCALE = 8;
-    public static final String DEFAULT_WIDTH = "720";
-    public static final String DEFAULT_HEIGHT = "1080";
+    public static final int DEFAULT_WIDTH = 720;
+    public static final int DEFAULT_HEIGHT = 1080;
 
     @Override
     protected void onCreate(Bundle arg0) {
@@ -85,6 +86,9 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
             finish();
             return;
         }
+
+        PhotoPickBean pickBean = PhotoPickConfig.getInstance();
+
         originalPicture = bean.isOriginalPicture();
         maxPickSize = bean.getMaxPickSize();
         selectPhotos = bean.getSelectPhotos();
@@ -113,16 +117,16 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                 pos = position;
                 position++;
                 toolbar.setTitle(position + "/" + photos.size());
-                if (selectPhotos != null && selectPhotos.contains(photos.get(pos).getOriginalImagePath())) {
+                if (selectPhotos != null && selectPhotos.contains(photos.get(pos).getOriginalPath())) {
                     checkbox.setChecked(true);
-                    if (pos == 1 && selectPhotos.contains(photos.get(pos - 1).getOriginalImagePath())) {
+                    if (pos == 1 && selectPhotos.contains(photos.get(pos - 1).getOriginalPath())) {
                         checkbox.setChecked(true);
                     }
                 } else {
                     checkbox.setChecked(false);
                 }
                 if (originalPicture && radioButton.isChecked()) {
-                    radioButton.setText(getString(R.string.image_size, UtilsHelper.formatFileSize(photos.get(pos).getOriginalImageSize())));
+                    radioButton.setText(getString(R.string.image_size, UtilsHelper.formatFileSize(photos.get(pos).getOriginalSize())));
                 } else {
                     radioButton.setText(getString(R.string.original_image));
 
@@ -142,7 +146,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                 if (selectPhotos == null) {
                     selectPhotos = new ArrayList<>();
                 }
-                String path = photos.get(pos).getOriginalImagePath();
+                String path = photos.get(pos).getOriginalPath();
                 if (selectPhotos.contains(path)) {
                     selectPhotosInfo.remove(photos.get(pos));
                     selectPhotos.remove(path);
@@ -172,7 +176,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                     } else {
                         radioButton.setChecked(true);
                         isChecked = true;
-                        radioButton.setText(getString(R.string.image_size, UtilsHelper.formatFileSize(photos.get(pos).getOriginalImageSize())));
+                        radioButton.setText(getString(R.string.image_size, UtilsHelper.formatFileSize(photos.get(pos).getOriginalSize())));
                     }
                 }
             });
@@ -230,8 +234,8 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                     public void onSuccess(File file) {
                         if (file.exists()) {
                             Rlog.e("Rain", "Luban compression success:" + file.getAbsolutePath() + " ; image length = " + file.length());
-                            Photo photo = selectPhotosInfo.get(imageFilePath.size());
-                            photo.setCompressionImagePath(file.getAbsolutePath());
+                            MediaData photo = selectPhotosInfo.get(imageFilePath.size());
+                            photo.setCompressionPath(file.getAbsolutePath());
                             imageFilePath.add(file.getAbsolutePath());
                             if (imageFilePath != null && imageFilePath.size() > 0 && imageFilePath.size() == selectPhotos.size()) {
                                 Rlog.e("Rain", "all select image compression success!");
@@ -309,10 +313,9 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
             View longView = LayoutInflater.from(PhotoPreviewActivity.this).inflate(R.layout.item_photo_preview_long, container, false);
             View simpleView = LayoutInflater.from(PhotoPreviewActivity.this).inflate(R.layout.item_photo_preview, container, false);
 
-            String originalImagePath = photos.get(position).getOriginalImagePath();
-            String thumbnailsImagePath = photos.get(position).getThumbnailsImagePath();
-            int imageWidth = Integer.parseInt(photos.get(position).getImageWidth() == null ? DEFAULT_WIDTH : photos.get(position).getImageWidth());
-            int imageHeight = Integer.parseInt(photos.get(position).getImageHeight() == null ? DEFAULT_HEIGHT : photos.get(position).getImageHeight());
+            String originalImagePath = photos.get(position).getOriginalPath();
+            int imageWidth =photos.get(position).getImageWidth() == 0 ? DEFAULT_WIDTH : photos.get(position).getImageWidth();
+            int imageHeight = photos.get(position).getImageHeight() == 0 ? DEFAULT_HEIGHT : photos.get(position).getImageHeight();
 
             if (imageHeight > MAX_SIZE || imageHeight / imageWidth > MAX_SCALE) {
                 //加载长截图
@@ -325,7 +328,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                 view = simpleView;
                 PhotoView imageView = (PhotoView) simpleView.findViewById(R.id.iv_media_image);
                 imageView.setOnPhotoTapListener(PhotoPreviewActivity.this);
-                PhotoPickConfig.imageLoader.displayImage(PhotoPreviewActivity.this, originalImagePath, thumbnailsImagePath, imageView, false, true);
+                PhotoPickConfig.imageLoader.displayImage(PhotoPreviewActivity.this, originalImagePath, imageView, false);
             }
             container.addView(view, 0);
             return view;

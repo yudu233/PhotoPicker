@@ -23,8 +23,10 @@ public class PhotoPickBean implements Parcelable {
     private boolean clipPhoto;          //是否启动裁剪图片
     private boolean originalPicture;    //是否选择的是原图
     private boolean startCompression;   //是否开启图片压缩
+    private boolean showGif;            //是否加载Gif
+    private int mimeType;               //加载文件类型
     private ImageLoader imageLoader;    //加载方式
-    private PhotoSelectCallback callback;
+    private PhotoSelectCallback callback;   //回调
 
     public PhotoPickBean() {
     }
@@ -90,6 +92,22 @@ public class PhotoPickBean implements Parcelable {
         this.showClipCircle = showClipCircle;
     }
 
+    public boolean isShowGif() {
+        return showGif;
+    }
+
+    public void setShowGif(boolean showGif) {
+        this.showGif = showGif;
+    }
+
+    public int getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(int mimeType) {
+        this.mimeType = mimeType;
+    }
+
     public ImageLoader getImageLoader() {
         return imageLoader;
     }
@@ -101,6 +119,7 @@ public class PhotoPickBean implements Parcelable {
     public void setOriginalPicture(boolean originalPicture) {
         this.originalPicture = originalPicture;
     }
+
 
     public PhotoSelectCallback getCallback() {
         return callback;
@@ -123,6 +142,8 @@ public class PhotoPickBean implements Parcelable {
         dest.writeByte(this.showClipCircle ? (byte) 1 : (byte) 0);
         dest.writeByte(this.showCamera ? (byte) 1 : (byte) 0);
         dest.writeByte(this.clipPhoto ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.showGif ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.mimeType);
         dest.writeByte(this.originalPicture ? (byte) 1 : (byte) 0);
         dest.writeByte(this.startCompression ? (byte) 1 : (byte) 0);
         dest.writeSerializable(this.imageLoader);
@@ -138,6 +159,8 @@ public class PhotoPickBean implements Parcelable {
         this.clipPhoto = in.readByte() != 0;
         this.originalPicture = in.readByte() != 0;
         this.startCompression = in.readByte() != 0;
+        this.showGif = in.readByte() != 0;
+        this.mimeType = in.readInt();
         this.imageLoader = (ImageLoader) in.readSerializable();
         this.callback = in.readParcelable(PhotoSelectCallback.class.getClassLoader());
     }

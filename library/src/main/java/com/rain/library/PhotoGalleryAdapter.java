@@ -12,8 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.rain.library.bean.Photo;
-import com.rain.library.bean.PhotoDirectory;
+import com.rain.library.bean.MediaData;
+import com.rain.library.bean.MediaDirectory;
 import com.rain.library.controller.PhotoPickConfig;
 import com.rain.library.utils.UtilsHelper;
 import com.rain.library.weidget.GalleryImageView;
@@ -29,8 +29,8 @@ public class PhotoGalleryAdapter extends RecyclerView.Adapter {
 
     private Context context;
     private int selected;
-    private ArrayList<PhotoDirectory> directories = new ArrayList<>();
-    private ArrayList<Photo> photoList = new ArrayList<>();
+    private ArrayList<MediaDirectory> directories = new ArrayList<>();
+    private ArrayList<MediaData> photoList = new ArrayList<>();
     private int imageSize;
 
     public PhotoGalleryAdapter(Context context) {
@@ -41,7 +41,7 @@ public class PhotoGalleryAdapter extends RecyclerView.Adapter {
         this.imageSize = metrics.widthPixels / 6;
     }
 
-    public void refresh(List<PhotoDirectory> directories) {
+    public void refresh(List<MediaDirectory> directories) {
         this.directories.clear();
         this.directories.addAll(directories);
         notifyDataSetChanged();
@@ -63,7 +63,7 @@ public class PhotoGalleryAdapter extends RecyclerView.Adapter {
         return directories.size();
     }
 
-    private PhotoDirectory getItem(int position) {
+    private MediaDirectory getItem(int position) {
         return this.directories.get(position);
     }
 
@@ -89,7 +89,7 @@ public class PhotoGalleryAdapter extends RecyclerView.Adapter {
             itemView.setOnClickListener(this);
         }
 
-        public void showData(PhotoDirectory directory, int position) {
+        public void showData(MediaDirectory directory, int position) {
             if (directory == null || directory.getCoverPath() == null) {
                 return;
             }
@@ -111,13 +111,13 @@ public class PhotoGalleryAdapter extends RecyclerView.Adapter {
                 if (onItemClickListener != null) {
                     changeSelect(position);
                     photoList.clear();
-                    List<Photo> photos = getItem(position).getPhotos();
+                    List<MediaData> photos = getItem(position).getMediaData();
                     for (int i = 0; i < photos.size(); i++) {
-                        if (UtilsHelper.isFileExist(photos.get(i).getOriginalImagePath())) {
+                        if (UtilsHelper.isFileExist(photos.get(i).getOriginalPath())) {
                             photoList.add(photos.get(i));
                         }
                     }
-                    onItemClickListener.onClick(photoList);
+                    onItemClickListener.onClick(photoList,position);
                 }
             }
         }
@@ -130,6 +130,6 @@ public class PhotoGalleryAdapter extends RecyclerView.Adapter {
     }
 
     public interface OnItemClickListener {
-        void onClick(ArrayList<Photo> photos);
+        void onClick(ArrayList<MediaData> photos,int position);
     }
 }

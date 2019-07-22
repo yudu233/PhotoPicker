@@ -9,6 +9,7 @@ import com.rain.library.bean.PhotoPickBean;
 import com.rain.library.impl.PhotoSelectCallback;
 import com.rain.library.loader.ImageLoader;
 import com.rain.library.ui.PhotoPickActivity;
+import com.rain.library.utils.MimeType;
 
 
 /**
@@ -37,6 +38,11 @@ public class PhotoPickConfig {
 
     public static boolean DEFAULT_START_COMPRESSION = true; //默认开启图片压缩
 
+    public static boolean DEFAULT_SHOW_GIF = true;          //默认显示Gif
+
+    public static int DEFAULT_MIMETYPE = MimeType.TYPE_ALL;   //默认加载文件类型
+
+
     public static ImageLoader imageLoader;              //图片加载方式
 
     public static PhotoSelectCallback callback;         //回调
@@ -50,6 +56,7 @@ public class PhotoPickConfig {
 
     public final static String EXTRA_PICK_BUNDLE = "extra_pick_bundle";
     public final static String EXTRA_PICK_BEAN = "extra_pick_bean";
+
     public final static int PICK_SINGLE_REQUEST_CODE = 10001;
     public static final int PICK_MORE_REQUEST_CODE = 10002;
     public static final int PICK_CLIP_REQUEST_CODE = 10003;
@@ -60,15 +67,13 @@ public class PhotoPickConfig {
         if (builder.pickBean == null) {
             throw new NullPointerException("builder#pickBean is null");
         }
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(EXTRA_PICK_BEAN, builder.pickBean);
-        int requestCode = builder.pickBean.getPickMode() == MODE_PICK_SINGLE ? (photoPickBean.isClipPhoto() == true ? PICK_CLIP_REQUEST_CODE : PICK_SINGLE_REQUEST_CODE) : PICK_MORE_REQUEST_CODE;
-        startPick(activity, bundle, requestCode);
+        photoPickBean = builder.pickBean;
+        int requestCode = builder.pickBean.getPickMode() == MODE_PICK_SINGLE ? (builder.pickBean.isClipPhoto() == true ? PICK_CLIP_REQUEST_CODE : PICK_SINGLE_REQUEST_CODE) : PICK_MORE_REQUEST_CODE;
+        startPick(activity, requestCode);
     }
 
-    private void startPick(Activity activity, Bundle bundle, int requestCode) {
+    private void startPick(Activity activity, int requestCode) {
         Intent intent = new Intent();
-        intent.putExtra(EXTRA_PICK_BUNDLE, bundle);
         intent.setClass(activity, PhotoPickActivity.class);
         activity.startActivityForResult(intent, requestCode);
         activity.overridePendingTransition(R.anim.image_pager_enter_animation, 0);
@@ -85,7 +90,7 @@ public class PhotoPickConfig {
                 throw new NullPointerException("context is null");
             }
             this.activity = activity;
-            photoPickBean = pickBean = new PhotoPickBean();
+            pickBean = new PhotoPickBean();
             pickBean.setSpanCount(GRID_SPAN_COUNT);             //默认gridView列数->3
             pickBean.setMaxPickSize(DEFAULT_CHOOSE_SIZE);       //默认可以选择的图片数目->1
             pickBean.setPickMode(MODE_PICK_SINGLE);             //默认图片单选
@@ -94,6 +99,9 @@ public class PhotoPickConfig {
             pickBean.setClipMode(CLIP_CIRCLE);                  //默认裁剪方式矩形
             pickBean.setOriginalPicture(DEFAULT_SHOW_ORIGINAL); //默认显示选择原图选项
             pickBean.setStartCompression(DEFAULT_START_COMPRESSION);    //默认启动图片压缩
+            pickBean.setShowGif(DEFAULT_SHOW_GIF);              //默认显示gif图
+            pickBean.setMimeType(DEFAULT_MIMETYPE);             //默认显示全部媒体文件
+
         }
 
         /**
@@ -105,6 +113,11 @@ public class PhotoPickConfig {
         public Builder imageLoader(ImageLoader imageLoader) {
             this.imageLoader = imageLoader;
             pickBean.setImageLoader(imageLoader);
+            return this;
+        }
+
+        public Builder setMimeType(int type) {
+            pickBean.setMimeType(type);
             return this;
         }
 
@@ -237,5 +250,9 @@ public class PhotoPickConfig {
             }
             return new PhotoPickConfig(activity, this);
         }
+    }
+
+    public static PhotoPickBean getInstance() {
+        return photoPickBean;
     }
 }

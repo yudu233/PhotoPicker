@@ -13,6 +13,9 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
+import android.widget.Toast;
+
+import com.rain.library.R;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -35,6 +38,8 @@ public class UtilsHelper {
 
     private static final String TAG = "UtilsHelper";
 
+    private static SimpleDateFormat msFormat = new SimpleDateFormat("mm:ss");
+
     /**
      * 转换文件大小
      */
@@ -54,6 +59,35 @@ public class UtilsHelper {
             fileSizeString = df.format((double) fileS / 1073741824) + "GB";
         }
         return fileSizeString;
+    }
+
+    public static String parseDuration(long duration) {
+        String time = "";
+        if (duration > 1000) {
+            time = timeParseMinute(duration);
+        } else {
+            long minute = duration / 60000;
+            long seconds = duration % 60000;
+            long second = Math.round((float) seconds / 1000);
+            if (minute < 10) {
+                time += "0";
+            }
+            time += minute + ":";
+            if (second < 10) {
+                time += "0";
+            }
+            time += second;
+        }
+        return time;
+    }
+
+    public static String timeParseMinute(long duration) {
+        try {
+            return msFormat.format(duration);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "0:00";
+        }
     }
 
     /**
@@ -114,10 +148,11 @@ public class UtilsHelper {
 
     /**
      * 计算出图片初次显示需要放大倍数
+     *
      * @param imagePath 图片的绝对路径
      */
-    public static float getImageScale(Context context, String imagePath){
-        if(TextUtils.isEmpty(imagePath)) {
+    public static float getImageScale(Context context, String imagePath) {
+        if (TextUtils.isEmpty(imagePath)) {
             return 2.0f;
         }
 
@@ -129,7 +164,7 @@ public class UtilsHelper {
             error.printStackTrace();
         }
 
-        if(bitmap == null) {
+        if (bitmap == null) {
             return 2.0f;
         }
 
@@ -137,7 +172,7 @@ public class UtilsHelper {
         int dw = bitmap.getWidth();
         int dh = bitmap.getHeight();
 
-        WindowManager wm = ((Activity)context).getWindowManager();
+        WindowManager wm = ((Activity) context).getWindowManager();
         int width = wm.getDefaultDisplay().getWidth();
         int height = wm.getDefaultDisplay().getHeight();
 
@@ -234,6 +269,12 @@ public class UtilsHelper {
         }
 
         return null;
+    }
+
+
+    public static void toast(Context context,String content){
+        Toast.makeText(context, content, Toast.LENGTH_SHORT).show();
+
     }
 
 }

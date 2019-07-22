@@ -3,7 +3,10 @@
 
     <string name="gallery_num">%s张</string>
     <string name="cannot_take_pic">SD卡不存在,不能拍照</string>
+    <string name="all_media">相机胶卷</string>
     <string name="all_photo">所有图片</string>
+    <string name="all_video">所有视频</string>
+    <string name="all_audio">所有音频</string>
     <string name="select_photo">选择图片</string>
     <string name="clip">裁剪</string>
     <string name="ok">确定</string>
@@ -19,6 +22,12 @@
     <string name="sends" formatted="false">发送(%s/%s)</string>
     <string name="image_size">原图(%s)</string>
     <string name="original_image">原图</string>
+    <string name="gif">动图</string>
+    <string name="long_image">长图</string>
+    <string name="tips_rule">不能同时选择图片和视频</string>
+    <string name="tips_max_num">你最多可以选择%1$d张图片</string>
+    <string name="tips_min_video_num">视频最低选择不能少于%1$s个</string>
+    <string name="tips_video_max_num">你最多可以选择%1$s个视频</string>
 
     <!-- android 6.0权限-->
     <string name="permission_tip_camera">缺少(相机)权限，无法使用该功能，点击"设置"去开启此权限\n您可在“设置”>“应用”>“权限”中配置权限</string>

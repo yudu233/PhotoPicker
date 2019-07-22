@@ -10,9 +10,9 @@ import java.util.ArrayList;
 public class PhotoPreviewBean implements Parcelable {
 
     private int position;
-    private ArrayList<Photo> photos;
+    private ArrayList<MediaData> photos;
     private ArrayList<String> selectPhotos;
-    private ArrayList<Photo> selectPhotosInfo;
+    private ArrayList<MediaData> selectPhotosInfo;
     private int maxPickSize;
     private boolean originalPicture;//是否选择的是原图
     private PhotoSelectCallback callback;
@@ -28,11 +28,11 @@ public class PhotoPreviewBean implements Parcelable {
         this.position = position;
     }
 
-    public ArrayList<Photo> getPhotos() {
+    public ArrayList<MediaData> getPhotos() {
         return photos;
     }
 
-    public void setPhotos(ArrayList<Photo> photos) {
+    public void setPhotos(ArrayList<MediaData> photos) {
         this.photos = photos;
     }
 
@@ -44,11 +44,11 @@ public class PhotoPreviewBean implements Parcelable {
         this.selectPhotos = selectPhotos;
     }
 
-    public ArrayList<Photo> getSelectPhotosInfo() {
+    public ArrayList<MediaData> getSelectPhotosInfo() {
         return selectPhotosInfo;
     }
 
-    public void setSelectPhotosInfo(ArrayList<Photo> selectPhotosInfo) {
+    public void setSelectPhotosInfo(ArrayList<MediaData> selectPhotosInfo) {
         this.selectPhotosInfo = selectPhotosInfo;
     }
 
@@ -94,9 +94,9 @@ public class PhotoPreviewBean implements Parcelable {
 
     protected PhotoPreviewBean(Parcel in) {
         this.position = in.readInt();
-        this.photos = in.createTypedArrayList(Photo.CREATOR);
+        this.photos = in.createTypedArrayList(MediaData.CREATOR);
         this.selectPhotos = in.createStringArrayList();
-        this.selectPhotosInfo = in.createTypedArrayList(Photo.CREATOR);
+        this.selectPhotosInfo = in.createTypedArrayList(MediaData.CREATOR);
         this.maxPickSize = in.readInt();
         this.originalPicture = in.readByte() != 0;
         this.callback = in.readParcelable(PhotoSelectCallback.class.getClassLoader());

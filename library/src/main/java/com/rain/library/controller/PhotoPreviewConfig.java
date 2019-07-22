@@ -6,14 +6,12 @@ import android.os.Bundle;
 
 import com.rain.library.PhotoPick;
 import com.rain.library.R;
-import com.rain.library.bean.Photo;
-import com.rain.library.bean.PhotoPickBean;
+import com.rain.library.bean.MediaData;
 import com.rain.library.bean.PhotoPreviewBean;
 import com.rain.library.impl.PhotoSelectCallback;
 import com.rain.library.ui.PhotoPreviewActivity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -79,7 +77,7 @@ public class PhotoPreviewConfig {
             return this;
         }
 
-        public Builder setPhotos(ArrayList<Photo> photos) {
+        public Builder setPhotos(ArrayList<MediaData> photos) {
             if (photos == null || photos.isEmpty()) {
                 throw new NullPointerException("photos is null or size is 0");
             }
@@ -97,7 +95,7 @@ public class PhotoPreviewConfig {
             return this;
         }
 
-        public Builder setSelectPhotosInfo(ArrayList<Photo> selectPhotosInfo) {
+        public Builder setSelectPhotosInfo(ArrayList<MediaData> selectPhotosInfo) {
             bean.setSelectPhotosInfo(selectPhotosInfo);
             return this;
         }
@@ -117,13 +115,13 @@ public class PhotoPreviewConfig {
         }
     }
 
-    private static ArrayList<Photo> photoArrayList = new ArrayList<>();
+    private static ArrayList<MediaData> photoArrayList = new ArrayList<>();
 
-    public static void setPreviewPhotos(ArrayList<Photo> photos) {
+    public static void setPreviewPhotos(ArrayList<MediaData> photos) {
         photoArrayList = photos;
     }
 
-    public static ArrayList<Photo> getPhotos() {
+    public static ArrayList<MediaData> getPhotos() {
         return photoArrayList;
     }
 }

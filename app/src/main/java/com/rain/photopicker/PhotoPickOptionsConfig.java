@@ -23,9 +23,6 @@ public class PhotoPickOptionsConfig {
         PhotoPickOptions options = new PhotoPickOptions();
         options.filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "eWorld/";
         options.imagePath = options.filePath +  "cytx/";
-        options.cameraImageName = "camera_" + System.currentTimeMillis() / 1000 + ".jpg";
-        options.clipImageName = "clip_" + System.currentTimeMillis() / 1000 + ".jpg";
-        options.saveImageName = "save_" + System.currentTimeMillis() / 1000 + ".jpg";
         options.photoPickAuthority = context.getString(R.string.file_provider_authorities);
         options.photoPickThemeColor = R.color.colorAccent;
         return options;

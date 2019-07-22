@@ -7,21 +7,39 @@ import java.util.List;
  * Describe :相册
  * Created by Rain on 17-4-28.
  */
-public class PhotoDirectory {
+public class MediaDirectory {
 
+    /**
+     * 相册id
+     */
     private String id;
+
+    /**
+     * 封面图片
+     */
     private String coverPath;
+
+    /**
+     * 相册名称
+     */
     private String name;
+
+    /**
+     * 相册路径
+     */
     private String dirPath;
-    private long dateAdded;
-    private ArrayList<Photo> photos = new ArrayList<>();
+
+    /**
+     * 单个相册内所有文件
+     */
+    private ArrayList<MediaData> mediaDatas = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof PhotoDirectory)) return false;
+        if (!(o instanceof MediaDirectory)) return false;
 
-        PhotoDirectory directory = (PhotoDirectory) o;
+        MediaDirectory directory = (MediaDirectory) o;
 
         if (!id.equals(directory.id)) return false;
         return name.equals(directory.name);
@@ -66,39 +84,31 @@ public class PhotoDirectory {
         this.dirPath = dirPath;
     }
 
-    public long getDateAdded() {
-        return dateAdded;
+    public ArrayList<MediaData> getMediaData() {
+        return mediaDatas;
     }
 
-    public void setDateAdded(long dateAdded) {
-        this.dateAdded = dateAdded;
-    }
-
-    public ArrayList<Photo> getPhotos() {
-        return photos;
-    }
-
-    public void setPhotos(ArrayList<Photo> photos) {
-        this.photos = photos;
+    public void setMediaData(ArrayList<MediaData> mediaDatas) {
+        this.mediaDatas = mediaDatas;
     }
 
     public List<String> getPhotoPaths() {
-        List<String> paths = new ArrayList<>(photos.size());
-        for (Photo photo : photos) {
-            paths.add(photo.getOriginalImagePath());
+        List<String> paths = new ArrayList<>(mediaDatas.size());
+        for (MediaData mediaData : mediaDatas) {
+            paths.add(mediaData.getOriginalPath());
         }
         return paths;
     }
 
-    public void addPhoto(int id, String path) {
-        photos.add(new Photo(id, path));
+    public void addMediaData(int id, String path) {
+        mediaDatas.add(new MediaData(id, path));
     }
 
-    public void addPhoto(Photo photo) {
-        photos.add(photo);
+    public void addMediaData(MediaData mediaData) {
+        mediaDatas.add(mediaData);
     }
 
-    public void addPhoto(int originalImageId, String originalImagePath, long originalImageSize, String thumbnailsImagePath) {
-        photos.add(new Photo(originalImageId, originalImagePath, originalImageSize, thumbnailsImagePath));
+    public void addMediaData(int originalImageId, String originalImagePath, long originalImageSize) {
+        mediaDatas.add(new MediaData(originalImageId, originalImagePath, originalImageSize));
     }
 }

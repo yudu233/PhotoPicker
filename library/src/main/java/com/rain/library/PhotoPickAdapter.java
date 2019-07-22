@@ -12,22 +12,26 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.rain.library.bean.Photo;
+import com.rain.library.bean.MediaData;
 import com.rain.library.bean.PhotoPickBean;
 import com.rain.library.controller.PhotoPickConfig;
 import com.rain.library.controller.PhotoPreviewConfig;
 import com.rain.library.impl.PhotoSelectCallback;
 import com.rain.library.loader.ImageLoader;
 import com.rain.library.ui.PhotoPickActivity;
+import com.rain.library.utils.MimeType;
 import com.rain.library.utils.UCropUtils;
+import com.rain.library.utils.UtilsHelper;
 import com.rain.library.weidget.GalleryImageView;
 
 import java.io.File;
@@ -41,23 +45,25 @@ import java.util.List;
 public class PhotoPickAdapter extends RecyclerView.Adapter {
 
     private Context context;
-    private ArrayList<Photo> photos = new ArrayList<>();
+    private ArrayList<MediaData> photos = new ArrayList<>();
     private ArrayList<String> selectPhotos = new ArrayList<>();
-    private ArrayList<Photo> selectPhotosInfo = new ArrayList<>();
+    private ArrayList<MediaData> selectPhotosInfo = new ArrayList<>();
 
-    private int maxPickSize;
-    private int pickMode;
+    //    private int maxPickSize;
+//    private int pickMode;
     private int imageSize;
-    private boolean clipCircle;
-    private boolean showCamera;
-    private boolean isClipPhoto;
-    private boolean isOriginalPicture;
-    private ImageLoader imageLoader;
-    private PhotoSelectCallback callback;
+//    private boolean clipCircle;
+//    private boolean showCamera;
+//    private boolean isClipPhoto;
+//    private boolean isOriginalPicture;
+//    private ImageLoader imageLoader;
+//    private PhotoSelectCallback callback;
 
     private Uri cameraUri;
     private String cameraImagePath;
     private String clipImagePath;
+
+    private PhotoPickBean photoPickBean;
 
     public PhotoPickAdapter(Context context, PhotoPickBean pickBean) {
         this.context = context;
@@ -65,17 +71,18 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
         Display display = ((Activity) context).getWindowManager().getDefaultDisplay();
         display.getMetrics(metrics);
         this.imageSize = metrics.widthPixels / pickBean.getSpanCount();
-        this.pickMode = pickBean.getPickMode();
-        this.maxPickSize = pickBean.getMaxPickSize();
-        this.clipCircle = pickBean.getClipMode();
-        this.showCamera = pickBean.isShowCamera();
-        this.isClipPhoto = pickBean.isClipPhoto();
-        this.isOriginalPicture = pickBean.isOriginalPicture();
-        this.imageLoader = pickBean.getImageLoader();
-        this.callback = pickBean.getCallback();
+        this.photoPickBean = pickBean;
+//        this.pickMode = pickBean.getPickMode();
+//        this.maxPickSize = pickBean.getMaxPickSize();
+//        this.clipCircle = pickBean.getClipMode();
+//        this.showCamera = pickBean.isShowCamera();
+//        this.isClipPhoto = pickBean.isClipPhoto();
+//        this.isOriginalPicture = pickBean.isOriginalPicture();
+//        this.imageLoader = pickBean.getImageLoader();
+//        this.callback = pickBean.getCallback();
     }
 
-    public void refresh(List<Photo> photos) {
+    public void refresh(List<MediaData> photos) {
         this.photos.clear();
         this.photos.addAll(photos);
         notifyDataSetChanged();
@@ -95,85 +102,148 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return showCamera ? (photos == null ? 0 : photos.size() + 1) : (photos == null ? 0 : photos.size());
+        return photoPickBean.isShowCamera() ? (photos == null ? 0 : photos.size() + 1) : (photos == null ? 0 : photos.size());
     }
 
-    private Photo getItem(int position) {
-        return showCamera ? photos.get(position - 1) : photos.get(position);
+    private MediaData getItem(int position) {
+        return photoPickBean.isShowCamera() ? photos.get(position - 1) : photos.get(position);
     }
 
     private class PhotoPickViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private GalleryImageView imageView;
-        private CheckBox checkbox;
+        private final GalleryImageView imageView;
+        private final CheckBox checkbox;
+        private final TextView mIsGif, mLongChart, mDuration;
 
         public PhotoPickViewHolder(View view) {
             super(view);
-            imageView = (GalleryImageView) itemView.findViewById(R.id.imageView);
-            checkbox = (CheckBox) itemView.findViewById(R.id.checkbox);
+            imageView = itemView.findViewById(R.id.imageView);
+            checkbox = itemView.findViewById(R.id.checkbox);
+            mIsGif = itemView.findViewById(R.id.txv_isGif);
+            mLongChart = itemView.findViewById(R.id.txv_long_chart);
+            mDuration = itemView.findViewById(R.id.txv_duration);
+
             imageView.getLayoutParams().height = imageSize;
             imageView.getLayoutParams().width = imageSize;
-            checkbox.setOnClickListener(this);
+            checkbox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    changeBoxState(getItem(getAdapterPosition()));
+                }
+            });
             itemView.setOnClickListener(this);
         }
 
+        private void changeBoxState(MediaData data) {
+            String mimeType = selectPhotosInfo.size() > 0 ? selectPhotosInfo.get(0).getImageType() : "";
+            if (!TextUtils.isEmpty(mimeType)) {
+                boolean toEqual = MimeType.mimeToEqual(mimeType, data.getImageType());
+                if (!toEqual) {
+                    UtilsHelper.toast(context, context.getString(R.string.tips_rule));
+                    checkbox.setChecked(false);
+                    return;
+                }
+            }
+
+            if (selectPhotos.contains(data.getOriginalPath())) {
+                checkbox.setChecked(false);
+                selectPhotos.remove(data.getOriginalPath());
+                selectPhotosInfo.remove(data);
+            } else {
+                if (selectPhotos.size() == photoPickBean.getMaxPickSize()) {
+                    checkbox.setChecked(false);
+                    UtilsHelper.toast(context, context.getString(R.string.tips_max_num, photoPickBean.getMaxPickSize()));
+                    return;
+                } else {
+                    checkbox.setChecked(true);
+                    selectPhotos.add(data.getOriginalPath());
+                    selectPhotosInfo.add(data);
+                }
+            }
+            if (onUpdateListener != null) {
+                onUpdateListener.updateToolBarTitle(getTitle());
+            }
+
+        }
+
         public void showData(int position) {
-            if (showCamera && position == 0) {
+            if (photoPickBean.isShowCamera() && position == 0) {
                 checkbox.setVisibility(View.GONE);
                 imageView.setImageResource(R.mipmap.take_photo);
             } else {
-                Photo photo = getItem(position);
-                if (isClipPhoto) {
+                MediaData photo = getItem(position);
+                if (photoPickBean.isClipPhoto()) {
                     checkbox.setVisibility(View.GONE);
                 } else {
                     checkbox.setVisibility(View.VISIBLE);
-                    checkbox.setChecked(selectPhotos.contains(photo.getOriginalImagePath()));
+                    checkbox.setChecked(selectPhotos.contains(photo.getOriginalPath()));
                 }
-                imageLoader.displayImage(context, photo.getOriginalImagePath(), photo.getThumbnailsImagePath(), imageView, true, true);
+
+                mIsGif.setVisibility(MimeType.isGif(photo.getImageType()) ? View.VISIBLE : View.GONE);
+                mLongChart.setVisibility(MimeType.isLongImage(photo) ? View.VISIBLE : View.GONE);
+                mDuration.setVisibility(MimeType.isVideo(photo.getImageType()) ? View.VISIBLE : View.GONE);
+                mDuration.setText(UtilsHelper.parseDuration(photo.getDuration()));
+
+                photoPickBean.getImageLoader().displayImage(context, photo.getOriginalPath(), imageView, true);
             }
+
         }
 
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition();
+
+
             if (view.getId() == R.id.checkbox) {
-                if (selectPhotos.contains(getItem(position).getOriginalImagePath())) {
-                    checkbox.setChecked(false);
-                    selectPhotos.remove(getItem(position).getOriginalImagePath());
-                    selectPhotosInfo.remove(getItem(position));
-                } else {
-                    if (selectPhotos.size() == maxPickSize) {
-                        checkbox.setChecked(false);
-                        return;
-                    } else {
-                        checkbox.setChecked(true);
-                        selectPhotos.add(getItem(position).getOriginalImagePath());
-                        selectPhotosInfo.add(getItem(position));
-                    }
-                }
-                if (onUpdateListener != null) {
-                    onUpdateListener.updateToolBarTitle(getTitle());
-                }
+//                if (checkbox.isChecked()) {
+//                    checkbox.setChecked(false);
+//                    selectPhotosInfo.remove(getItem(position));
+//                } else {
+//                    if (selectPhotosInfo.size() == photoPickBean.getMaxPickSize()) {
+//                        checkbox.setChecked(false);
+//                        UtilsHelper.toast(context, context.getString(R.string.tips_max_num, photoPickBean.getMaxPickSize()));
+//                        return;
+//                    }
+//                }
+
+//
+//
+//
+//                if (selectPhotos.contains(getItem(position).getOriginalPath())) {
+//                    checkbox.setChecked(false);
+//                    selectPhotosInfo.remove(getItem(position));
+//                } else {
+//                    if (selectPhotos.size() == maxPickSize) {
+//                        checkbox.setChecked(false);
+//                        return;
+//                    } else {
+//                        checkbox.setChecked(true);
+//                        selectPhotosInfo.add(getItem(position));
+//                    }
+//                }
+//                if (onUpdateListener != null) {
+//                    onUpdateListener.updateToolBarTitle(getTitle());
+//                }
             } else if (view.getId() == R.id.photo_pick_rl) {
-                if (showCamera && position == 0) {
+                if (photoPickBean.isShowCamera() && position == 0) {
                     if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                         //申请权限
                         ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.CAMERA}, PhotoPickActivity.REQUEST_CODE_CAMERA);
                     } else {
                         selectPicFromCamera();
                     }
-                } else if (isClipPhoto) {
+                } else if (photoPickBean.isClipPhoto()) {
                     //头像裁剪
-                    startClipPic(getItem(position).getOriginalImagePath());
+                    startClipPic(getItem(position).getOriginalPath());
                 } else {
                     //查看大图
                     new PhotoPreviewConfig.Builder((Activity) context)
-                            .setPosition(showCamera ? position - 1 : position)
-                            .setMaxPickSize(maxPickSize)
-                            .setSelectPhotos(selectPhotos)
+                            .setPosition(photoPickBean.isShowCamera() ? position - 1 : position)
+                            .setMaxPickSize(photoPickBean.getMaxPickSize())
                             .setSelectPhotosInfo(selectPhotosInfo)
-                            .setOriginalPicture(isOriginalPicture)
-                            .setCallback(callback)
+                            .setSelectPhotos(selectPhotos)
+                            .setOriginalPicture(photoPickBean.isOriginalPicture())
+                            .setCallback(photoPickBean.getCallback())
                             .build();
                 }
             }
@@ -190,7 +260,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
         String clipImageName = "clip_" + (System.currentTimeMillis() / 1000) + ".jpg";
         File clipImage = new File(PhotoPickOptions.DEFAULT.imagePath, clipImageName);
         clipImagePath = clipImage.getAbsolutePath();
-        UCropUtils.start((Activity) context, new File(picPath), clipImage, clipCircle);
+        UCropUtils.start((Activity) context, new File(picPath), clipImage, photoPickBean.getClipMode());
     }
 
     /**
@@ -228,9 +298,9 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
 
     //如果是多选title才会变化，要不然单选的没有变
     public String getTitle() {
-        String title = context.getString(R.string.select_photo);
-        if (pickMode == PhotoPickConfig.MODE_PICK_MORE && selectPhotos.size() >= 1) {//不是单选，更新title
-            title = selectPhotos.size() + "/" + maxPickSize;
+        String title = MimeType.getTitle(PhotoPickConfig.getInstance().getMimeType(), context);
+        if (photoPickBean.getPickMode() == PhotoPickConfig.MODE_PICK_MORE && selectPhotosInfo.size() >= 1) {//不是单选，更新title
+            title = selectPhotosInfo.size() + "/" + photoPickBean.getMaxPickSize();
         }
         return title;
     }
@@ -249,7 +319,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
      *
      * @return
      */
-    public ArrayList<Photo> getSelectPhotosInfo() {
+    public ArrayList<MediaData> getSelectPhotosInfo() {
         return selectPhotosInfo;
     }
 

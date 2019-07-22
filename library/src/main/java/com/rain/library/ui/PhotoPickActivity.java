@@ -27,13 +27,14 @@ import com.rain.library.PhotoPick;
 import com.rain.library.PhotoPickAdapter;
 import com.rain.library.PhotoPickOptions;
 import com.rain.library.R;
-import com.rain.library.bean.Photo;
-import com.rain.library.bean.PhotoDirectory;
+import com.rain.library.bean.MediaData;
+import com.rain.library.bean.MediaDirectory;
 import com.rain.library.bean.PhotoPickBean;
 import com.rain.library.controller.PhotoPickConfig;
 import com.rain.library.controller.PhotoPreviewConfig;
 import com.rain.library.impl.CommonResult;
 import com.rain.library.loader.MediaStoreHelper;
+import com.rain.library.utils.MimeType;
 import com.rain.library.utils.Rlog;
 import com.rain.library.utils.UtilsHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -68,19 +69,20 @@ public class PhotoPickActivity extends BaseActivity {
     private Uri cameraUri;
 
 
-    private ArrayList<Photo> photoList = new ArrayList<>();
-    private ArrayList<PhotoDirectory> photoDirectoryList = new ArrayList<>();
+    private ArrayList<MediaData> photoList = new ArrayList<>();
+    private ArrayList<MediaDirectory> photoDirectoryList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_pick, true);
 
-        Bundle bundle = getIntent().getBundleExtra(PhotoPickConfig.EXTRA_PICK_BUNDLE);
-        if (bundle == null) {
-            throw new NullPointerException("bundle is null,please init it");
-        }
-        pickBean = bundle.getParcelable(PhotoPickConfig.EXTRA_PICK_BEAN);
+//        Bundle bundle = getIntent().getBundleExtra(PhotoPickConfig.EXTRA_PICK_BUNDLE);
+//        if (bundle == null) {
+//            throw new NullPointerException("bundle is null,please init it");
+//        }
+//        pickBean = bundle.getParcelable(PhotoPickConfig.EXTRA_PICK_BEAN);
+        pickBean = PhotoPickConfig.getInstance();
         if (pickBean == null) {
             finish();
             return;
@@ -97,7 +99,7 @@ public class PhotoPickActivity extends BaseActivity {
      */
     private void init() {
         //设置ToolBar
-        toolbar.setTitle(R.string.select_photo);
+        toolbar.setTitle(MimeType.getTitle(pickBean.getMimeType(), this));
         toolbar.setBackgroundColor(PhotoPick.getToolbarBackGround());
         toolbar.setNavigationIcon(PhotoPickOptions.DEFAULT.backIcon);
 
@@ -124,24 +126,26 @@ public class PhotoPickActivity extends BaseActivity {
         //相册列表item选择的时候关闭slidingUpPanelLayout并更新照片adapter
         galleryAdapter.setOnItemClickListener(new PhotoGalleryAdapter.OnItemClickListener() {
             @Override
-            public void onClick(ArrayList<Photo> photos) {
+            public void onClick(ArrayList<MediaData> photos, int position) {
                 if (adapter != null) {
                     PhotoPreviewConfig.setPreviewPhotos(photos);
                     slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                    toolbar.setTitle(photoDirectoryList.get(position).getName());
                     adapter.refresh(photos);
                 }
             }
         });
-        //获取全部照片
-        MediaStoreHelper.getPhotoDirs(this, new MediaStoreHelper.PhotosResultCallback() {
+
+        //获取全部媒体文件
+        MediaStoreHelper.getData(this, pickBean.getMimeType(), true, new MediaStoreHelper.PhotosResultCallback() {
             @Override
-            public void onResultCallback(final List<PhotoDirectory> directories) {
+            public void onResultCallback(final List<MediaDirectory> directories) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        List<Photo> photos = directories.get(0).getPhotos();
+                        List<MediaData> photos = directories.get(0).getMediaData();
                         for (int i = 0; i < photos.size(); i++) {
-                            if (UtilsHelper.isFileExist(photos.get(i).getOriginalImagePath()))
+                            if (UtilsHelper.isFileExist(photos.get(i).getOriginalPath()))
                                 photoList.add(photos.get(i));
                         }
                         photoDirectoryList.add(directories.get(0));
@@ -180,7 +184,6 @@ public class PhotoPickActivity extends BaseActivity {
 
     //请求权限(先检查)
     private void requestPermission() {
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             //申请权限
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_SDCARD);
@@ -260,16 +263,15 @@ public class PhotoPickActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.ok) {
             final Intent intent = new Intent();
-            if (adapter != null && !adapter.getSelectPhotos().isEmpty()) {
+            if (adapter != null && !adapter.getSelectPhotosInfo().isEmpty()) {
 
                 if (pickBean.isStartCompression()) {
                     PhotoPick.startCompression(PhotoPickActivity.this, adapter.getSelectPhotos(), new CommonResult<File>() {
                         @Override
                         public void onSuccess(File file) {
                             if (file.exists()) {
-
                                 Rlog.e("Rain", "Luban compression success:" + file.getAbsolutePath() + " ; image length = " + file.length());
-                                adapter.getSelectPhotosInfo().get(imageFilePath.size()).setCompressionImagePath(file.getAbsolutePath());
+                                adapter.getSelectPhotosInfo().get(imageFilePath.size()).setCompressionPath(file.getAbsolutePath());
                                 imageFilePath.add(file.getAbsolutePath());
                                 if (imageFilePath != null && imageFilePath.size() > 0 && imageFilePath.size() == adapter.getSelectPhotos().size()) {
                                     Rlog.e("Rain", "all select image compression success!");
@@ -351,7 +353,7 @@ public class PhotoPickActivity extends BaseActivity {
                     finish();
                 } else {//用户按了返回键，合并用户选择的图片集合
                     ArrayList<String> photoLists = data.getStringArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST);
-                    if (photoLists == null) {
+                    if (photoLists == null || photoLists.size() == 0) {
                         return;
                     }
                     ArrayList<String> selectedList = adapter.getSelectPhotos();//之前已经选了的图片
@@ -378,7 +380,7 @@ public class PhotoPickActivity extends BaseActivity {
     }
 
     private void findClipPhoto() {
-        adapter.getSelectPhotosInfo().add(new Photo(adapter.getClipImagePath(), 1));
+        adapter.getSelectPhotosInfo().add(new MediaData(adapter.getClipImagePath(), 1));
         if (pickBean.getCallback() != null) {
             pickBean.getCallback().clipImage(adapter.getSelectPhotosInfo());
         } else {
@@ -402,9 +404,9 @@ public class PhotoPickActivity extends BaseActivity {
                     PhotoPick.startCompression(PhotoPickActivity.this, new ArrayList<>(Arrays.asList(adapter.getCameraImagePath())), new CommonResult<File>() {
                         @Override
                         public void onSuccess(File data) {
-                            Photo photo = new Photo();
-                            photo.setCompressionImagePath(data.getAbsolutePath());
-                            photo.setOriginalImagePath(adapter.getCameraImagePath());
+                            MediaData photo = new MediaData();
+                            photo.setCompressionPath(data.getAbsolutePath());
+                            photo.setOriginalPath(adapter.getCameraImagePath());
                             adapter.getSelectPhotosInfo().add(photo);
                             if (pickBean.getCallback() != null) {
                                 pickBean.getCallback().cameraImage(adapter.getSelectPhotosInfo());
@@ -417,7 +419,7 @@ public class PhotoPickActivity extends BaseActivity {
                         }
                     });
                 } else {
-                    adapter.getSelectPhotosInfo().add(new Photo(adapter.getCameraImagePath(), 3));
+                    adapter.getSelectPhotosInfo().add(new MediaData(adapter.getCameraImagePath(), 3));
 
                     if (pickBean.getCallback() != null) {
                         pickBean.getCallback().singleSelect(adapter.getSelectPhotosInfo());
