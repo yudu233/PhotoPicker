@@ -308,6 +308,7 @@ public class PhotoPickActivity extends BaseActivity {
                     Rlog.e("Rain", "all select image compression success!");
                     Intent intent = new Intent();
                     if (adapter.getSelectPhotosInfo().size() != 1) {
+
                         if (pickBean.getCallback() != null)
                             pickBean.getCallback().moreSelect(adapter.getSelectPhotosInfo());
                         else

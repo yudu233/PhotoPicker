@@ -11,6 +11,7 @@ import com.rain.library.bean.MediaData;
 import com.rain.library.controller.PhotoPickConfig;
 import com.rain.library.impl.PhotoSelectCallback;
 import com.rain.library.utils.MimeType;
+import com.rain.library.utils.Rlog;
 import com.rain.photopicker.glide.GlideImageLoader;
 
 import java.util.ArrayList;
@@ -70,7 +71,11 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void singleSelect(ArrayList<MediaData> photos) {
+                                Rlog.e(photos.get(0).getOriginalPath() + "-----------");
+                            }
 
+                            @Override
+                            public void clipImage(ArrayList<MediaData> photos) {
                             }
                         }).build();
             }
@@ -82,51 +87,50 @@ public class MainActivity extends AppCompatActivity {
 
     StringBuilder builder = new StringBuilder();
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK) return;
-        String path;
-
-        switch (requestCode) {
-            case PhotoPickConfig.PICK_SINGLE_REQUEST_CODE:      //单选不裁剪
-                ArrayList<MediaData> photos = data.getParcelableArrayListExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO);
-
-                if (PhotoPickConfig.DEFAULT_START_COMPRESSION) {
-                    path = photos.get(0).getCompressionPath();
-                    Log.e("单选---压缩 ：", photos.get(0).getCompressionPath());
-
-                } else {
-                    path = photos.get(0).getOriginalPath();
-                    Log.e("单选---原图 ：", photos.get(0).getOriginalPath());
-                }
-
-                mContent.setText(path);
-                break;
-            case PhotoPickConfig.PICK_MORE_REQUEST_CODE:        //多选
-                ArrayList<MediaData> photoLists = data.getParcelableArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST);
-
-                if (photoLists != null && !photoLists.isEmpty()) {
-
-                    if (PhotoPickConfig.DEFAULT_START_COMPRESSION) {
-                        for (int i = 0; i < photoLists.size(); i++) {
-                            Log.e("多选---压缩", photoLists.get(i).getCompressionPath() + "========");
-                            mContent.setText(builder.append(photoLists.get(i).getCompressionPath() + "\n"));
-                        }
-
-                    } else {
-                        for (int i = 0; i < photoLists.size(); i++) {
-                            Log.e("多选---原图", photoLists.get(i).getOriginalPath() + "========");
-                            mContent.setText(builder.append(photoLists.get(i).getOriginalPath() + "\n"));
-                        }
-                    }
-                }
-                break;
-
-            case PhotoPickConfig.PICK_CLIP_REQUEST_CODE:    //裁剪
-                ArrayList<MediaData> photoArrayList = data.getParcelableArrayListExtra(PhotoPickConfig.EXTRA_CLIP_PHOTO);
-                Log.e("裁剪", photoArrayList.get(0).getClipImagePath());
-                break;
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        if (resultCode != RESULT_OK) return;
+//        String path;
+//
+//        switch (requestCode) {
+//            case PhotoPickConfig.PICK_SINGLE_REQUEST_CODE:      //单选不裁剪
+//                ArrayList<MediaData> photos = data.getParcelableArrayListExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO);
+//
+//                if (PhotoPickConfig.DEFAULT_START_COMPRESSION) {
+//                    path = photos.get(0).getCompressionPath();
+//                    Log.e("单选---压缩 ：", photos.get(0).getCompressionPath());
+//
+//                } else {
+//                    path = photos.get(0).getOriginalPath();
+//                    Log.e("单选---原图 ：", photos.get(0).getOriginalPath());
+//                }
+//
+//                mContent.setText(path);
+//                break;
+//            case PhotoPickConfig.PICK_MORE_REQUEST_CODE:        //多选
+//                ArrayList<MediaData> photoLists = data.getParcelableArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST);
+//
+//                if (photoLists != null && !photoLists.isEmpty()) {
+//
+//                    if (PhotoPickConfig.DEFAULT_START_COMPRESSION) {
+//                        for (int i = 0; i < photoLists.size(); i++) {
+//                            Log.e("多选---压缩", photoLists.get(i).getCompressionPath() + "========");
+//                            mContent.setText(builder.append(photoLists.get(i).getCompressionPath() + "\n"));
+//                        }
+//
+//                    } else {
+//                        for (int i = 0; i < photoLists.size(); i++) {
+//                            Log.e("多选---原图", photoLists.get(i).getOriginalPath() + "========");
+//                            mContent.setText(builder.append(photoLists.get(i).getOriginalPath() + "\n"));
+//                        }
+//                    }
+//                }
+//                break;
+//
+//            case PhotoPickConfig.PICK_CLIP_REQUEST_CODE:    //裁剪
+//                ArrayList<MediaData> photoArrayList = data.getParcelableArrayListExtra(PhotoPickConfig.EXTRA_CLIP_PHOTO);
+//                Log.e("裁剪", photoArrayList.get(0).getClipImagePath());
+//                break;
+//        }
+//    }
 }

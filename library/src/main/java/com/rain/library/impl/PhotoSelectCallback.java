@@ -23,22 +23,16 @@ public class PhotoSelectCallback implements Parcelable {
     }
 
 
-
-
     public void singleSelect(ArrayList<MediaData> photos) {
-        PhotoPickConfig.callback.singleSelect(photos);
     }
 
     public void moreSelect(ArrayList<MediaData> photos) {
-        PhotoPickConfig.callback.moreSelect(photos);
     }
 
     public void clipImage(ArrayList<MediaData> photos) {
-        PhotoPickConfig.callback.clipImage(photos);
     }
 
     public void cameraImage(ArrayList<MediaData> photos) {
-        PhotoPickConfig.callback.cameraImage(photos);
     }
 
     @Override
