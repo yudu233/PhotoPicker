@@ -104,40 +104,8 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         toolbar.setTitle((bean.getPosition() + 1) + "/" + photos.size());
         toolbar.setNavigationIcon(PhotoPickOptions.DEFAULT.backIcon);
         setSupportActionBar(toolbar);
-
         //照片滚动监听，更改ToolBar数据
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                pos = position;
-                position++;
-                toolbar.setTitle(position + "/" + photos.size());
-                if (selectPhotos != null && selectPhotos.contains(photos.get(pos).getOriginalPath())) {
-                    checkbox.setChecked(true);
-                    if (pos == 1 && selectPhotos.contains(photos.get(pos - 1).getOriginalPath())) {
-                        checkbox.setChecked(true);
-                    }
-                } else {
-                    checkbox.setChecked(false);
-                }
-                if (originalPicture && radioButton.isChecked()) {
-                    radioButton.setText(getString(R.string.image_size, UtilsHelper.formatFileSize(photos.get(pos).getOriginalSize())));
-                } else {
-                    radioButton.setText(getString(R.string.original_image));
-
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
+        viewPager.addOnPageChangeListener(onPageChangeListener);
 
         //选中
         checkbox.setOnClickListener(new View.OnClickListener() {
@@ -183,10 +151,45 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         } else {
             radioButton.setVisibility(View.GONE);
         }
-
         viewPager.setAdapter(new ImagePagerAdapter());
         viewPager.setCurrentItem(bean.getPosition());
+        if (bean.getPosition() == 0) {
+            onPageChangeListener.onPageSelected(bean.getPosition());
+        }
     }
+
+    ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            pos = position;
+            position++;
+            toolbar.setTitle(position + "/" + photos.size());
+            if (selectPhotos != null && selectPhotos.contains(photos.get(pos).getOriginalPath())) {
+                checkbox.setChecked(true);
+                if (pos == 1 && selectPhotos.contains(photos.get(pos - 1).getOriginalPath())) {
+                    checkbox.setChecked(true);
+                }
+            } else {
+                checkbox.setChecked(false);
+            }
+            if (originalPicture && radioButton.isChecked()) {
+                radioButton.setText(getString(R.string.image_size, UtilsHelper.formatFileSize(photos.get(pos).getOriginalSize())));
+            } else {
+                radioButton.setText(getString(R.string.original_image));
+
+            }
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    };
 
     private void updateMenuItemTitle() {
         if (selectPhotos.isEmpty()) {
@@ -314,7 +317,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
             View simpleView = LayoutInflater.from(PhotoPreviewActivity.this).inflate(R.layout.item_photo_preview, container, false);
 
             String originalImagePath = photos.get(position).getOriginalPath();
-            int imageWidth =photos.get(position).getImageWidth() == 0 ? DEFAULT_WIDTH : photos.get(position).getImageWidth();
+            int imageWidth = photos.get(position).getImageWidth() == 0 ? DEFAULT_WIDTH : photos.get(position).getImageWidth();
             int imageHeight = photos.get(position).getImageHeight() == 0 ? DEFAULT_HEIGHT : photos.get(position).getImageHeight();
 
             if (imageHeight > MAX_SIZE || imageHeight / imageWidth > MAX_SCALE) {
