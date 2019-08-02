@@ -39,6 +39,13 @@ public class MainActivity extends AppCompatActivity {
                         .clipCircle(false)          //是否裁剪方式为圆形，默认为矩形
                         .showOriginal(true)
                         .startCompression(true)
+                        .setCallback(new PhotoSelectCallback(){
+                            @Override
+                            public void clipImage(ArrayList<MediaData> photos) {
+                                super.clipImage(photos);
+                                Rlog.e(photos.get(0).getClipImagePath() + "---------------");
+                            }
+                        })
                         .build();
             }
         });

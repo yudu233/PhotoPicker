@@ -26,8 +26,6 @@ import com.rain.library.bean.MediaData;
 import com.rain.library.bean.PhotoPickBean;
 import com.rain.library.controller.PhotoPickConfig;
 import com.rain.library.controller.PhotoPreviewConfig;
-import com.rain.library.impl.PhotoSelectCallback;
-import com.rain.library.loader.ImageLoader;
 import com.rain.library.ui.PhotoPickActivity;
 import com.rain.library.utils.MimeType;
 import com.rain.library.utils.UCropUtils;
@@ -49,16 +47,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
     private ArrayList<String> selectPhotos = new ArrayList<>();
     private ArrayList<MediaData> selectPhotosInfo = new ArrayList<>();
 
-    //    private int maxPickSize;
-//    private int pickMode;
     private int imageSize;
-//    private boolean clipCircle;
-//    private boolean showCamera;
-//    private boolean isClipPhoto;
-//    private boolean isOriginalPicture;
-//    private ImageLoader imageLoader;
-//    private PhotoSelectCallback callback;
-
     private Uri cameraUri;
     private String cameraImagePath;
     private String clipImagePath;
@@ -72,14 +61,6 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
         display.getMetrics(metrics);
         this.imageSize = metrics.widthPixels / pickBean.getSpanCount();
         this.photoPickBean = pickBean;
-//        this.pickMode = pickBean.getPickMode();
-//        this.maxPickSize = pickBean.getMaxPickSize();
-//        this.clipCircle = pickBean.getClipMode();
-//        this.showCamera = pickBean.isShowCamera();
-//        this.isClipPhoto = pickBean.isClipPhoto();
-//        this.isOriginalPicture = pickBean.isOriginalPicture();
-//        this.imageLoader = pickBean.getImageLoader();
-//        this.callback = pickBean.getCallback();
     }
 
     public void refresh(List<MediaData> photos) {
@@ -109,7 +90,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
         return photoPickBean.isShowCamera() ? photos.get(position - 1) : photos.get(position);
     }
 
-    private class PhotoPickViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class PhotoPickViewHolder extends RecyclerView.ViewHolder {
 
         private final GalleryImageView imageView;
         private final CheckBox checkbox;
@@ -131,7 +112,36 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
                     changeBoxState(getItem(getAdapterPosition()));
                 }
             });
-            itemView.setOnClickListener(this);
+            itemView.findViewById(R.id.photo_pick_rl).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    doSomeThing();
+                }
+            });
+        }
+
+        private void doSomeThing() {
+            if (photoPickBean.isShowCamera() && getAdapterPosition() == 0) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    //申请权限
+                    ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.CAMERA}, PhotoPickActivity.REQUEST_CODE_CAMERA);
+                } else {
+                    selectPicFromCamera();
+                }
+            } else if (photoPickBean.isClipPhoto()) {
+                //头像裁剪
+                startClipPic(getItem(getAdapterPosition()).getOriginalPath());
+            } else {
+                //查看大图
+                new PhotoPreviewConfig.Builder((Activity) context)
+                        .setPosition(photoPickBean.isShowCamera() ? getAdapterPosition() - 1 : getAdapterPosition())
+                        .setMaxPickSize(photoPickBean.getMaxPickSize())
+                        .setSelectPhotosInfo(selectPhotosInfo)
+                        .setSelectPhotos(selectPhotos)
+                        .setOriginalPicture(photoPickBean.isOriginalPicture())
+                        .setCallback(photoPickBean.getCallback())
+                        .build();
+            }
         }
 
         private void changeBoxState(MediaData data) {
@@ -139,7 +149,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
             if (!TextUtils.isEmpty(mimeType)) {
                 boolean toEqual = MimeType.mimeToEqual(mimeType, data.getImageType());
                 if (!toEqual) {
-                    UtilsHelper.toast(context, context.getString(R.string.tips_rule));
+                    PhotoPick.toast(R.string.tips_rule);
                     checkbox.setChecked(false);
                     return;
                 }
@@ -152,7 +162,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
             } else {
                 if (selectPhotos.size() == photoPickBean.getMaxPickSize()) {
                     checkbox.setChecked(false);
-                    UtilsHelper.toast(context, context.getString(R.string.tips_max_num, photoPickBean.getMaxPickSize()));
+                    PhotoPick.toast(context.getString(R.string.tips_max_num, photoPickBean.getMaxPickSize()));
                     return;
                 } else {
                     checkbox.setChecked(true);
@@ -188,66 +198,6 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
             }
 
         }
-
-        @Override
-        public void onClick(View view) {
-            int position = getAdapterPosition();
-
-
-            if (view.getId() == R.id.checkbox) {
-//                if (checkbox.isChecked()) {
-//                    checkbox.setChecked(false);
-//                    selectPhotosInfo.remove(getItem(position));
-//                } else {
-//                    if (selectPhotosInfo.size() == photoPickBean.getMaxPickSize()) {
-//                        checkbox.setChecked(false);
-//                        UtilsHelper.toast(context, context.getString(R.string.tips_max_num, photoPickBean.getMaxPickSize()));
-//                        return;
-//                    }
-//                }
-
-//
-//
-//
-//                if (selectPhotos.contains(getItem(position).getOriginalPath())) {
-//                    checkbox.setChecked(false);
-//                    selectPhotosInfo.remove(getItem(position));
-//                } else {
-//                    if (selectPhotos.size() == maxPickSize) {
-//                        checkbox.setChecked(false);
-//                        return;
-//                    } else {
-//                        checkbox.setChecked(true);
-//                        selectPhotosInfo.add(getItem(position));
-//                    }
-//                }
-//                if (onUpdateListener != null) {
-//                    onUpdateListener.updateToolBarTitle(getTitle());
-//                }
-            } else if (view.getId() == R.id.photo_pick_rl) {
-                if (photoPickBean.isShowCamera() && position == 0) {
-                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                        //申请权限
-                        ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.CAMERA}, PhotoPickActivity.REQUEST_CODE_CAMERA);
-                    } else {
-                        selectPicFromCamera();
-                    }
-                } else if (photoPickBean.isClipPhoto()) {
-                    //头像裁剪
-                    startClipPic(getItem(position).getOriginalPath());
-                } else {
-                    //查看大图
-                    new PhotoPreviewConfig.Builder((Activity) context)
-                            .setPosition(photoPickBean.isShowCamera() ? position - 1 : position)
-                            .setMaxPickSize(photoPickBean.getMaxPickSize())
-                            .setSelectPhotosInfo(selectPhotosInfo)
-                            .setSelectPhotos(selectPhotos)
-                            .setOriginalPicture(photoPickBean.isOriginalPicture())
-                            .setCallback(photoPickBean.getCallback())
-                            .build();
-                }
-            }
-        }
     }
 
 
@@ -271,12 +221,6 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
             Toast.makeText(context, R.string.cannot_take_pic, Toast.LENGTH_SHORT).show();
             return;
         }
-        // 直接将拍到的照片存到手机默认的文件夹
-       /* Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        ContentValues values = new ContentValues();
-        cameraUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
-        startActivityForResult(intent, REQUEST_CODE_CAMERA);*/
 
         //保存到自定义目录
         String cameraImageName = "camera_" + (System.currentTimeMillis() / 1000) + ".jpg";
@@ -298,9 +242,9 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
 
     //如果是多选title才会变化，要不然单选的没有变
     public String getTitle() {
-        String title = MimeType.getTitle(PhotoPickConfig.getInstance().getMimeType(), context);
+        String title = context.getString(R.string.send);
         if (photoPickBean.getPickMode() == PhotoPickConfig.MODE_PICK_MORE && selectPhotosInfo.size() >= 1) {//不是单选，更新title
-            title = selectPhotosInfo.size() + "/" + photoPickBean.getMaxPickSize();
+            title = context.getString(R.string.sends, selectPhotosInfo.size(), photoPickBean.getMaxPickSize());
         }
         return title;
     }

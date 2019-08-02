@@ -3,7 +3,9 @@ package com.rain.library.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PointF;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -120,7 +122,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                 if (!TextUtils.isEmpty(mimeType)) {
                     boolean toEqual = MimeType.mimeToEqual(mimeType, photos.get(pos).getImageType());
                     if (!toEqual) {
-                        UtilsHelper.toast(PhotoPreviewActivity.this, getString(R.string.tips_rule));
+                        PhotoPick.toast(R.string.tips_rule);
                         checkbox.setChecked(false);
                         return;
                     }
@@ -212,7 +214,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         if (selectPhotos.isEmpty()) {
             menuItem.setTitle(R.string.send);
         } else {
-            menuItem.setTitle(getString(R.string.sends, String.valueOf(selectPhotos.size()), String.valueOf(maxPickSize)));
+            menuItem.setTitle(getString(R.string.sends, selectPhotos.size(), maxPickSize));
         }
     }
 
@@ -325,6 +327,14 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
     //单击图片时操作
     @Override
     public void onPhotoTap(ImageView view, float x, float y) {
+        if (MimeType.isPictureType(photos.get(pos).getImageType()) == MimeType.ofVideo()) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            String type = "video/*";
+            Uri uri = FileProvider.getUriForFile(this, PhotoPickOptions.DEFAULT.photoPickAuthority, new File(photos.get(pos).getOriginalPath()));
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            intent.setDataAndType(uri, type);
+            startActivity(intent);
+        }
         finish();
     }
 

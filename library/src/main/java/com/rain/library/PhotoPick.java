@@ -1,10 +1,18 @@
 package com.rain.library;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
+import android.widget.Toast;
 
 import com.rain.library.impl.CommonResult;
 import com.rain.library.utils.ExternalStorage;
 import com.rain.library.utils.Rlog;
+import com.rain.library.utils.UtilsHelper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -65,5 +73,35 @@ public final class PhotoPick {
 
                     }
                 }).launch();
+    }
+
+    public static AlertDialog.Builder showDialog(final Activity activity, int resId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle(UtilsHelper.getString(R.string.permission_tip_title));
+        builder.setMessage(UtilsHelper.getString(resId));
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                activity.finish();
+            }
+        });
+        builder.setPositiveButton(R.string.settings, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.setData(Uri.parse("package:" + activity.getPackageName()));
+                activity.startActivity(intent);
+            }
+        });
+        builder.setCancelable(false);
+        return builder;
+    }
+
+    public static void toast(int resId) {
+        Toast.makeText(getContext(), resId, Toast.LENGTH_SHORT).show();
+    }
+
+    public static void toast(String text) {
+        Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
     }
 }

@@ -13,9 +13,8 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
-import android.widget.Toast;
 
-import com.rain.library.R;
+import com.rain.library.PhotoPick;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -35,8 +34,6 @@ import static com.yalantis.ucrop.util.FileUtils.isMediaDocument;
  * Created by Rain on 17-5-3.
  */
 public class UtilsHelper {
-
-    private static final String TAG = "UtilsHelper";
 
     private static SimpleDateFormat msFormat = new SimpleDateFormat("mm:ss");
 
@@ -272,11 +269,15 @@ public class UtilsHelper {
     }
 
 
-    public static void toast(Context context,String content){
-        Toast.makeText(context, content, Toast.LENGTH_SHORT).show();
-
+    /**
+     * 获取strings.xml资源文件字符串
+     *
+     * @param id 资源文件id
+     * @return 资源文件对应字符串
+     */
+    public static String getString(int id) {
+        return PhotoPick.getContext().getResources().getString(id);
     }
-
 }
 
 /*
