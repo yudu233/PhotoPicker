@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
@@ -29,6 +30,7 @@ import com.rain.library.controller.PhotoPickConfig;
 import com.rain.library.controller.PhotoPreviewConfig;
 import com.rain.library.impl.CommonResult;
 import com.rain.library.loader.MediaStoreHelper;
+import com.rain.library.observer.UpdateUIObserver;
 import com.rain.library.utils.MimeType;
 import com.rain.library.utils.Rlog;
 import com.rain.library.utils.UtilsHelper;
@@ -40,6 +42,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 
 /**
@@ -48,7 +52,7 @@ import java.util.List;
  * Blog   : http://blog.csdn.net/sinat_33680954
  * Created by Rain on 16-12-7.
  */
-public class PhotoPickActivity extends BaseActivity {
+public class PhotoPickActivity extends BaseActivity implements Observer {
 
     public static final String TAG = PhotoPickActivity.class.getSimpleName();
 
@@ -145,6 +149,7 @@ public class PhotoPickActivity extends BaseActivity {
                 slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             }
         });
+        UpdateUIObserver.getInstance().addObserver(this);
 
     }
 
@@ -330,26 +335,26 @@ public class PhotoPickActivity extends BaseActivity {
                     finish();
                 } else {
                     //用户按了返回键，合并用户选择的图片集合
-                    ArrayList<String> photoLists = data.getStringArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST);
+                    ArrayList<MediaData> photoLists = data.getParcelableArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST);
                     if (photoLists == null || photoLists.size() == 0) {
                         return;
                     }
                     //之前已经选了的图片
-                    ArrayList<String> selectedList = adapter.getSelectPhotos();
+                    ArrayList<MediaData> selectedList = adapter.getSelectPhotosInfo();
                     //这是去图片预览界面需要删除的图片
-                    List<String> deleteList = new ArrayList<>();
-                    for (String s : selectedList) {
-                        if (!photoLists.contains(s)) {
-                            deleteList.add(s);
+                    List<MediaData> deleteList = new ArrayList<>();
+                    for (MediaData mediaData : selectedList) {
+                        if (!photoLists.contains(mediaData)) {
+                            deleteList.add(mediaData);
                         }
                     }
                     //删除预览界面取消选择的图片
                     selectedList.removeAll(deleteList);
                     deleteList.clear();
                     //合并相同的数据
-                    HashSet<String> set = new HashSet<>(photoLists);
-                    for (String s : selectedList) {
-                        set.add(s);
+                    HashSet<MediaData> set = new HashSet<>(photoLists);
+                    for (MediaData mediaData : selectedList) {
+                        set.add(mediaData);
                     }
                     selectedList.clear();
                     selectedList.addAll(set);
@@ -427,4 +432,16 @@ public class PhotoPickActivity extends BaseActivity {
         overridePendingTransition(0, R.anim.image_pager_exit_animation);
     }
 
+    @Override
+    public void update(Observable observable, Object obj) {
+        Rlog.e("update ui");
+        UpdateUIObserver.NotifyCmd data = (UpdateUIObserver.NotifyCmd) obj;
+        if (data.isChecked) {
+            adapter.getSelectPhotos().add(data.mediaData.getOriginalPath());
+        } else {
+            adapter.getSelectPhotos().remove(data.mediaData.getOriginalPath());
+        }
+        adapter.notifyItemChanged(data.position);
+
+    }
 }

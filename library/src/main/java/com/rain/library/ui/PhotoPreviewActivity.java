@@ -36,6 +36,7 @@ import com.rain.library.controller.PhotoPickConfig;
 import com.rain.library.controller.PhotoPreviewConfig;
 import com.rain.library.impl.CommonResult;
 import com.rain.library.impl.PhotoSelectCallback;
+import com.rain.library.observer.UpdateUIObserver;
 import com.rain.library.utils.MimeType;
 import com.rain.library.utils.Rlog;
 import com.rain.library.utils.UtilsHelper;
@@ -55,7 +56,6 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
     private static final String TAG = "PhotoPreviewActivity";
 
     private ArrayList<MediaData> photos;            //全部图片集合
-    private ArrayList<String> selectPhotos;         //选中的图片集合
     private ArrayList<MediaData> selectPhotosInfo;  //选中的图片集合信息
 
     private CheckBox checkbox;
@@ -91,7 +91,6 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
 
         originalPicture = bean.isOriginalPicture();
         maxPickSize = bean.getMaxPickSize();
-        selectPhotos = bean.getSelectPhotos();
         selectPhotosInfo = bean.getSelectPhotosInfo();
         callback = bean.getCallback();
         setContentView(R.layout.activity_photo_select);
@@ -112,9 +111,8 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         checkbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if (selectPhotos == null) {
-                    selectPhotos = new ArrayList<>();
+                if (selectPhotosInfo == null) {
+                    selectPhotosInfo = new ArrayList<>();
                 }
 
                 //判断是否同一类型文件
@@ -128,21 +126,20 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                     }
                 }
 
-                String path = photos.get(pos).getOriginalPath();
-                if (selectPhotos.contains(path)) {
-                    selectPhotosInfo.remove(photos.get(pos));
-                    selectPhotos.remove(path);
+                if (selectPhotosInfo.size() == maxPickSize && checkbox.isChecked()) {
                     checkbox.setChecked(false);
-                } else {
-                    if (maxPickSize == selectPhotos.size()) {
-                        checkbox.setChecked(false);
-                        return;
-                    }
-                    selectPhotosInfo.add(photos.get(pos));
-                    selectPhotos.add(path);
-                    checkbox.setChecked(true);
+                    PhotoPick.toast(getString(R.string.tips_max_num, maxPickSize));
+                    return;
                 }
+
+                if (checkbox.isChecked()) {
+                    selectPhotosInfo.add(photos.get(pos));
+                } else {
+                    selectPhotosInfo.remove(photos.get(pos));
+                }
+
                 updateMenuItemTitle();
+                UpdateUIObserver.getInstance().sendUpdateUIMessage(pos, photos.get(pos), checkbox.isChecked());
             }
         });
 
@@ -171,6 +168,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         if (bean.getPosition() == 0) {
             onPageChangeListener.onPageSelected(bean.getPosition());
         }
+
     }
 
     ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.OnPageChangeListener() {
@@ -183,14 +181,13 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         public void onPageSelected(int position) {
             pos = position;
             toolbar.setTitle(position + 1 + "/" + photos.size());
-            if (selectPhotos != null && selectPhotos.contains(photos.get(pos).getOriginalPath())) {
+
+            if (isChecked(position)) {
                 checkbox.setChecked(true);
-                if (pos == 1 && selectPhotos.contains(photos.get(pos - 1).getOriginalPath())) {
-                    checkbox.setChecked(true);
-                }
             } else {
                 checkbox.setChecked(false);
             }
+
             if (originalPicture && radioButton.isChecked()) {
                 radioButton.setText(getString(R.string.image_size, UtilsHelper.formatFileSize(photos.get(pos).getOriginalSize())));
             } else {
@@ -210,11 +207,31 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         }
     };
 
+
+    /**
+     * 判断当前图片是否选中
+     *
+     * @param position
+     * @return
+     */
+    private boolean isChecked(int position) {
+        if (selectPhotosInfo == null || selectPhotosInfo.size() == 0) {
+            return false;
+        } else {
+            for (MediaData mediaData : selectPhotosInfo) {
+                if (mediaData.getOriginalPath().equals(photos.get(position).getOriginalPath())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     private void updateMenuItemTitle() {
-        if (selectPhotos.isEmpty()) {
+        if (selectPhotosInfo.isEmpty()) {
             menuItem.setTitle(R.string.send);
         } else {
-            menuItem.setTitle(getString(R.string.sends, selectPhotos.size(), maxPickSize));
+            menuItem.setTitle(getString(R.string.sends, selectPhotosInfo.size(), maxPickSize));
         }
     }
 
@@ -231,10 +248,10 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.ok && !selectPhotos.isEmpty()) {
+        if (item.getItemId() == R.id.ok && !selectPhotosInfo.isEmpty()) {
             if (isChecked) {
                 Intent intent = new Intent();
-                if (selectPhotos.size() != 1) {
+                if (selectPhotosInfo.size() != 1) {
                     if (callback != null) {
                         callback.moreSelect(selectPhotosInfo);
                     } else
@@ -248,7 +265,12 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                 setResult(Activity.RESULT_OK, intent);
                 finish();
             } else {
-                PhotoPick.startCompression(PhotoPreviewActivity.this, selectPhotos, compressResult);
+                ArrayList<String> selectPath = new ArrayList<>();
+                for (MediaData data :
+                        selectPhotosInfo) {
+                    selectPath.add(data.getOriginalPath());
+                }
+                PhotoPick.startCompression(PhotoPreviewActivity.this, selectPath, compressResult);
             }
 
             return true;
@@ -270,10 +292,10 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                 photo.setCompressionPath(file.getAbsolutePath());
                 index++;
 
-                if (index > 0 && index == selectPhotos.size()) {
+                if (index > 0 && index == selectPhotosInfo.size()) {
                     Rlog.e("Rain", "all select image compression success!");
                     Intent intent = new Intent();
-                    if (selectPhotos.size() != 1) {
+                    if (selectPhotosInfo.size() != 1) {
                         if (callback != null) {
                             callback.moreSelect(selectPhotosInfo);
                         } else
@@ -298,7 +320,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
     private void backTo() {
         Intent intent = new Intent();
         intent.putExtra("isBackPressed", true);
-        intent.putStringArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST, selectPhotos);
+        intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST, selectPhotosInfo);
         intent.putExtra(PhotoPreviewConfig.EXTRA_ORIGINAL_PIC, originalPicture);
         setResult(Activity.RESULT_OK, intent);
         finish();
