@@ -105,7 +105,6 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
 
         //照片滚动监听，更改ToolBar数据
         viewPager.addOnPageChangeListener(onPageChangeListener);
-
         //选中
         checkbox.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,32 +112,30 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                 if (selectPhotosInfo == null) {
                     selectPhotosInfo = new ArrayList<>();
                 }
+                if (!checkbox.isChecked()) {
+                    selectPhotosInfo.remove(photos.get(pos));
+                    updateMenuItemTitle();
+                } else {
 
-                //判断是否同一类型文件
-                String mimeType = selectPhotosInfo.size() > 0 ? selectPhotosInfo.get(0).getImageType() : "";
-                if (!TextUtils.isEmpty(mimeType)) {
-                    boolean toEqual = MimeType.mimeToEqual(mimeType, photos.get(pos).getImageType());
-                    if (!toEqual) {
-                        PhotoPick.toast(R.string.tips_rule);
+                    //判断是否同一类型文件
+                    String mimeType = selectPhotosInfo.size() > 0 ? selectPhotosInfo.get(0).getImageType() : "";
+                    if (!TextUtils.isEmpty(mimeType)) {
+                        boolean toEqual = MimeType.mimeToEqual(mimeType, photos.get(pos).getImageType());
+                        if (!toEqual) {
+                            PhotoPick.toast(R.string.tips_rule);
+                            checkbox.setChecked(false);
+                            return;
+                        }
+                    }
+
+                    if (selectPhotosInfo.size() == maxPickSize && checkbox.isChecked()) {
                         checkbox.setChecked(false);
+                        PhotoPick.toast(getString(R.string.tips_max_num, maxPickSize));
                         return;
                     }
-                }
-
-                if (selectPhotosInfo.size() == maxPickSize && checkbox.isChecked()) {
-                    checkbox.setChecked(false);
-                    PhotoPick.toast(getString(R.string.tips_max_num, maxPickSize));
-                    return;
-                }
-
-                if (checkbox.isChecked()) {
                     selectPhotosInfo.add(photos.get(pos));
-                } else {
-                    selectPhotosInfo.remove(photos.get(pos));
+                    updateMenuItemTitle();
                 }
-
-                updateMenuItemTitle();
-                UpdateUIObserver.getInstance().sendUpdateUIMessage(pos, photos.get(pos), checkbox.isChecked());
             }
         });
 
@@ -155,6 +152,11 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                         radioButton.setChecked(true);
                         isChecked = true;
                         radioButton.setText(getString(R.string.image_size, UtilsHelper.formatFileSize(photos.get(pos).getOriginalSize())));
+                        if (!checkbox.isChecked()) {
+                            checkbox.setChecked(true);
+                            selectPhotosInfo.add(photos.get(pos));
+                            updateMenuItemTitle();
+                        }
                     }
                 }
             });
@@ -231,6 +233,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         } else {
             menuItem.setTitle(getString(R.string.sends, selectPhotosInfo.size(), maxPickSize));
         }
+        UpdateUIObserver.getInstance().sendUpdateUIMessage(pos, photos.get(pos), checkbox.isChecked());
     }
 
     private MenuItem menuItem;
@@ -376,7 +379,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                     photos.get(position).getImageWidth();
             int imageHeight = photos.get(position).getImageHeight() == 0 ? UtilsHelper.getScreenHeight(PhotoPreviewActivity.this) :
                     photos.get(position).getImageHeight();
-            if ( imageHeight / imageWidth > MAX_SCALE) {
+            if (imageHeight / imageWidth > MAX_SCALE) {
                 //加载长截图
                 view = longView;
                 SubsamplingScaleImageView imageView = longView.findViewById(R.id.iv_media_image);
