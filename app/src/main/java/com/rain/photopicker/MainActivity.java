@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
                         .clipCircle(false)          //是否裁剪方式为圆形，默认为矩形
                         .showOriginal(true)
                         .startCompression(true)
-                        .setCallback(new PhotoSelectCallback(){
+                        .setCallback(new PhotoSelectCallback() {
                             @Override
                             public void clipImage(ArrayList<MediaData> photos) {
                                 super.clipImage(photos);
@@ -62,7 +62,9 @@ public class MainActivity extends AppCompatActivity {
                         .setCallback(new PhotoSelectCallback() {
                             @Override
                             public void moreSelect(ArrayList<MediaData> photoLists) {
-                                if (PhotoPickConfig.DEFAULT_START_COMPRESSION) {
+                                super.moreSelect(photoLists);
+
+                                if (PhotoPickConfig.getInstance().isStartCompression()) {
                                     for (int i = 0; i < photoLists.size(); i++) {
                                         Log.e("多选---压缩", photoLists.get(i).getCompressionPath() + "====Callback====");
                                         mContent.setText(builder.append(photoLists.get(i).getCompressionPath() + "\n"));
@@ -78,12 +80,18 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void singleSelect(ArrayList<MediaData> photos) {
-                                Rlog.e(photos.get(0).getOriginalPath() + "-----------");
+                                super.singleSelect(photos);
+                                mContent.setText(builder.append(photos.get(0).getOriginalPath() + "\n"));
+                                Rlog.e(photos.get(0).getOriginalPath() + "-----单选------");
                             }
 
                             @Override
                             public void clipImage(ArrayList<MediaData> photos) {
+                                super.clipImage(photos);
+
                             }
+
+
                         }).build();
             }
         });

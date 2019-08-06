@@ -33,6 +33,7 @@ import com.rain.library.observer.UpdateUIObserver;
 import com.rain.library.utils.MimeType;
 import com.rain.library.utils.Rlog;
 import com.rain.library.utils.UtilsHelper;
+import com.rain.library.weidget.LoadingDialog;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.yalantis.ucrop.UCrop;
 
@@ -69,6 +70,7 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
 
     private ArrayList<MediaData> photoList = new ArrayList<>();
     private ArrayList<MediaDirectory> photoDirectoryList = new ArrayList<>();
+    private LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +95,9 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
      * 初始化控件
      */
     private void init() {
+
+        loadingDialog = new LoadingDialog(this);
+
         //设置ToolBar
         toolbar.setTitle(MimeType.getTitle(pickBean.getMimeType(), this));
         toolbar.setBackgroundColor(PhotoPick.getToolbarBackGround());
@@ -231,10 +236,13 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.ok) {
+        if (PhotoPick.isTimeEnabled()) {
             Intent intent = new Intent();
             if (adapter != null && !adapter.getSelectPhotosInfo().isEmpty()) {
-                if (pickBean.isStartCompression()) {
+                if (PhotoPickConfig.getInstance().isStartCompression() && !MimeType.isVideo(adapter.getSelectPhotosInfo().get(0).getImageType())) {
+                    if (loadingDialog != null) {
+                        loadingDialog.show();
+                    }
                     PhotoPick.startCompression(PhotoPickActivity.this, adapter.getSelectPhotos(), compressResult);
                 } else {
                     //不做压缩处理 直接发送原图信息
@@ -256,22 +264,21 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
                     finish();
                 }
             }
-            return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private int index = 0;
 
-    private ArrayList<String> imageFilePath = new ArrayList<>();
-
-
     private CommonResult<File> compressResult = new CommonResult<File>() {
         @Override
         public void onSuccess(File file, boolean success) {
+            if (loadingDialog != null) {
+                loadingDialog.dismiss();
+            }
             if (success && file.exists()) {
                 Rlog.e(TAG, "Luban compression success:" + file.getAbsolutePath() + " ; image length = " + file.length());
-                adapter.getSelectPhotosInfo().get(imageFilePath.size()).setCompressionPath(file.getAbsolutePath());
+                adapter.getSelectPhotosInfo().get(index).setCompressionPath(file.getAbsolutePath());
                 index++;
                 if (index > 0 && index == adapter.getSelectPhotosInfo().size()) {
                     Rlog.e(TAG, "all select image compression success!");

@@ -248,6 +248,10 @@ public class PhotoPickConfig {
                 pickBean.setMaxPickSize(1);
                 pickBean.setPickMode(MODE_PICK_SINGLE);
             }
+
+            if (pickBean.getMimeType() == MimeType.TYPE_VIDEO) {
+                pickBean.setStartCompression(false);
+            }
             return new PhotoPickConfig(activity, this);
         }
     }

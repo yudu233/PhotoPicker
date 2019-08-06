@@ -41,6 +41,7 @@ import com.rain.library.utils.MimeType;
 import com.rain.library.utils.Rlog;
 import com.rain.library.utils.UtilsHelper;
 import com.rain.library.weidget.HackyViewPager;
+import com.rain.library.weidget.LoadingDialog;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -69,10 +70,13 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
     private static final int MAX_SCALE = 3;
     public static final int DEFAULT_WIDTH = 1080;
     public static final int DEFAULT_HEIGHT = 1920;
+    private LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
+
+        loadingDialog = new LoadingDialog(this);
         Bundle bundle = getIntent().getBundleExtra(PhotoPreviewConfig.EXTRA_BUNDLE);
         if (bundle == null) {
             throw new NullPointerException("bundle is null,please init it");
@@ -91,7 +95,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         originalPicture = bean.isOriginalPicture();
         maxPickSize = bean.getMaxPickSize();
         selectPhotosInfo = bean.getSelectPhotosInfo();
-        callback = bean.getCallback();
+        callback = PhotoPickConfig.getInstance().getCallback();
         setContentView(R.layout.activity_photo_select);
 
         radioButton = (RadioButton) findViewById(R.id.radioButton);
@@ -249,36 +253,43 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.ok && !selectPhotosInfo.isEmpty()) {
-            if (isChecked) {
-                Intent intent = new Intent();
-                if (selectPhotosInfo.size() != 1) {
-                    if (callback != null) {
-                        callback.moreSelect(selectPhotosInfo);
-                    } else
-                        intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST, selectPhotosInfo);
-                } else {
-                    if (callback != null)
-                        callback.singleSelect(selectPhotosInfo);
-                    else
-                        intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO, selectPhotosInfo);
+        if (PhotoPick.isTimeEnabled()) {
+            if (!selectPhotosInfo.isEmpty()) {
+                if (isChecked) {
+                    PhotoPickConfig.getInstance().setStartCompression(false);
                 }
-                setResult(Activity.RESULT_OK, intent);
-                finish();
-            } else {
-                ArrayList<String> selectPath = new ArrayList<>();
-                for (MediaData data :
-                        selectPhotosInfo) {
-                    selectPath.add(data.getOriginalPath());
-                }
-                PhotoPick.startCompression(PhotoPreviewActivity.this, selectPath, compressResult);
-            }
+                if (PhotoPickConfig.getInstance().isStartCompression() && !isChecked && !MimeType.isVideo(selectPhotosInfo.get(0).getImageType())) {
+                    if (loadingDialog != null) {
+                        loadingDialog.show();
+                    }
+                    ArrayList<String> selectPath = new ArrayList<>();
+                    for (MediaData data :
+                            selectPhotosInfo) {
+                        selectPath.add(data.getOriginalPath());
+                    }
+                    PhotoPick.startCompression(PhotoPreviewActivity.this, selectPath, compressResult);
 
-            return true;
-        } else if (item.getItemId() == android.R.id.home) {
-            backTo();
-            return true;
+                } else {
+                    Intent intent = new Intent();
+                    if (selectPhotosInfo.size() != 1) {
+                        if (callback != null) {
+                            callback.moreSelect(selectPhotosInfo);
+                        } else
+                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST, selectPhotosInfo);
+                    } else {
+                        if (callback != null)
+                            callback.singleSelect(selectPhotosInfo);
+                        else
+                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO, selectPhotosInfo);
+                    }
+                    setResult(Activity.RESULT_OK, intent);
+                    finish();
+                }
+            } else {
+                backTo();
+            }
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -287,6 +298,9 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
     private CommonResult<File> compressResult = new CommonResult<File>() {
         @Override
         public void onSuccess(File file, boolean success) {
+            if (loadingDialog != null) {
+                loadingDialog.dismiss();
+            }
             if (success && file.exists()) {
                 Rlog.e("Rain", "Luban compression success:" + file.getAbsolutePath() + " ; image length = " + file.length());
                 MediaData photo = selectPhotosInfo.get(index);
@@ -319,11 +333,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
     };
 
     private void backTo() {
-        Intent intent = new Intent();
-        intent.putExtra("isBackPressed", true);
-        intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST, selectPhotosInfo);
-        intent.putExtra(PhotoPreviewConfig.EXTRA_ORIGINAL_PIC, originalPicture);
-        setResult(Activity.RESULT_OK, intent);
+        PhotoPickConfig.getInstance().setStartCompression(!isChecked);
         finish();
     }
 

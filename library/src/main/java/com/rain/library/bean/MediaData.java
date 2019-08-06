@@ -66,6 +66,9 @@ public class MediaData implements Parcelable {
      */
     private long duration;
 
+
+    private boolean isCheckedOri;
+
     public MediaData(int id, String path) {
         this.originalPath = path;
         this.mediaId = id;

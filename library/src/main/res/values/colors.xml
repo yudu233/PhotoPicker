@@ -8,4 +8,7 @@
 
     <color name="fresco_wait_color">#D9D9D9</color>
     <color name="fresco_image_press">#80ffffff</color>
+
+    <color name="transparent">#00000000</color>
+
 </resources>
