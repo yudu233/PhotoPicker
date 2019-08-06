@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
@@ -434,7 +433,6 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
 
     @Override
     public void update(Observable observable, Object obj) {
-        Rlog.e("update ui");
         UpdateUIObserver.NotifyCmd data = (UpdateUIObserver.NotifyCmd) obj;
         if (data.isChecked) {
             adapter.getSelectPhotos().add(data.mediaData.getOriginalPath());

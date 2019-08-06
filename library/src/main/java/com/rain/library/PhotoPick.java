@@ -104,4 +104,17 @@ public final class PhotoPick {
     public static void toast(String text) {
         Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
     }
+
+    private static long lastClickTime;
+    private final static long TIME = 800;
+
+    public static boolean isTimeEnabled() {
+        long time = System.currentTimeMillis();
+        if (time - lastClickTime > TIME) {
+            lastClickTime = time;
+            return true;
+        }
+        lastClickTime = time;
+        return false;
+    }
 }

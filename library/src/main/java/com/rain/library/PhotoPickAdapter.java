@@ -115,7 +115,9 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
             itemView.findViewById(R.id.photo_pick_rl).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    doSomeThing();
+                    if (PhotoPick.isTimeEnabled()) {
+                        doSomeThing();
+                    }
                 }
             });
         }

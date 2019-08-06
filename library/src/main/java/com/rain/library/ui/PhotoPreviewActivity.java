@@ -66,10 +66,9 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
     private boolean originalPicture;    //是否选择的是原图
     private PhotoSelectCallback callback;
 
-    private static final int MAX_SIZE = 4096;
-    private static final int MAX_SCALE = 8;
-    public static final int DEFAULT_WIDTH = 720;
-    public static final int DEFAULT_HEIGHT = 1080;
+    private static final int MAX_SCALE = 3;
+    public static final int DEFAULT_WIDTH = 1080;
+    public static final int DEFAULT_HEIGHT = 1920;
 
     @Override
     protected void onCreate(Bundle arg0) {
@@ -168,7 +167,6 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         if (bean.getPosition() == 0) {
             onPageChangeListener.onPageSelected(bean.getPosition());
         }
-
     }
 
     ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.OnPageChangeListener() {
@@ -369,15 +367,16 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
 
         @Override
         public View instantiateItem(ViewGroup container, int position) {
-            View view;
+            View view = null;
             View longView = LayoutInflater.from(PhotoPreviewActivity.this).inflate(R.layout.item_photo_preview_long, container, false);
             View simpleView = LayoutInflater.from(PhotoPreviewActivity.this).inflate(R.layout.item_photo_preview, container, false);
 
             String originalImagePath = photos.get(position).getOriginalPath();
-            int imageWidth = photos.get(position).getImageWidth() == 0 ? DEFAULT_WIDTH : photos.get(position).getImageWidth();
-            int imageHeight = photos.get(position).getImageHeight() == 0 ? DEFAULT_HEIGHT : photos.get(position).getImageHeight();
-
-            if (imageHeight > MAX_SIZE || imageHeight / imageWidth > MAX_SCALE) {
+            int imageWidth = photos.get(position).getImageWidth() == 0 ? UtilsHelper.getScreenWidth(PhotoPreviewActivity.this) :
+                    photos.get(position).getImageWidth();
+            int imageHeight = photos.get(position).getImageHeight() == 0 ? UtilsHelper.getScreenHeight(PhotoPreviewActivity.this) :
+                    photos.get(position).getImageHeight();
+            if ( imageHeight / imageWidth > MAX_SCALE) {
                 //加载长截图
                 view = longView;
                 SubsamplingScaleImageView imageView = longView.findViewById(R.id.iv_media_image);
@@ -389,6 +388,9 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                 PhotoView imageView = (PhotoView) simpleView.findViewById(R.id.iv_media_image);
                 imageView.setOnPhotoTapListener(PhotoPreviewActivity.this);
                 PhotoPickConfig.imageLoader.displayImage(PhotoPreviewActivity.this, originalImagePath, imageView, false);
+            }
+            if (MimeType.isVideo(photos.get(position).getImageType())) {
+                simpleView.findViewById(R.id.imv_play).setVisibility(View.VISIBLE);
             }
             container.addView(view, 0);
             return view;
