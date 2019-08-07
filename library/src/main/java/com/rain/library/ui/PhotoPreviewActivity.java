@@ -119,6 +119,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                 if (!checkbox.isChecked()) {
                     selectPhotosInfo.remove(photos.get(pos));
                     updateMenuItemTitle();
+                    UpdateUIObserver.getInstance().sendUpdateUIMessage(pos, photos.get(pos), checkbox.isChecked());
                 } else {
                     //判断是否同一类型文件
                     String mimeType = selectPhotosInfo.size() > 0 ? selectPhotosInfo.get(0).getImageType() : "";
@@ -138,6 +139,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                     }
                     selectPhotosInfo.add(photos.get(pos));
                     updateMenuItemTitle();
+                    UpdateUIObserver.getInstance().sendUpdateUIMessage(pos, photos.get(pos), checkbox.isChecked());
                 }
             }
         });
@@ -159,6 +161,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                             checkbox.setChecked(true);
                             selectPhotosInfo.add(photos.get(pos));
                             updateMenuItemTitle();
+                            UpdateUIObserver.getInstance().sendUpdateUIMessage(pos, photos.get(pos), checkbox.isChecked());
                         }
                     }
                 }
@@ -236,7 +239,6 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         } else {
             menuItem.setTitle(getString(R.string.sends, selectPhotosInfo.size(), maxPickSize));
         }
-        UpdateUIObserver.getInstance().sendUpdateUIMessage(pos, photos.get(pos), checkbox.isChecked());
     }
 
     private MenuItem menuItem;
@@ -253,7 +255,6 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (PhotoPick.isTimeEnabled()) {
-
             if (item.getItemId() == R.id.ok) {
                 if (!selectPhotosInfo.isEmpty()) {
                     if (PhotoPickConfig.getInstance().isStartCompression() && !isChecked && !MimeType.isVideo(selectPhotosInfo.get(0).getImageType())) {

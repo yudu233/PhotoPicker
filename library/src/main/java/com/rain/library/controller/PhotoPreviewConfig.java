@@ -47,7 +47,7 @@ public class PhotoPreviewConfig {
     private void startPreviewActivity(Activity activity, Bundle bundle) {
         Intent intent = new Intent(activity, PhotoPreviewActivity.class);
         intent.putExtra(EXTRA_BUNDLE, bundle);
-        activity.startActivity(intent);
+        activity.startActivityForResult(intent, REQUEST_CODE);
         activity.overridePendingTransition(R.anim.image_pager_enter_animation, 0);
     }
 

@@ -321,6 +321,10 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
                 Throwable cropError = UCrop.getError(data);
                 PhotoPick.toast(cropError.getMessage());
                 break;
+            case PhotoPreviewConfig.REQUEST_CODE:
+                setResult(Activity.RESULT_OK, data);
+                finish();
+                break;
         }
     }
 

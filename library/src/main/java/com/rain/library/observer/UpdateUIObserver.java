@@ -1,10 +1,8 @@
 package com.rain.library.observer;
 
 import com.rain.library.bean.MediaData;
-import com.rain.library.utils.Rlog;
 
 import java.util.Observable;
-import java.util.Observer;
 
 /**
  * @author:duyu
