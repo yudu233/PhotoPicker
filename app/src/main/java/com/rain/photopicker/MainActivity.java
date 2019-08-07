@@ -1,5 +1,6 @@
 package com.rain.photopicker;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -10,7 +11,6 @@ import com.rain.library.bean.MediaData;
 import com.rain.library.controller.PhotoPickConfig;
 import com.rain.library.impl.PhotoSelectCallback;
 import com.rain.library.utils.MimeType;
-import com.rain.library.utils.Rlog;
 import com.rain.photopicker.glide.GlideImageLoader;
 
 import java.util.ArrayList;
@@ -42,15 +42,8 @@ public class MainActivity extends AppCompatActivity {
                         .clipCircle(false)          //是否裁剪方式为圆形，默认为矩形
                         .showOriginal(true)         //是否显示原图按钮，默认显示
                         .startCompression(true)     //是否开启压缩，默认true
-                        .selectedMimeType(data)     //
-                        .setCallback(new PhotoSelectCallback() {
-                            @Override
-                            public void selectResult(ArrayList<MediaData> photos) {
-                                data = photos;
-                                Rlog.e("裁剪路径:" + photos.get(0).getClipImagePath());
-                                mContent.setText("裁剪路径:" + builder.append(photos.get(0).getClipImagePath() + "\n"));
-                            }
-                        }).build();
+                        .selectedMimeType(data)     //选择后返回的文件（用于判断下次进入是否可展示其他类型文件）
+                        .build();
             }
         });
 
@@ -95,4 +88,33 @@ public class MainActivity extends AppCompatActivity {
 
     StringBuilder builder = new StringBuilder();
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != RESULT_OK) return;
+        if (requestCode == PhotoPickConfig.PICK_SELECT_REQUEST_CODE) {
+            ArrayList<MediaData> datas = data.getParcelableArrayListExtra(PhotoPickConfig.EXTRA_SELECT_PHOTOS);
+            MediaData mediaData = datas.get(0);
+            if (mediaData.isClip()) {
+                Log.e("裁剪:", mediaData.getClipImagePath());
+                mContent.setText(builder.append(mediaData.getClipImagePath() + "\n"));
+                return;
+            }
+            if (mediaData.isCamera()) {
+                Log.e("相机:", mediaData.getCameraImagePath());
+                mContent.setText(builder.append(mediaData.getCameraImagePath() + "\n"));
+                return;
+            }
+
+            if (mediaData.isCompressed()) {
+                Log.e("压缩后:", mediaData.getCompressionPath());
+                mContent.setText(builder.append(mediaData.getCompressionPath() + "\n"));
+                return;
+            }
+            Log.e("原始地址：:", mediaData.getOriginalPath());
+            mContent.setText(builder.append(mediaData.getOriginalPath() + "\n"));
+        }
+    }
 }
