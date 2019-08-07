@@ -1,11 +1,8 @@
 package com.rain.library.impl;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.rain.library.bean.MediaData;
-import com.rain.library.controller.PhotoPickConfig;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -16,46 +13,6 @@ import java.util.ArrayList;
  * @filename : PhotoSelectCallback
  * @describe :
  */
-public class PhotoSelectCallback implements Parcelable {
-
-
-    protected PhotoSelectCallback() {
-    }
-
-
-    public void singleSelect(ArrayList<MediaData> photos) {
-    }
-
-    public void moreSelect(ArrayList<MediaData> photos) {
-    }
-
-    public void clipImage(ArrayList<MediaData> photos) {
-    }
-
-    public void cameraImage(ArrayList<MediaData> photos) {
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-    }
-
-    protected PhotoSelectCallback(Parcel in) {
-    }
-
-    public static final Creator<PhotoSelectCallback> CREATOR = new Creator<PhotoSelectCallback>() {
-        @Override
-        public PhotoSelectCallback createFromParcel(Parcel source) {
-            return new PhotoSelectCallback(source);
-        }
-
-        @Override
-        public PhotoSelectCallback[] newArray(int size) {
-            return new PhotoSelectCallback[size];
-        }
-    };
+public interface PhotoSelectCallback extends Serializable {
+    void selectResult(ArrayList<MediaData> photos);
 }

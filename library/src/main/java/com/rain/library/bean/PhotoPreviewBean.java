@@ -3,8 +3,6 @@ package com.rain.library.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.rain.library.impl.PhotoSelectCallback;
-
 import java.util.ArrayList;
 
 public class PhotoPreviewBean implements Parcelable {
@@ -15,9 +13,9 @@ public class PhotoPreviewBean implements Parcelable {
     private ArrayList<MediaData> selectPhotosInfo;
     private int maxPickSize;
     private boolean originalPicture;//是否选择的是原图
-    private PhotoSelectCallback callback;
 
-    public PhotoPreviewBean(){}
+    public PhotoPreviewBean() {
+    }
 
     public int getPosition() {
         return position;
@@ -67,14 +65,6 @@ public class PhotoPreviewBean implements Parcelable {
         this.originalPicture = originalPicture;
     }
 
-    public PhotoSelectCallback getCallback() {
-        return callback;
-    }
-
-    public void setCallback(PhotoSelectCallback callback) {
-        this.callback = callback;
-    }
-
     protected PhotoPreviewBean(Parcel in) {
         position = in.readInt();
         photos = in.createTypedArrayList(MediaData.CREATOR);
@@ -82,7 +72,6 @@ public class PhotoPreviewBean implements Parcelable {
         selectPhotosInfo = in.createTypedArrayList(MediaData.CREATOR);
         maxPickSize = in.readInt();
         originalPicture = in.readByte() != 0;
-        callback = in.readParcelable(PhotoSelectCallback.class.getClassLoader());
     }
 
     @Override
@@ -93,7 +82,6 @@ public class PhotoPreviewBean implements Parcelable {
         dest.writeTypedList(selectPhotosInfo);
         dest.writeInt(maxPickSize);
         dest.writeByte((byte) (originalPicture ? 1 : 0));
-        dest.writeParcelable(callback, flags);
     }
 
     @Override

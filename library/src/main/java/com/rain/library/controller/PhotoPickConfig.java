@@ -5,11 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.rain.library.R;
+import com.rain.library.bean.MediaData;
 import com.rain.library.bean.PhotoPickBean;
 import com.rain.library.impl.PhotoSelectCallback;
 import com.rain.library.loader.ImageLoader;
 import com.rain.library.ui.PhotoPickActivity;
 import com.rain.library.utils.MimeType;
+
+import java.util.List;
 
 
 /**
@@ -42,20 +45,15 @@ public class PhotoPickConfig {
 
     public static int DEFAULT_MIMETYPE = MimeType.TYPE_ALL;   //默认加载文件类型
 
-
     public static ImageLoader imageLoader;              //图片加载方式
 
     public static PhotoSelectCallback callback;         //回调
 
     public static PhotoPickBean photoPickBean;
 
-    public static final String EXTRA_STRING_ARRAYLIST = "extra_string_array_list";
-    public static final String EXTRA_SINGLE_PHOTO = "extra_single_photo";
+    public static final String EXTRA_CHOOSE_PHOTOS = "extra_choose_photos";
     public static final String EXTRA_CLIP_PHOTO = "extra_clip_photo";
 
-
-    public final static String EXTRA_PICK_BUNDLE = "extra_pick_bundle";
-    public final static String EXTRA_PICK_BEAN = "extra_pick_bean";
 
     public final static int PICK_SINGLE_REQUEST_CODE = 10001;
     public static final int PICK_MORE_REQUEST_CODE = 10002;
@@ -228,6 +226,13 @@ public class PhotoPickConfig {
          */
         public Builder startCompression(boolean compression) {
             pickBean.setStartCompression(compression);
+            return this;
+        }
+
+        public Builder selectedMimeType(List<MediaData> mediaDataList) {
+            if (mediaDataList.size() != 0) {
+                setMimeType(MimeType.isPictureType(mediaDataList.get(0).getImageType()));
+            }
             return this;
         }
 

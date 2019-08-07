@@ -107,8 +107,4 @@ public class MediaDirectory {
     public void addMediaData(MediaData mediaData) {
         mediaDatas.add(mediaData);
     }
-
-    public void addMediaData(int originalImageId, String originalImagePath, long originalImageSize) {
-        mediaDatas.add(new MediaData(originalImageId, originalImagePath, originalImageSize));
-    }
 }

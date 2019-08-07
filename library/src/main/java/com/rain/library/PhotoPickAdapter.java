@@ -44,7 +44,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
 
     private Context context;
     private ArrayList<MediaData> photos = new ArrayList<>();
-    private ArrayList<String> selectPhotos = new ArrayList<>();
+    //    private ArrayList<String> selectPhotos = new ArrayList<>();
     private ArrayList<MediaData> selectPhotosInfo = new ArrayList<>();
 
     private int imageSize;
@@ -130,7 +130,8 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
                 } else {
                     selectPicFromCamera();
                 }
-            } else if (photoPickBean.isClipPhoto()) {
+            } else if (photoPickBean.isClipPhoto() &&
+                    (!MimeType.isVideo(getItem(getAdapterPosition()).getImageType()))) {
                 //头像裁剪
                 startClipPic(getItem(getAdapterPosition()).getOriginalPath());
             } else {
@@ -139,43 +140,38 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
                         .setPosition(photoPickBean.isShowCamera() ? getAdapterPosition() - 1 : getAdapterPosition())
                         .setMaxPickSize(photoPickBean.getMaxPickSize())
                         .setSelectPhotosInfo(selectPhotosInfo)
-                        .setSelectPhotos(selectPhotos)
+//                        .setSelectPhotos(selectPhotos)
                         .setOriginalPicture(photoPickBean.isOriginalPicture())
-                        .setCallback(photoPickBean.getCallback())
                         .build();
             }
         }
 
         private void changeBoxState(MediaData data) {
             String mimeType = selectPhotosInfo.size() > 0 ? selectPhotosInfo.get(0).getImageType() : "";
-            if (!TextUtils.isEmpty(mimeType)) {
-                boolean toEqual = MimeType.mimeToEqual(mimeType, data.getImageType());
-                if (!toEqual) {
-                    PhotoPick.toast(R.string.tips_rule);
-                    checkbox.setChecked(false);
-                    return;
-                }
-            }
 
-            if (selectPhotos.contains(data.getOriginalPath())) {
-                checkbox.setChecked(false);
-                selectPhotos.remove(data.getOriginalPath());
+            if (!checkbox.isChecked()) {
                 selectPhotosInfo.remove(data);
             } else {
-                if (selectPhotos.size() == photoPickBean.getMaxPickSize()) {
+                if (!TextUtils.isEmpty(mimeType)) {
+                    boolean toEqual = MimeType.mimeToEqual(mimeType, data.getImageType());
+                    if (!toEqual) {
+                        PhotoPick.toast(R.string.tips_rule);
+                        checkbox.setChecked(false);
+                        return;
+                    }
+                }
+                if (selectPhotosInfo.size() == photoPickBean.getMaxPickSize()) {
                     checkbox.setChecked(false);
                     PhotoPick.toast(context.getString(R.string.tips_max_num, photoPickBean.getMaxPickSize()));
                     return;
-                } else {
-                    checkbox.setChecked(true);
-                    selectPhotos.add(data.getOriginalPath());
-                    selectPhotosInfo.add(data);
                 }
+                checkbox.setChecked(true);
+                selectPhotosInfo.add(data);
             }
+
             if (onUpdateListener != null) {
                 onUpdateListener.updateToolBarTitle(getTitle());
             }
-
         }
 
         public void showData(int position) {
@@ -188,7 +184,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
                     checkbox.setVisibility(View.GONE);
                 } else {
                     checkbox.setVisibility(View.VISIBLE);
-                    checkbox.setChecked(selectPhotos.contains(photo.getOriginalPath()));
+                    checkbox.setChecked(selectPhotosInfo.contains(photo));
                 }
 
                 mIsGif.setVisibility(MimeType.isGif(photo.getImageType()) ? View.VISIBLE : View.GONE);
@@ -245,8 +241,8 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
     //如果是多选title才会变化，要不然单选的没有变
     public String getTitle() {
         String title = context.getString(R.string.send);
-        if (photoPickBean.getPickMode() == PhotoPickConfig.MODE_PICK_MORE && selectPhotos.size() >= 1) {//不是单选，更新title
-            title = context.getString(R.string.sends, selectPhotos.size(), photoPickBean.getMaxPickSize());
+        if (photoPickBean.getPickMode() == PhotoPickConfig.MODE_PICK_MORE && selectPhotosInfo.size() >= 1) {//不是单选，更新title
+            title = context.getString(R.string.sends, selectPhotosInfo.size(), photoPickBean.getMaxPickSize());
         }
         return title;
     }
@@ -256,9 +252,9 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
      *
      * @return selected photos
      */
-    public ArrayList<String> getSelectPhotos() {
-        return selectPhotos;
-    }
+//    public ArrayList<String> getSelectPhotos() {
+//        return selectPhotos;
+//    }
 
     /**
      * get selected photos info

@@ -9,6 +9,7 @@ import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
+import com.rain.library.bean.MediaData;
 import com.rain.library.impl.CommonResult;
 import com.rain.library.utils.ExternalStorage;
 import com.rain.library.utils.Rlog;
@@ -16,6 +17,7 @@ import com.rain.library.utils.UtilsHelper;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import top.zibin.luban.Luban;
 import top.zibin.luban.OnCompressListener;
@@ -51,7 +53,11 @@ public final class PhotoPick {
         }
     }
 
-    public static void startCompression(Context context, ArrayList<String> paths, final CommonResult result) {
+    public static void startCompression(Context context, ArrayList<MediaData> mediaData, final CommonResult result) {
+        List<String> paths = new ArrayList<>();
+        for (int i = 0; i < mediaData.size(); i++) {
+            paths.add(mediaData.get(i).getOriginalPath());
+        }
         Luban.with(context)
                 .load(paths)
                 .setTargetDir(PhotoPickOptions.DEFAULT.imagePath)

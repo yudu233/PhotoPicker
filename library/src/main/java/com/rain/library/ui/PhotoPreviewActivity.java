@@ -120,7 +120,6 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                     selectPhotosInfo.remove(photos.get(pos));
                     updateMenuItemTitle();
                 } else {
-
                     //判断是否同一类型文件
                     String mimeType = selectPhotosInfo.size() > 0 ? selectPhotosInfo.get(0).getImageType() : "";
                     if (!TextUtils.isEmpty(mimeType)) {
@@ -254,36 +253,24 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (PhotoPick.isTimeEnabled()) {
-            if (!selectPhotosInfo.isEmpty()) {
-                if (isChecked) {
-                    PhotoPickConfig.getInstance().setStartCompression(false);
-                }
-                if (PhotoPickConfig.getInstance().isStartCompression() && !isChecked && !MimeType.isVideo(selectPhotosInfo.get(0).getImageType())) {
-                    if (loadingDialog != null) {
-                        loadingDialog.show();
-                    }
-                    ArrayList<String> selectPath = new ArrayList<>();
-                    for (MediaData data :
-                            selectPhotosInfo) {
-                        selectPath.add(data.getOriginalPath());
-                    }
-                    PhotoPick.startCompression(PhotoPreviewActivity.this, selectPath, compressResult);
 
-                } else {
-                    Intent intent = new Intent();
-                    if (selectPhotosInfo.size() != 1) {
-                        if (callback != null) {
-                            callback.moreSelect(selectPhotosInfo);
-                        } else
-                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST, selectPhotosInfo);
+            if (item.getItemId() == R.id.ok) {
+                if (!selectPhotosInfo.isEmpty()) {
+                    if (PhotoPickConfig.getInstance().isStartCompression() && !isChecked && !MimeType.isVideo(selectPhotosInfo.get(0).getImageType())) {
+                        if (loadingDialog != null) {
+                            loadingDialog.show();
+                        }
+                        PhotoPick.startCompression(PhotoPreviewActivity.this, selectPhotosInfo, compressResult);
+
                     } else {
-                        if (callback != null)
-                            callback.singleSelect(selectPhotosInfo);
-                        else
-                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO, selectPhotosInfo);
+                        Intent intent = new Intent();
+                        if (callback != null) {
+                            callback.selectResult(selectPhotosInfo);
+                        } else
+                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_CHOOSE_PHOTOS, selectPhotosInfo);
+                        setResult(Activity.RESULT_OK, intent);
+                        finish();
                     }
-                    setResult(Activity.RESULT_OK, intent);
-                    finish();
                 }
             } else {
                 backTo();
@@ -304,22 +291,17 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
             if (success && file.exists()) {
                 Rlog.e("Rain", "Luban compression success:" + file.getAbsolutePath() + " ; image length = " + file.length());
                 MediaData photo = selectPhotosInfo.get(index);
+                photo.setCompressed(true);
                 photo.setCompressionPath(file.getAbsolutePath());
                 index++;
 
                 if (index > 0 && index == selectPhotosInfo.size()) {
                     Rlog.e("Rain", "all select image compression success!");
                     Intent intent = new Intent();
-                    if (selectPhotosInfo.size() != 1) {
-                        if (callback != null) {
-                            callback.moreSelect(selectPhotosInfo);
-                        } else
-                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_STRING_ARRAYLIST, selectPhotosInfo);
+                    if (callback != null) {
+                        callback.selectResult(selectPhotosInfo);
                     } else {
-                        if (callback != null)
-                            callback.singleSelect(selectPhotosInfo);
-                        else
-                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_SINGLE_PHOTO, selectPhotosInfo);
+                        intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_CHOOSE_PHOTOS, selectPhotosInfo);
                     }
                     setResult(Activity.RESULT_OK, intent);
                     finish();
@@ -333,7 +315,9 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
     };
 
     private void backTo() {
-        PhotoPickConfig.getInstance().setStartCompression(!isChecked);
+        if (isChecked) {
+            PhotoPickConfig.getInstance().setStartCompression(false);
+        }
         finish();
     }
 

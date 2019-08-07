@@ -147,7 +147,6 @@ public class PhotoPickBean implements Parcelable {
         dest.writeByte(this.originalPicture ? (byte) 1 : (byte) 0);
         dest.writeByte(this.startCompression ? (byte) 1 : (byte) 0);
         dest.writeSerializable(this.imageLoader);
-        dest.writeParcelable(this.callback, flags);
     }
 
     protected PhotoPickBean(Parcel in) {
@@ -162,7 +161,6 @@ public class PhotoPickBean implements Parcelable {
         this.showGif = in.readByte() != 0;
         this.mimeType = in.readInt();
         this.imageLoader = (ImageLoader) in.readSerializable();
-        this.callback = in.readParcelable(PhotoSelectCallback.class.getClassLoader());
     }
 
     public static final Creator<PhotoPickBean> CREATOR = new Creator<PhotoPickBean>() {

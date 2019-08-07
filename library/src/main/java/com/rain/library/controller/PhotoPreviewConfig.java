@@ -47,7 +47,7 @@ public class PhotoPreviewConfig {
     private void startPreviewActivity(Activity activity, Bundle bundle) {
         Intent intent = new Intent(activity, PhotoPreviewActivity.class);
         intent.putExtra(EXTRA_BUNDLE, bundle);
-        activity.startActivityForResult(intent, REQUEST_CODE);
+        activity.startActivity(intent);
         activity.overridePendingTransition(R.anim.image_pager_enter_animation, 0);
     }
 
@@ -102,11 +102,6 @@ public class PhotoPreviewConfig {
 
         public Builder setMaxPickSize(int maxPickSize) {
             bean.setMaxPickSize(maxPickSize);
-            return this;
-        }
-
-        public Builder setCallback(PhotoSelectCallback callback) {
-            bean.setCallback(callback);
             return this;
         }
 

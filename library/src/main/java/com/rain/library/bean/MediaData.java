@@ -67,31 +67,25 @@ public class MediaData implements Parcelable {
     private long duration;
 
 
-    private boolean isCheckedOri;
+    /**
+     * 是否压缩
+     */
+    private boolean isCompressed;
+
+    /**
+     * 是否裁剪
+     */
+    private boolean isClip;
+
+    /**
+     * 是否是相机图片
+     */
+    private boolean isCamera;
+
 
     public MediaData(int id, String path) {
         this.originalPath = path;
         this.mediaId = id;
-    }
-
-    public MediaData(String path, int type) {
-        switch (type) {
-            case 0:     //压缩图片路径
-                compressionPath = path;
-                break;
-            case 1:     //裁剪图片路径
-                clipImagePath = path;
-                break;
-            case 2:     //相机图片路径
-                cameraImagePath = path;
-                break;
-        }
-    }
-
-    public MediaData(int mediaId, String path, long size) {
-        this.originalPath = path;
-        this.originalSize = size;
-        this.mediaId = mediaId;
     }
 
     public MediaData() {
@@ -194,6 +188,30 @@ public class MediaData implements Parcelable {
         this.duration = duration;
     }
 
+    public boolean isCompressed() {
+        return isCompressed;
+    }
+
+    public void setCompressed(boolean compressed) {
+        isCompressed = compressed;
+    }
+
+    public boolean isClip() {
+        return isClip;
+    }
+
+    public void setClip(boolean clip) {
+        isClip = clip;
+    }
+
+    public boolean isCamera() {
+        return isCamera;
+    }
+
+    public void setCamera(boolean camera) {
+        isCamera = camera;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -229,6 +247,10 @@ public class MediaData implements Parcelable {
         dest.writeInt(this.mimeType);
         dest.writeString(this.imageType);
         dest.writeLong(this.duration);
+        dest.writeByte(this.isCompressed ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.isClip ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.isCamera ? (byte) 1 : (byte) 0);
+
     }
 
     protected MediaData(Parcel in) {
@@ -244,6 +266,9 @@ public class MediaData implements Parcelable {
         this.mimeType = in.readInt();
         this.imageType = in.readString();
         this.duration = in.readLong();
+        this.isCompressed = in.readByte() != 0;
+        this.isClip = in.readByte() != 0;
+        this.isCamera = in.readByte() != 0;
     }
 
     public static final Creator<MediaData> CREATOR = new Creator<MediaData>() {
