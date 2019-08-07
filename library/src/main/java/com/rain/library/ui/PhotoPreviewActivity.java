@@ -267,9 +267,10 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                         Intent intent = new Intent();
                         if (callback != null) {
                             callback.selectResult(selectPhotosInfo);
-                        } else
-                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_CHOOSE_PHOTOS, selectPhotosInfo);
-                        setResult(Activity.RESULT_OK, intent);
+                        } else{
+                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_SELECT_PHOTOS, selectPhotosInfo);
+                            setResult(Activity.RESULT_OK, intent);
+                        }
                         finish();
                     }
                 }
@@ -302,7 +303,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                     if (callback != null) {
                         callback.selectResult(selectPhotosInfo);
                     } else {
-                        intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_CHOOSE_PHOTOS, selectPhotosInfo);
+                        intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_SELECT_PHOTOS, selectPhotosInfo);
                     }
                     setResult(Activity.RESULT_OK, intent);
                     finish();

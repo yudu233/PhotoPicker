@@ -2,7 +2,6 @@ package com.rain.library.controller;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 
 import com.rain.library.R;
 import com.rain.library.bean.MediaData;
@@ -51,13 +50,10 @@ public class PhotoPickConfig {
 
     public static PhotoPickBean photoPickBean;
 
-    public static final String EXTRA_CHOOSE_PHOTOS = "extra_choose_photos";
-    public static final String EXTRA_CLIP_PHOTO = "extra_clip_photo";
+    public static final String EXTRA_SELECT_PHOTOS = "extra_select_photos";
 
 
-    public final static int PICK_SINGLE_REQUEST_CODE = 10001;
-    public static final int PICK_MORE_REQUEST_CODE = 10002;
-    public static final int PICK_CLIP_REQUEST_CODE = 10003;
+    public static final int PICK_SELECT_REQUEST_CODE = 10001;
 
     public PhotoPickConfig(Activity activity, Builder builder) {
         imageLoader = builder.imageLoader;
@@ -66,7 +62,7 @@ public class PhotoPickConfig {
             throw new NullPointerException("builder#pickBean is null");
         }
         photoPickBean = builder.pickBean;
-        int requestCode = builder.pickBean.getPickMode() == MODE_PICK_SINGLE ? (builder.pickBean.isClipPhoto() == true ? PICK_CLIP_REQUEST_CODE : PICK_SINGLE_REQUEST_CODE) : PICK_MORE_REQUEST_CODE;
+        int requestCode = PICK_SELECT_REQUEST_CODE;
         startPick(activity, requestCode);
     }
 
