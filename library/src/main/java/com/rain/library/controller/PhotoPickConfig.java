@@ -178,6 +178,18 @@ public class PhotoPickConfig {
         }
 
         /**
+         * 是否展示gif
+         *
+         * @param showGif 默认展示
+         * @return
+         */
+        public Builder showGif(boolean showGif) {
+            pickBean.setShowGif(showGif);
+            return this;
+        }
+
+
+        /**
          * 是否开启选择照片后开启裁剪功能
          * 默认关闭
          *
