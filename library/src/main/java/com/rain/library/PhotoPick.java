@@ -55,6 +55,15 @@ public final class PhotoPick {
 
     public static void startCompression(Context context, ArrayList<MediaData> mediaData, final CommonResult result) {
         List<String> paths = new ArrayList<>();
+        for (MediaData data : mediaData) {
+            if (data.isCamera()) {
+                paths.add(data.getCameraImagePath());
+            } else if (data.isClip()) {
+                paths.add(data.getClipImagePath());
+            } else {
+                paths.add(data.getOriginalPath());
+            }
+        }
         for (int i = 0; i < mediaData.size(); i++) {
             paths.add(mediaData.get(i).getOriginalPath());
         }
