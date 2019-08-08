@@ -64,9 +64,7 @@ public final class PhotoPick {
                 paths.add(data.getOriginalPath());
             }
         }
-        for (int i = 0; i < mediaData.size(); i++) {
-            paths.add(mediaData.get(i).getOriginalPath());
-        }
+
         Luban.with(context)
                 .load(paths)
                 .setTargetDir(PhotoPickOptions.DEFAULT.imagePath)
