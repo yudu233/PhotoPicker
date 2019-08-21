@@ -85,15 +85,14 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             requestPermission();
         else init();
-
-        //获取全部媒体文件
-        loadMediaData();
     }
 
     /**
      * 初始化控件
      */
     private void init() {
+        //获取全部媒体文件
+        loadMediaData();
 
         loadingDialog = new LoadingDialog(this);
 
@@ -286,10 +285,10 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
                     finish();
                 }
             } else {
-                index++;
                 MediaData photo = adapter.getSelectPhotosInfo().get(index);
                 photo.setCompressed(true);
                 photo.setCompressionPath(photo.getOriginalPath());
+                index++;
             }
         }
     };
