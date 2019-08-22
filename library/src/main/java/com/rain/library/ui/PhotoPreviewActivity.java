@@ -309,9 +309,9 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                     finish();
                 }
             } else {
-                index++;
                 MediaData photo = selectPhotosInfo.get(index);
                 photo.setCompressionPath(photo.getOriginalPath());
+                index++;
             }
         }
     };
