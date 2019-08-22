@@ -278,6 +278,14 @@ public class UtilsHelper {
     public static String getString(int id) {
         return PhotoPick.getContext().getResources().getString(id);
     }
+
+
+    public static boolean isEmptyOrNull(String content) {
+        if (content == null || content.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
 }
 
 /*

@@ -96,15 +96,6 @@ public class MediaStoreHelper {
 
             while (data.moveToNext()) {
                 long media_duration;
-                Log.e("Rain", data.getInt(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[1])) + "---FileColumns._WIDTH---");
-                Log.e("Rain", data.getInt(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[2])) + "---FileColumns._HEIGHT---");
-                Log.e("Rain", data.getLong(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[3])) + "---FileColumns._DURATION---");
-                Log.e("Rain", data.getString(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[4])) + "---FileColumns._DATA---");
-                Log.e("Rain", data.getString(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[5])) + "---FileColumns.MIME_TYPE---");
-                Log.e("Rain", data.getLong(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[6])) + "---FileColumns.SIZE---");
-                Log.e("Rain", data.getString(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[8])) + "---BUCKET_DISPLAY_NAME---");
-                Log.e("Rain", "------------------------------------------------------");
-
                 int media_id = data.getInt(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[0]));
                 int media_width = data.getInt(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[1]));
                 int media_height = data.getInt(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[2]));

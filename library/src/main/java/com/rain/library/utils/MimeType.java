@@ -59,6 +59,9 @@ public class MimeType {
     }
 
     public static int isPictureType(String pictureType) {
+        if (UtilsHelper.isEmptyOrNull(pictureType)) {
+            return MimeType.TYPE_IMAGE;
+        }
         switch (pictureType) {
             case "image/png":
             case "image/PNG":
@@ -94,6 +97,9 @@ public class MimeType {
      * @return
      */
     public static boolean isGif(String pictureType) {
+        if (UtilsHelper.isEmptyOrNull(pictureType)) {
+            return false;
+        }
         switch (pictureType) {
             case "image/gif":
             case "image/GIF":
@@ -109,6 +115,9 @@ public class MimeType {
      * @return
      */
     public static boolean isVideo(String pictureType) {
+        if (UtilsHelper.isEmptyOrNull(pictureType)) {
+            return false;
+        }
         switch (pictureType) {
             case "video/3gp":
             case "video/3gpp":
