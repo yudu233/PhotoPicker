@@ -4,20 +4,16 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
-import com.rain.library.R;
 import com.rain.library.bean.MediaData;
 import com.rain.library.bean.MediaDirectory;
 import com.rain.library.data.Data;
 import com.rain.library.utils.MimeType;
-import com.rain.library.utils.Rlog;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -95,7 +91,6 @@ public class MediaStoreHelper {
 
 
             while (data.moveToNext()) {
-                long media_duration;
                 int media_id = data.getInt(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[0]));
                 int media_width = data.getInt(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[1]));
                 int media_height = data.getInt(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[2]));
@@ -108,16 +103,7 @@ public class MediaStoreHelper {
                 String media_dirName = data.getString(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[8]));
                 String media_directoryPath = media_path.substring(0, media_path.lastIndexOf(File.separator));
 
-                if (MimeType.isVideo(media_type)) {
-                    MediaMetadataRetriever media = new MediaMetadataRetriever();
-                    media.setDataSource(media_path);
-                    String duration = media.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                    media_duration = Long.parseLong(duration);
-                    media.release();
-                } else {
-                    media_duration = 0;
-                }
-
+                long media_duration = MimeType.isVideo(media_type) ? MimeType.getVideoDuration(media_path) : 0;
                 MediaData mediaData = getMediaData(media_id, media_path, media_size, media_duration, mineType, media_type, media_width, media_height);
                 MediaDirectory mediaDirectory = new MediaDirectory();
                 mediaDirectory.setId(media_dirId);

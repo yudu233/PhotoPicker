@@ -1,6 +1,7 @@
 package com.rain.library.utils;
 
 import android.content.Context;
+import android.media.MediaMetadataRetriever;
 import android.text.TextUtils;
 
 import com.rain.library.R;
@@ -266,5 +267,23 @@ public class MimeType {
             e.printStackTrace();
             return ".png";
         }
+    }
+
+    /**
+     * 获取视频时长
+     * @param videoPath
+     * @return
+     */
+    public static long getVideoDuration(String videoPath) {
+        long duration;
+        try {
+            MediaMetadataRetriever media = new MediaMetadataRetriever();
+            media.setDataSource(videoPath);
+            duration = Long.parseLong(media.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+            media.release();
+        } catch (Exception e) {
+            return 0;
+        }
+        return duration;
     }
 }
