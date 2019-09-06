@@ -45,6 +45,7 @@ import com.rain.library.weidget.LoadingDialog;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 
 /**
@@ -68,8 +69,6 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
     private PhotoSelectCallback callback;
 
     private static final int MAX_SCALE = 3;
-    public static final int DEFAULT_WIDTH = 1080;
-    public static final int DEFAULT_HEIGHT = 1920;
     private LoadingDialog loadingDialog;
 
     @Override
@@ -261,17 +260,10 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                         if (loadingDialog != null) {
                             loadingDialog.show();
                         }
+                        checkImages();
                         PhotoPick.startCompression(PhotoPreviewActivity.this, selectPhotosInfo, compressResult);
-
                     } else {
-                        Intent intent = new Intent();
-                        if (callback != null) {
-                            callback.selectResult(selectPhotosInfo);
-                        } else{
-                            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_SELECT_PHOTOS, selectPhotosInfo);
-                            setResult(Activity.RESULT_OK, intent);
-                        }
-                        finish();
+                        sendImage();
                     }
                 }
             } else {
@@ -280,6 +272,41 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void sendImage() {
+        if (callback != null) {
+            callback.selectResult(selectPhotosInfo);
+        } else{
+            Intent intent = new Intent();
+            intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_SELECT_PHOTOS, selectPhotosInfo);
+            setResult(Activity.RESULT_OK, intent);
+        }
+        finish();
+    }
+
+    private void checkImages() {
+        //检测图片是否存在/损坏
+        ListIterator<MediaData> iterator = selectPhotosInfo.listIterator();
+        while (iterator.hasNext()) {
+            String mediaPath;
+            MediaData media = iterator.next();
+            if (media.isClip()) {
+                mediaPath = media.getClipImagePath();
+            } else if (media.isCamera()) {
+                mediaPath = media.getCameraImagePath();
+            } else if (media.isCompressed()) {
+                mediaPath = media.getCompressionPath();
+            } else {
+                mediaPath = media.getOriginalPath();
+            }
+
+            if (!new File(mediaPath).exists()) {
+                Rlog.e("文件不存在" + selectPhotosInfo.size());
+                iterator.remove();
+            }
+
+        }
     }
 
     private int index = 0;
@@ -311,11 +338,14 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                 }
             } else {
                 MediaData photo = selectPhotosInfo.get(index);
+                photo.setCompressed(true);
                 photo.setCompressionPath(photo.getOriginalPath());
                 index++;
             }
         }
     };
+
+
 
     private void backTo() {
         if (isChecked) {
@@ -367,7 +397,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
 
         @Override
         public View instantiateItem(ViewGroup container, int position) {
-            View view = null;
+            View view;
             View longView = LayoutInflater.from(PhotoPreviewActivity.this).inflate(R.layout.item_photo_preview_long, container, false);
             View simpleView = LayoutInflater.from(PhotoPreviewActivity.this).inflate(R.layout.item_photo_preview, container, false);
 
