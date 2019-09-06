@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                         .imageLoader(new GlideImageLoader())
                         .pickMode(PhotoPickConfig.MODE_PICK_MORE)
                         .setMimeType(MimeType.TYPE_ALL)
-                        .maxPickSize(3)
+                        .maxPickSize(9)
                         .selectedMimeType(data)
                         .setCallback(new PhotoSelectCallback() {
                             @Override
@@ -95,26 +95,28 @@ public class MainActivity extends AppCompatActivity {
 
         if (resultCode != RESULT_OK) return;
         if (requestCode == PhotoPickConfig.PICK_SELECT_REQUEST_CODE) {
-            ArrayList<MediaData> datas = data.getParcelableArrayListExtra(PhotoPickConfig.EXTRA_SELECT_PHOTOS);
-            MediaData mediaData = datas.get(0);
-            if (mediaData.isClip()) {
-                Log.e("裁剪:", mediaData.getClipImagePath());
-                mContent.setText(builder.append(mediaData.getClipImagePath() + "\n"));
-                return;
-            }
-            if (mediaData.isCamera()) {
-                Log.e("相机:", mediaData.getCameraImagePath());
-                mContent.setText(builder.append(mediaData.getCameraImagePath() + "\n"));
-                return;
-            }
+            List<MediaData> datas = data.getParcelableArrayListExtra(PhotoPickConfig.EXTRA_SELECT_PHOTOS);
+            if (datas != null) {
+                MediaData mediaData = datas.get(0);
+                if (mediaData.isClip()) {
+                    Log.e("裁剪:", mediaData.getClipImagePath());
+                    mContent.setText(builder.append(mediaData.getClipImagePath() + "\n"));
+                    return;
+                }
+                if (mediaData.isCamera()) {
+                    Log.e("相机:", mediaData.getCameraImagePath());
+                    mContent.setText(builder.append(mediaData.getCameraImagePath() + "\n"));
+                    return;
+                }
 
-            if (mediaData.isCompressed()) {
-                Log.e("压缩后:", mediaData.getCompressionPath());
-                mContent.setText(builder.append(mediaData.getCompressionPath() + "\n"));
-                return;
+                if (mediaData.isCompressed()) {
+                    Log.e("压缩后:", mediaData.getCompressionPath());
+                    mContent.setText(builder.append(mediaData.getCompressionPath() + "\n"));
+                    return;
+                }
+                Log.e("原始地址：:", mediaData.getOriginalPath());
+                mContent.setText(builder.append(mediaData.getOriginalPath() + "\n"));
             }
-            Log.e("原始地址：:", mediaData.getOriginalPath());
-            mContent.setText(builder.append(mediaData.getOriginalPath() + "\n"));
         }
     }
 }
