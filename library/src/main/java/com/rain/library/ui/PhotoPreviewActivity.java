@@ -287,9 +287,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
     private CommonResult<File> compressResult = new CommonResult<File>() {
         @Override
         public void onSuccess(File file, boolean success) {
-            if (loadingDialog != null) {
-                loadingDialog.dismiss();
-            }
+
             if (success && file.exists()) {
                 Rlog.e("Rain", "Luban compression success:" + file.getAbsolutePath() + " ; image length = " + file.length());
                 MediaData photo = selectPhotosInfo.get(index);
@@ -299,6 +297,9 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
 
                 if (index > 0 && index == selectPhotosInfo.size()) {
                     Rlog.e("Rain", "all select image compression success!");
+                    if (loadingDialog != null) {
+                        loadingDialog.dismiss();
+                    }
                     Intent intent = new Intent();
                     if (callback != null) {
                         callback.selectResult(selectPhotosInfo);
@@ -386,7 +387,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                 view = simpleView;
                 PhotoView imageView = (PhotoView) simpleView.findViewById(R.id.iv_media_image);
                 imageView.setOnPhotoTapListener(PhotoPreviewActivity.this);
-                PhotoPickConfig.imageLoader.displayImage(PhotoPreviewActivity.this, originalImagePath, imageView, false);
+                PhotoPickConfig.getInstance().getImageLoader().displayImage(PhotoPreviewActivity.this, originalImagePath, imageView, false);
             }
             if (MimeType.isVideo(photos.get(position).getImageType())) {
                 simpleView.findViewById(R.id.imv_play).setVisibility(View.VISIBLE);

@@ -44,11 +44,8 @@ public class PhotoPickConfig {
 
     public static int DEFAULT_MIMETYPE = MimeType.TYPE_ALL;   //默认加载文件类型
 
-    public static ImageLoader imageLoader;              //图片加载方式
 
-    public static PhotoSelectCallback callback;         //回调
-
-    public static PhotoPickBean photoPickBean;
+    public static PhotoPickBean photoPickBean = new PhotoPickBean();
 
     public static final String EXTRA_SELECT_PHOTOS = "extra_select_photos";
 
@@ -56,12 +53,11 @@ public class PhotoPickConfig {
     public static final int PICK_SELECT_REQUEST_CODE = 10001;
 
     public PhotoPickConfig(Activity activity, Builder builder) {
-        imageLoader = builder.imageLoader;
-        callback = builder.callback;
         if (builder.pickBean == null) {
             throw new NullPointerException("builder#pickBean is null");
+        } else {
+            photoPickBean = builder.pickBean;
         }
-        photoPickBean = builder.pickBean;
         int requestCode = PICK_SELECT_REQUEST_CODE;
         startPick(activity, requestCode);
     }
@@ -76,8 +72,6 @@ public class PhotoPickConfig {
     public static class Builder {
         private Activity activity;
         private PhotoPickBean pickBean;
-        private ImageLoader imageLoader;
-        private PhotoSelectCallback callback;
 
         public Builder(Activity activity) {
             if (activity == null) {
@@ -105,7 +99,6 @@ public class PhotoPickConfig {
          * @return
          */
         public Builder imageLoader(ImageLoader imageLoader) {
-            this.imageLoader = imageLoader;
             pickBean.setImageLoader(imageLoader);
             return this;
         }
@@ -245,7 +238,6 @@ public class PhotoPickConfig {
         }
 
         public Builder setCallback(PhotoSelectCallback callback) {
-            this.callback = callback;
             pickBean.setCallback(callback);
             return this;
         }

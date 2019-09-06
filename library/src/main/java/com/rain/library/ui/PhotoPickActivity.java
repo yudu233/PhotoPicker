@@ -416,7 +416,7 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
                 adapter.getSelectPhotosInfo().remove(data.mediaData);
             }
             adapter.notifyItemChanged(data.position);
-            menuItem.setTitle(adapter.getTitle());
+            toolbar.getMenu().findItem(R.id.ok).setTitle(adapter.getTitle());
         }
     }
 }

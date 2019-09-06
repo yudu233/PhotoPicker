@@ -100,8 +100,8 @@ public class PhotoGalleryAdapter extends RecyclerView.Adapter {
             }
             name.setText(directory.getName());
             num.setText(context.getString(R.string.gallery_num, String.valueOf(directory.getPhotoPaths().size())));
-            if (PhotoPickConfig.imageLoader != null)
-                PhotoPickConfig.imageLoader.displayImage(context, directory.getCoverPath(), imageView, true);
+            if (PhotoPickConfig.getInstance().getImageLoader() != null)
+                PhotoPickConfig.getInstance().getImageLoader().displayImage(context, directory.getCoverPath(), imageView, true);
         }
 
         @Override
