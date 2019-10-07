@@ -192,13 +192,16 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
             } else {
                 checkbox.setChecked(false);
             }
+            if (!originalPicture) {
+                radioButton.setVisibility(View.GONE);
+                return;
+            }
 
             if (originalPicture && radioButton.isChecked()) {
                 radioButton.setText(getString(R.string.image_size, UtilsHelper.formatFileSize(photos.get(pos).getOriginalSize())));
             } else {
                 radioButton.setText(getString(R.string.original_image));
             }
-
             if (MimeType.isPictureType(photos.get(position).getImageType()) == MimeType.ofVideo()) {
                 radioButton.setVisibility(View.GONE);
             } else {
@@ -277,7 +280,8 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
     private void sendImage() {
         if (callback != null) {
             callback.selectResult(selectPhotosInfo);
-        } else{
+            setResult(RESULT_OK, new Intent());
+        } else {
             Intent intent = new Intent();
             intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_SELECT_PHOTOS, selectPhotosInfo);
             setResult(Activity.RESULT_OK, intent);
@@ -344,7 +348,6 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
             }
         }
     };
-
 
 
     private void backTo() {
