@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.LoaderManager;
@@ -13,7 +14,9 @@ import android.support.v7.app.AppCompatActivity;
 import com.rain.library.bean.MediaData;
 import com.rain.library.bean.MediaDirectory;
 import com.rain.library.data.Data;
+import com.rain.library.utils.ExternalStorage;
 import com.rain.library.utils.MimeType;
+import com.rain.library.utils.Rlog;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -104,6 +107,10 @@ public class MediaStoreHelper {
                 String media_directoryPath = media_path.substring(0, media_path.lastIndexOf(File.separator));
 
                 long media_duration = MimeType.isVideo(media_type) ? MimeType.getVideoDuration(media_path) : 0;
+
+                //判断文件是否损坏
+                boolean isDamage = ExternalStorage.getInstance().checkImageIsDamage(media_width, media_path);
+                if (isDamage) continue;
                 MediaData mediaData = getMediaData(media_id, media_path, media_size, media_duration, mineType, media_type, media_width, media_height);
                 MediaDirectory mediaDirectory = new MediaDirectory();
                 mediaDirectory.setId(media_dirId);

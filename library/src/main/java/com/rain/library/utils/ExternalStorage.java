@@ -3,6 +3,7 @@ package com.rain.library.utils;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.os.StatFs;
 import android.text.TextUtils;
@@ -184,5 +185,28 @@ public class ExternalStorage {
             createSubFolders();
         }
         return hasPermission;
+    }
+
+    /**
+     * 判断文件是否损坏
+     *
+     * @param width
+     * @param media_path
+     * @return
+     */
+    public boolean checkImageIsDamage(int width, String media_path) {
+        if (width == 0) {
+            BitmapFactory.Options options = null;
+            if (options == null) options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(media_path, options); //filePath代表图片路径
+            if (options.mCancel || options.outWidth == -1 || options.outHeight == -1) {
+                //表示图片已损毁
+                Rlog.e("表示图片已损毁");
+                return true;
+            }
+
+        }
+        return false;
     }
 }
