@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.rain.library.bean.MediaData;
 import com.rain.library.impl.CommonResult;
 import com.rain.library.utils.ExternalStorage;
+import com.rain.library.utils.MimeType;
 import com.rain.library.utils.Rlog;
 import com.rain.library.utils.UtilsHelper;
 
@@ -60,7 +61,7 @@ public final class PhotoPick {
                 paths.add(data.getCameraImagePath());
             } else if (data.isClip()) {
                 paths.add(data.getClipImagePath());
-            } else {
+            } else{
                 paths.add(data.getOriginalPath());
             }
         }

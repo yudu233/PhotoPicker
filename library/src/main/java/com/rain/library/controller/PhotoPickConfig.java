@@ -249,14 +249,17 @@ public class PhotoPickConfig {
         }
 
         public PhotoPickConfig build() {
+            if (pickBean.getMimeType() == MimeType.TYPE_VIDEO) {
+                pickBean.setStartCompression(false);
+                pickBean.setClipPhoto(false);
+            }
             if (pickBean.isClipPhoto()) {
                 pickBean.setMaxPickSize(1);
                 pickBean.setPickMode(MODE_PICK_SINGLE);
+                pickBean.setMimeType(MimeType.TYPE_IMAGE);
+                pickBean.setShowGif(false);
             }
 
-            if (pickBean.getMimeType() == MimeType.TYPE_VIDEO) {
-                pickBean.setStartCompression(false);
-            }
             return new PhotoPickConfig(activity, this);
         }
     }

@@ -130,8 +130,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
                 } else {
                     selectPicFromCamera();
                 }
-            } else if (photoPickBean.isClipPhoto() &&
-                    (!MimeType.isVideo(getItem(getAdapterPosition()).getImageType()))) {
+            } else if (photoPickBean.isClipPhoto()) {
                 //头像裁剪
                 startClipPic(getItem(getAdapterPosition()).getOriginalPath());
             } else {

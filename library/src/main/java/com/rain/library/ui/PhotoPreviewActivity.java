@@ -123,6 +123,9 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                     //判断是否同一类型文件
                     String mimeType = selectPhotosInfo.size() > 0 ? selectPhotosInfo.get(0).getImageType() : "";
                     if (!TextUtils.isEmpty(mimeType)) {
+                        if (MimeType.isGif(mimeType)) {
+                            radioButton.setChecked(true);
+                        }
                         boolean toEqual = MimeType.mimeToEqual(mimeType, photos.get(pos).getImageType());
                         if (!toEqual) {
                             PhotoPick.toast(R.string.tips_rule);
@@ -156,12 +159,12 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                         radioButton.setChecked(true);
                         isChecked = true;
                         radioButton.setText(getString(R.string.image_size, UtilsHelper.formatFileSize(photos.get(pos).getOriginalSize())));
-                        if (!checkbox.isChecked()) {
-                            checkbox.setChecked(true);
-                            selectPhotosInfo.add(photos.get(pos));
-                            updateMenuItemTitle();
-                            UpdateUIObserver.getInstance().sendUpdateUIMessage(pos, photos.get(pos), checkbox.isChecked());
-                        }
+//                        if (!checkbox.isChecked()) {
+//                            checkbox.setChecked(true);
+//                            selectPhotosInfo.add(photos.get(pos));
+//                            updateMenuItemTitle();
+                        UpdateUIObserver.getInstance().sendUpdateUIMessage(pos, photos.get(pos), checkbox.isChecked());
+//                        }
                     }
                 }
             });
@@ -173,6 +176,9 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         viewPager.setCurrentItem(bean.getPosition());
         if (bean.getPosition() == 0) {
             onPageChangeListener.onPageSelected(bean.getPosition());
+        }
+        if (MimeType.isGif(photos.get(bean.getPosition()).getImageType())) {
+            radioButton.setVisibility(View.GONE);
         }
     }
 
@@ -202,7 +208,8 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
             } else {
                 radioButton.setText(getString(R.string.original_image));
             }
-            if (MimeType.isPictureType(photos.get(position).getImageType()) == MimeType.ofVideo()) {
+            int pictureType = MimeType.isPictureType(photos.get(position).getImageType());
+            if (pictureType == MimeType.ofVideo() || MimeType.isGif(photos.get(position).getImageType())) {
                 radioButton.setVisibility(View.GONE);
             } else {
                 radioButton.setVisibility(View.VISIBLE);
@@ -323,7 +330,11 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                 Rlog.e("Rain", "Luban compression success:" + file.getAbsolutePath() + " ; image length = " + file.length());
                 MediaData photo = selectPhotosInfo.get(index);
                 photo.setCompressed(true);
-                photo.setCompressionPath(file.getAbsolutePath());
+                if (MimeType.isGif(photo.getImageType())) {
+                    photo.setCompressionPath(photo.getOriginalPath());
+                } else {
+                    photo.setCompressionPath(file.getAbsolutePath());
+                }
                 index++;
 
                 if (index > 0 && index == selectPhotosInfo.size()) {

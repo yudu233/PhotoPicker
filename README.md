@@ -1,4 +1,6 @@
 # PhotoPicker
+
+[![](https://jitpack.io/v/yudu233/PhotoPicker.svg)](https://jitpack.io/#yudu233/PhotoPicker)
 [![](https://jitpack.io/v/yudu233/PhotoPicker.svg)](https://jitpack.io/#yudu233/PhotoPicker)
 
 Android 照片选择器 ，支持单图、多图、视频、gif选择，内置鲁班压缩和Ucrop裁剪功能，以及主题自定义配置等功能
@@ -198,7 +200,17 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 [ucrop](https://github.com/Yalantis/uCrop)
 
 ## 更新日志
-# 当前版本：v2.0.0
+# 当前版本：v2.0.2
+* 优化裁剪时不显示其他类型文件（video、gif）
+* 优化选择gif时默认原图，非原图时不压缩
+
+
+# 历史版本
+### v2.0.1
+* 代码优化
+* 新增损坏文件判断过滤
+---
+### v2.0.0
 * 新增视频、gif选择功能
 * 鲁班压缩优化
 * 部分机型视频
@@ -206,8 +218,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 * 修复选择-取消后返回多条数据
 * 修复快速双击问题
 * UI更新
-
-# 历史版本
+---
 ### v1.6.0
 * 新增鲁班压缩
 * 新增长截图预览功能
