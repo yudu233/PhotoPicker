@@ -8,7 +8,7 @@ Android 照片选择器 ，支持单图、多图、视频、gif选择，内置�
 简书：[PhotoPicker](http://www.jianshu.com/p/a6b5831797d0)
 
 ### 各位读者来点Star支持一下吧
-==如使用请尽快更新到2.0.0版本，本版本新增多个功能，修复旧版本已知问题==
+==如使用请尽快更新到2.0.0版本+，本版本新增多个功能，修复旧版本已知问题==
 
 参考项目：
 - https://github.com/donglua/PhotoPicker
@@ -53,7 +53,7 @@ allprojects {
 **在APP目录下的build.gradle中添加依赖**
 
 ```java
-implementation 'com.github.yudu233:PhotoPicker:2.0.0'
+implementation 'com.github.yudu233:PhotoPicker:2.0.2'
 ```
 
 **AndroidManifest.xml 配置**
