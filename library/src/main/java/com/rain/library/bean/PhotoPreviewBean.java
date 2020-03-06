@@ -12,7 +12,8 @@ public class PhotoPreviewBean implements Parcelable {
     private ArrayList<String> selectPhotos;
     private ArrayList<MediaData> selectPhotosInfo;
     private int maxPickSize;
-    private boolean originalPicture;//是否选择的是原图
+    private boolean showOriginalButton;//是否显示原图按钮
+    private boolean isSelectOrigin; //是否选中原图
 
     public PhotoPreviewBean() {
     }
@@ -57,12 +58,20 @@ public class PhotoPreviewBean implements Parcelable {
         this.maxPickSize = maxPickSize;
     }
 
-    public boolean isOriginalPicture() {
-        return originalPicture;
+    public boolean isShowOriginalButton() {
+        return showOriginalButton;
     }
 
-    public void setOriginalPicture(boolean originalPicture) {
-        this.originalPicture = originalPicture;
+    public void setShowOriginalButton(boolean originalPicture) {
+        this.showOriginalButton = originalPicture;
+    }
+
+    public boolean isSelectOrigin() {
+        return isSelectOrigin;
+    }
+
+    public void setSelectOrigin(boolean selectOrigin) {
+        isSelectOrigin = selectOrigin;
     }
 
     protected PhotoPreviewBean(Parcel in) {
@@ -71,7 +80,8 @@ public class PhotoPreviewBean implements Parcelable {
         selectPhotos = in.createStringArrayList();
         selectPhotosInfo = in.createTypedArrayList(MediaData.CREATOR);
         maxPickSize = in.readInt();
-        originalPicture = in.readByte() != 0;
+        showOriginalButton = in.readByte() != 0;
+        isSelectOrigin = in.readByte() != 0;
     }
 
     @Override
@@ -81,7 +91,9 @@ public class PhotoPreviewBean implements Parcelable {
         dest.writeStringList(selectPhotos);
         dest.writeTypedList(selectPhotosInfo);
         dest.writeInt(maxPickSize);
-        dest.writeByte((byte) (originalPicture ? 1 : 0));
+        dest.writeByte((byte) (showOriginalButton ? 1 : 0));
+        dest.writeByte((byte) (isSelectOrigin ? 1 : 0));
+
     }
 
     @Override

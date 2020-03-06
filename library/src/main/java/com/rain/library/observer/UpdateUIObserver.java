@@ -29,9 +29,9 @@ public class UpdateUIObserver extends Observable {
     }
 
 
-    public void sendUpdateUIMessage(int position, MediaData mediaData,boolean isChecked) {
+    public void sendUpdateUIMessage(int position, MediaData mediaData, boolean isChecked, boolean isSelectOrigin) {
         setChanged();
-        notifyObservers(new NotifyCmd(position, mediaData,isChecked));
+        notifyObservers(new NotifyCmd(position, mediaData, isChecked, isSelectOrigin));
     }
 
 
@@ -39,11 +39,13 @@ public class UpdateUIObserver extends Observable {
         public int position;
         public MediaData mediaData;
         public boolean isChecked;
+        public boolean isSelectOrigin;
 
-        public NotifyCmd(int position, MediaData mediaData,boolean isChecked) {
+        public NotifyCmd(int position, MediaData mediaData, boolean isChecked, boolean isSelectOrigin) {
             this.position = position;
             this.mediaData = mediaData;
             this.isChecked = isChecked;
+            this.isSelectOrigin = isSelectOrigin;
         }
     }
 }

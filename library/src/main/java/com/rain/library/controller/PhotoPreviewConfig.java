@@ -8,7 +8,6 @@ import com.rain.library.PhotoPick;
 import com.rain.library.R;
 import com.rain.library.bean.MediaData;
 import com.rain.library.bean.PhotoPreviewBean;
-import com.rain.library.impl.PhotoSelectCallback;
 import com.rain.library.ui.PhotoPreviewActivity;
 
 import java.util.ArrayList;
@@ -25,7 +24,6 @@ public class PhotoPreviewConfig {
 
     public static final String EXTRA_BUNDLE = "extra_bundle";
     public static final String EXTRA_BEAN = "extra_bean";
-    public static final String EXTRA_ORIGINAL_PIC = "original_picture";
     public final static int REQUEST_CODE = 10504;
 
     public PhotoPreviewConfig(Activity activity, Builder builder) {
@@ -33,9 +31,7 @@ public class PhotoPreviewConfig {
         if (photoPreviewBean == null) {
             throw new NullPointerException("Builder#photoPagerBean is null");
         }
-//        if (photoPreviewBean.getPhotos() == null || photoPreviewBean.getPhotos().isEmpty()) {
-//            throw new NullPointerException("photos is null or size is 0");
-//        }
+
         if (photoPreviewBean.getSelectPhotos() != null && (photoPreviewBean.getSelectPhotos().size() > photoPreviewBean.getMaxPickSize())) {
             throw new IndexOutOfBoundsException("seleced photo size out maxPickSize size,select photo size = " + photoPreviewBean.getSelectPhotos().size() + ",maxPickSize size = " + photoPreviewBean.getMaxPickSize());
         }
@@ -77,21 +73,13 @@ public class PhotoPreviewConfig {
             return this;
         }
 
-        public Builder setPhotos(ArrayList<MediaData> photos) {
-            if (photos == null || photos.isEmpty()) {
-                throw new NullPointerException("photos is null or size is 0");
-            }
-            bean.setPhotos(photos);
+        public Builder isSelectOrigin(boolean isSelect){
+            bean.setSelectOrigin(isSelect);
             return this;
         }
 
-        public Builder setSelectPhotos(ArrayList<String> selectPhotos) {
-            bean.setSelectPhotos(selectPhotos);
-            return this;
-        }
-
-        public Builder setOriginalPicture(boolean originalPicture) {//是否设置原图,默认false
-            bean.setOriginalPicture(originalPicture);
+        public Builder setShowOriginalButton(boolean originalPicture) {//是否设置原图,默认false
+            bean.setShowOriginalButton(originalPicture);
             return this;
         }
 

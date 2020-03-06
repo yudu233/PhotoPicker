@@ -202,7 +202,7 @@ public class ExternalStorage {
             BitmapFactory.decodeFile(media_path, options); //filePath代表图片路径
             if (options.mCancel || options.outWidth == -1 || options.outHeight == -1) {
                 //表示图片已损毁
-                Rlog.e("表示图片已损毁");
+                Rlog.e("表示图片已损毁:" + media_path);
                 return true;
             }
 

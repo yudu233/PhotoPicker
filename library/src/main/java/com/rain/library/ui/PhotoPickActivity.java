@@ -65,7 +65,6 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
     private SlidingUpPanelLayout slidingUpPanelLayout;
     private PhotoGalleryAdapter galleryAdapter;
     private PhotoPickAdapter adapter;
-    private PhotoPickBean pickBean;
 
     private ArrayList<MediaData> photoList = new ArrayList<>();
     private ArrayList<MediaDirectory> photoDirectoryList = new ArrayList<>();
@@ -75,8 +74,7 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_pick, true);
-        pickBean = PhotoPickConfig.getInstance();
-        if (pickBean == null) {
+        if (PhotoPickConfig.getInstance() == null) {
             finish();
             return;
         }
@@ -97,18 +95,18 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
         loadingDialog = new LoadingDialog(this);
 
         //设置ToolBar
-        toolbar.setTitle(MimeType.getTitle(pickBean.getMimeType(), this));
+        toolbar.setTitle(MimeType.getTitle(PhotoPickConfig.getInstance().getMimeType(), this));
         toolbar.setBackgroundColor(PhotoPick.getToolbarBackGround());
         toolbar.setNavigationIcon(PhotoPickOptions.DEFAULT.backIcon);
 
         //全部相册照片列表
-        RecyclerView recyclerView = (RecyclerView) this.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, pickBean.getSpanCount()));
-        adapter = new PhotoPickAdapter(this, pickBean);
+        RecyclerView recyclerView = this.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, PhotoPickConfig.getInstance().getSpanCount()));
+        adapter = new PhotoPickAdapter(this, PhotoPickConfig.getInstance());
         recyclerView.setAdapter(adapter);
 
         //相册列表
-        RecyclerView gallery_rv = (RecyclerView) this.findViewById(R.id.gallery_rcl);
+        RecyclerView gallery_rv = this.findViewById(R.id.gallery_rcl);
         gallery_rv.setLayoutManager(new LinearLayoutManager(this));
         galleryAdapter = new PhotoGalleryAdapter(this);
         gallery_rv.setAdapter(galleryAdapter);
@@ -134,7 +132,7 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
             }
         });
 
-        slidingUpPanelLayout = (SlidingUpPanelLayout) this.findViewById(R.id.slidingUpPanelLayout);
+        slidingUpPanelLayout = this.findViewById(R.id.slidingUpPanelLayout);
         slidingUpPanelLayout.setAnchorPoint(0.5f);
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
@@ -158,37 +156,40 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
      * 获取媒体文件
      */
     private void loadMediaData() {
-        MediaStoreHelper.getData(this, pickBean.getMimeType(), pickBean.isShowGif(), new MediaStoreHelper.PhotosResultCallback() {
-            @Override
-            public void onResultCallback(final List<MediaDirectory> directories) {
-                runOnUiThread(new Runnable() {
+        MediaStoreHelper.getData(this, PhotoPickConfig.getInstance().getMimeType(),
+                PhotoPickConfig.getInstance().isShowGif(), new MediaStoreHelper.PhotosResultCallback() {
                     @Override
-                    public void run() {
-                        List<MediaData> photos = directories.get(0).getMediaData();
-                        for (int i = 0; i < photos.size(); i++) {
-                            if (UtilsHelper.isFileExist(photos.get(i).getOriginalPath()))
-                                photoList.add(photos.get(i));
-                        }
-                        photoDirectoryList.add(directories.get(0));
-                        for (int i = 1; i < directories.size(); i++) {
-                            if (UtilsHelper.isFileExist(directories.get(i).getDirPath())) {
-                                photoDirectoryList.add(directories.get(i));
+                    public void onResultCallback(final List<MediaDirectory> directories) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                List<MediaData> photos = directories.get(0).getMediaData();
+                                for (int i = 0; i < photos.size(); i++) {
+                                    if (UtilsHelper.isFileExist(photos.get(i).getOriginalPath()))
+                                        photoList.add(photos.get(i));
+                                }
+                                photoDirectoryList.add(directories.get(0));
+                                for (int i = 1; i < directories.size(); i++) {
+                                    if (UtilsHelper.isFileExist(directories.get(i).getDirPath())) {
+                                        photoDirectoryList.add(directories.get(i));
+                                    }
+                                }
+                                PhotoPreviewConfig.setPreviewPhotos(photoList);
+                                adapter.refresh(photoList);
+                                galleryAdapter.refresh(photoDirectoryList);
                             }
-                        }
-                        PhotoPreviewConfig.setPreviewPhotos(photoList);
-                        adapter.refresh(photoList);
-                        galleryAdapter.refresh(photoDirectoryList);
+                        });
                     }
                 });
-            }
-        });
     }
 
     //请求权限(先检查)
     private void requestPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
             //申请权限
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_SDCARD);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_SDCARD);
         } else {
             init();
         }
@@ -223,7 +224,7 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!pickBean.isClipPhoto()) {
+        if (!PhotoPickConfig.getInstance().isClipPhoto()) {
             getMenuInflater().inflate(R.menu.menu_ok, menu);
             menuItem = menu.findItem(R.id.ok);
         }
@@ -234,18 +235,21 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (PhotoPick.isTimeEnabled()) {
             if (item.getItemId() == R.id.ok) {
+                checkImages();
                 if (adapter != null && !adapter.getSelectPhotosInfo().isEmpty()) {
                     MediaData mediaData = adapter.getSelectPhotosInfo().get(0);
                     if (PhotoPickConfig.getInstance().isStartCompression() && !MimeType.isVideo(mediaData.getImageType())) {
                         if (loadingDialog != null) {
                             loadingDialog.show();
                         }
-                        checkImages();
                         PhotoPick.startCompression(PhotoPickActivity.this, adapter.getSelectPhotosInfo(), compressResult);
                     } else {
                         //不做压缩处理 直接发送原图信息
                         sendImages();
                     }
+                }else {
+                    PhotoPick.toast(getString(R.string.tips_no));
+                    finish();
                 }
             }
         }
@@ -328,11 +332,11 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
         if (adapter.getCameraUri() == null || TextUtils.isEmpty(adapter.getCameraImagePath())) {
             PhotoPick.toast(R.string.unable_find_pic);
         } else {
-            if (pickBean.isClipPhoto()) {
+            if (PhotoPickConfig.getInstance().isClipPhoto()) {
                 //拍完照之后，如果要启动裁剪，则去裁剪再把地址传回来
                 adapter.startClipPic(adapter.getCameraImagePath());
             } else {
-                if (pickBean.isStartCompression()) {
+                if (PhotoPickConfig.getInstance().isStartCompression()) {
                     final MediaData photo = new MediaData();
                     photo.setCamera(true);
                     photo.setCameraImagePath(adapter.getCameraImagePath());
@@ -365,8 +369,10 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
         }
     }
 
+    /**
+     * 检测图片是否存在/损坏
+     */
     private void checkImages() {
-        //检测图片是否存在/损坏
         ListIterator<MediaData> iterator = adapter.getSelectPhotosInfo().listIterator();
         while (iterator.hasNext()) {
             String mediaPath;
@@ -382,20 +388,18 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
             }
 
             if (!new File(mediaPath).exists()) {
-                Rlog.e("文件不存在" + adapter.getSelectPhotosInfo().size());
                 iterator.remove();
             }
-
         }
     }
 
     private void sendImages() {
-        if (!pickBean.isStartCompression()) {
+        if (!PhotoPickConfig.getInstance().isStartCompression()) {
             checkImages();
         }
 
-        if (pickBean.getCallback() != null) {
-            pickBean.getCallback().selectResult(adapter.getSelectPhotosInfo());
+        if (PhotoPickConfig.getInstance().getCallback() != null) {
+            PhotoPickConfig.getInstance().getCallback().selectResult(adapter.getSelectPhotosInfo());
         } else {
             Intent intent = new Intent();
             intent.putParcelableArrayListExtra(PhotoPickConfig.EXTRA_SELECT_PHOTOS, adapter.getSelectPhotosInfo());
@@ -416,6 +420,7 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
             }
             adapter.notifyItemChanged(data.position);
             toolbar.getMenu().findItem(R.id.ok).setTitle(adapter.getTitle());
+            adapter.notifyPreviewConfig(data.isSelectOrigin);
         }
     }
 

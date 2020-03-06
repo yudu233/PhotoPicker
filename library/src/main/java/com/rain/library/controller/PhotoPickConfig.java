@@ -85,7 +85,7 @@ public class PhotoPickConfig {
             pickBean.setShowCamera(DEFAULT_SHOW_CAMERA);        //默认展示拍照那个icon
             pickBean.setClipPhoto(DEFAULT_SHOW_CLIP);           //默认关闭图片裁剪
             pickBean.setClipMode(CLIP_CIRCLE);                  //默认裁剪方式矩形
-            pickBean.setOriginalPicture(DEFAULT_SHOW_ORIGINAL); //默认显示选择原图选项
+            pickBean.setShowOriginalButton(DEFAULT_SHOW_ORIGINAL); //默认显示选择原图选项
             pickBean.setStartCompression(DEFAULT_START_COMPRESSION);    //默认启动图片压缩
             pickBean.setShowGif(DEFAULT_SHOW_GIF);              //默认显示gif图
             pickBean.setMimeType(DEFAULT_MIMETYPE);             //默认显示全部媒体文件
@@ -214,7 +214,7 @@ public class PhotoPickConfig {
          * @return
          */
         public Builder showOriginal(boolean showOriginal) {
-            pickBean.setOriginalPicture(showOriginal);
+            pickBean.setShowOriginalButton(showOriginal);
             return this;
         }
 

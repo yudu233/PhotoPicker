@@ -44,7 +44,6 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
 
     private Context context;
     private ArrayList<MediaData> photos = new ArrayList<>();
-    //    private ArrayList<String> selectPhotos = new ArrayList<>();
     private ArrayList<MediaData> selectPhotosInfo = new ArrayList<>();
 
     private int imageSize;
@@ -53,6 +52,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
     private String clipImagePath;
 
     private PhotoPickBean photoPickBean;
+    private PhotoPreviewConfig.Builder previewBuilder;
 
     public PhotoPickAdapter(Context context, PhotoPickBean pickBean) {
         this.context = context;
@@ -61,6 +61,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
         display.getMetrics(metrics);
         this.imageSize = metrics.widthPixels / pickBean.getSpanCount();
         this.photoPickBean = pickBean;
+        previewBuilder = new PhotoPreviewConfig.Builder((Activity) context);
     }
 
     public void refresh(List<MediaData> photos) {
@@ -88,6 +89,10 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
 
     private MediaData getItem(int position) {
         return photoPickBean.isShowCamera() ? photos.get(position - 1) : photos.get(position);
+    }
+
+    public void notifyPreviewConfig(boolean isSelectOrigin) {
+        previewBuilder.isSelectOrigin(isSelectOrigin);
     }
 
     private class PhotoPickViewHolder extends RecyclerView.ViewHolder {
@@ -135,19 +140,19 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
                 startClipPic(getItem(getAdapterPosition()).getOriginalPath());
             } else {
                 //查看大图
-                new PhotoPreviewConfig.Builder((Activity) context)
-                        .setPosition(photoPickBean.isShowCamera() ? getAdapterPosition() - 1 : getAdapterPosition())
+                previewBuilder.setPosition(photoPickBean.isShowCamera() ? getAdapterPosition() - 1 : getAdapterPosition())
                         .setMaxPickSize(photoPickBean.getMaxPickSize())
                         .setSelectPhotosInfo(selectPhotosInfo)
-//                        .setSelectPhotos(selectPhotos)
-                        .setOriginalPicture(photoPickBean.isOriginalPicture())
+                        .setShowOriginalButton(photoPickBean.isShowOriginalButton())
                         .build();
             }
         }
 
         private void changeBoxState(MediaData data) {
             String mimeType = selectPhotosInfo.size() > 0 ? selectPhotosInfo.get(0).getImageType() : "";
-
+            if (MimeType.isGif(getItem(getAdapterPosition()).getImageType())) {
+                previewBuilder.isSelectOrigin(true);
+            }
             if (!checkbox.isChecked()) {
                 selectPhotosInfo.remove(data);
             } else {

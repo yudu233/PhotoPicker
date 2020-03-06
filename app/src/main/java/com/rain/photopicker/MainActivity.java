@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
                         .pickMode(PhotoPickConfig.MODE_PICK_MORE)
                         .setMimeType(MimeType.TYPE_ALL)
                         .maxPickSize(9)
-                        .selectedMimeType(data)
                         .setCallback(new PhotoSelectCallback() {
                             @Override
                             public void selectResult(ArrayList<MediaData> photos) {

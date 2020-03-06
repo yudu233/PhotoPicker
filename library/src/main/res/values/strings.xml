@@ -29,6 +29,7 @@
     <string name="tips_min_image_num">图片最低选择不能少于%1$s个</string>
     <string name="tips_min_video_num">视频最低选择不能少于%1$s个</string>
     <string name="tips_video_max_num">你最多可以选择%1$s个视频</string>
+    <string name="tips_no">所选项目没有可发送的内容</string>
 
     <!-- android 6.0权限-->
     <string name="permission_tip_title">温馨提示</string>

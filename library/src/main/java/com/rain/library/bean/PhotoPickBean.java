@@ -72,7 +72,7 @@ public class PhotoPickBean implements Parcelable {
         this.clipPhoto = clipPhoto;
     }
 
-    public boolean isOriginalPicture() {
+    public boolean isShowOriginalButton() {
         return originalPicture;
     }
 
@@ -116,7 +116,7 @@ public class PhotoPickBean implements Parcelable {
         this.imageLoader = imageLoader;
     }
 
-    public void setOriginalPicture(boolean originalPicture) {
+    public void setShowOriginalButton(boolean originalPicture) {
         this.originalPicture = originalPicture;
     }
 
