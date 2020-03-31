@@ -9,6 +9,8 @@
     android:orientation="vertical">
 
     <com.rain.library.weidget.GalleryImageView
+        android:foreground="?attr/selectableItemBackground"
+        android:layout_margin="2dp"
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

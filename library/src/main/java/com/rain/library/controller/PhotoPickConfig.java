@@ -44,6 +44,9 @@ public class PhotoPickConfig {
 
     public static int DEFAULT_MIMETYPE = MimeType.TYPE_ALL;   //默认加载文件类型
 
+    public static String TOOLBAR_RIGHT_TEXT = "toobar_right_text";
+    private static String toolBarRightText = "发送";
+
 
     public static PhotoPickBean photoPickBean = new PhotoPickBean();
 
@@ -64,6 +67,7 @@ public class PhotoPickConfig {
 
     private void startPick(Activity activity, int requestCode) {
         Intent intent = new Intent();
+        intent.putExtra(TOOLBAR_RIGHT_TEXT , toolBarRightText);
         intent.setClass(activity, PhotoPickActivity.class);
         activity.startActivityForResult(intent, requestCode);
         activity.overridePendingTransition(R.anim.image_pager_enter_animation, 0);
@@ -203,6 +207,11 @@ public class PhotoPickConfig {
          */
         public Builder clipCircle(boolean showClipCircle) {
             pickBean.setClipMode(showClipCircle);
+            return this;
+        }
+
+        public Builder setToolBarRightText(String toolBarRightText) {
+            PhotoPickConfig.toolBarRightText = toolBarRightText;
             return this;
         }
 

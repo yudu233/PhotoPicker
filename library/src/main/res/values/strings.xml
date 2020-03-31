@@ -19,7 +19,7 @@
     <string name="cancel">取消</string>
     <string name="selected">选择</string>
     <string name="send">发送</string>
-    <string name="sends" formatted="false">发送(%d/%d)</string>
+    <string name="sends" formatted="false">(%d/%d)</string>
     <string name="image_size">原图(%s)</string>
     <string name="original_image">原图</string>
     <string name="gif">动图</string>

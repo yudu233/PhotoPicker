@@ -24,7 +24,6 @@ import com.rain.library.PhotoPickOptions;
 import com.rain.library.R;
 import com.rain.library.bean.MediaData;
 import com.rain.library.bean.MediaDirectory;
-import com.rain.library.bean.PhotoPickBean;
 import com.rain.library.controller.PhotoPickConfig;
 import com.rain.library.controller.PhotoPreviewConfig;
 import com.rain.library.impl.CommonResult;
@@ -69,11 +68,16 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
     private ArrayList<MediaData> photoList = new ArrayList<>();
     private ArrayList<MediaDirectory> photoDirectoryList = new ArrayList<>();
     private LoadingDialog loadingDialog;
+    private String toolBarRightText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_pick, true);
+
+        toolBarRightText = getIntent().getStringExtra(PhotoPickConfig.TOOLBAR_RIGHT_TEXT);
+        toolBarRightText = TextUtils.isEmpty(toolBarRightText) ? "发送" : toolBarRightText;
+
         if (PhotoPickConfig.getInstance() == null) {
             finish();
             return;
@@ -115,7 +119,7 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
         adapter.setOnUpdateListener(new PhotoPickAdapter.OnUpdateListener() {
             @Override
             public void updateToolBarTitle(String title) {
-                menuItem.setTitle(title);
+                menuItem.setTitle(toolBarRightText.concat(title));
             }
         });
 
@@ -227,7 +231,13 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
         if (!PhotoPickConfig.getInstance().isClipPhoto()) {
             getMenuInflater().inflate(R.menu.menu_ok, menu);
             menuItem = menu.findItem(R.id.ok);
+
+
+            if(!TextUtils.isEmpty(toolBarRightText)){
+                menuItem.setTitle(toolBarRightText);
+            }
         }
+
         return true;
     }
 
@@ -247,7 +257,7 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
                         //不做压缩处理 直接发送原图信息
                         sendImages();
                     }
-                }else {
+                } else {
                     PhotoPick.toast(getString(R.string.tips_no));
                     finish();
                 }

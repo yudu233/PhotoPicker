@@ -243,7 +243,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         if (selectPhotosInfo.isEmpty()) {
             menuItem.setTitle(R.string.send);
         } else {
-            menuItem.setTitle(getString(R.string.sends, selectPhotosInfo.size(), maxPickSize));
+            menuItem.setTitle("确定" + getString(R.string.sends, selectPhotosInfo.size(), maxPickSize));
         }
     }
 

@@ -1,5 +1,7 @@
 package com.rain.library.bean;
 
+import android.text.TextUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +44,8 @@ public class MediaDirectory {
         MediaDirectory directory = (MediaDirectory) o;
 
         if (!id.equals(directory.id)) return false;
+        if(TextUtils.isEmpty(directory.name)) return false;
+
         return name.equals(directory.name);
     }
 

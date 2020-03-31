@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.LoaderManager;
@@ -16,7 +15,6 @@ import com.rain.library.bean.MediaDirectory;
 import com.rain.library.data.Data;
 import com.rain.library.utils.ExternalStorage;
 import com.rain.library.utils.MimeType;
-import com.rain.library.utils.Rlog;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -97,7 +95,7 @@ public class MediaStoreHelper {
                 int media_id = data.getInt(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[0]));
                 int media_width = data.getInt(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[1]));
                 int media_height = data.getInt(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[2]));
-                // 使用DURATION获取的时长不准确
+                // 使用DURATION获取的时长不准确······
                 // media_duration = data.getLong(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[3]));
                 String media_path = data.getString(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[4]));
                 String media_type = data.getString(data.getColumnIndexOrThrow(LocalMediaLoader.FILE_PROJECTION[5]));
