@@ -259,7 +259,7 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
                     }
                 } else {
                     PhotoPick.toast(getString(R.string.tips_no));
-                    finish();
+                    //finish();
                 }
             }
         }

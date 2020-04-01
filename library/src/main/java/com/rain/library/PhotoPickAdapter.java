@@ -244,7 +244,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
 
     //如果是多选title才会变化，要不然单选的没有变
     public String getTitle() {
-        String title = context.getString(R.string.send);
+        String title = "";
         if (photoPickBean.getPickMode() == PhotoPickConfig.MODE_PICK_MORE && selectPhotosInfo.size() >= 1) {//不是单选，更新title
             title = context.getString(R.string.sends, selectPhotosInfo.size(), photoPickBean.getMaxPickSize());
         }

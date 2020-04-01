@@ -1,7 +1,6 @@
 package com.rain.library.loader;
 
 import android.content.Context;
-import android.view.View;
 import android.widget.ImageView;
 
 import java.io.Serializable;
@@ -21,24 +20,3 @@ public interface ImageLoader extends Serializable {
     void clearMemoryCache();
 
 }
-/*
- *   ┏┓　　　┏┓
- * ┏┛┻━━━┛┻┓
- * ┃　　　　　　　┃
- * ┃　　　━　　　┃
- * ┃　┳┛　┗┳　┃
- * ┃　　　　　　　┃
- * ┃　　　┻　　　┃
- * ┃　　　　　　　┃
- * ┗━┓　　　┏━┛
- *     ┃　　　┃
- *     ┃　　　┃
- *     ┃　　　┗━━━┓
- *     ┃　　　　　　　┣┓
- *     ┃　　　　　　　┏┛
- *     ┗┓┓┏━┳┓┏┛
- *       ┃┫┫　┃┫┫
- *       ┗┻┛　┗┻┛
- *        神兽保佑
- *        代码无BUG!
- */
