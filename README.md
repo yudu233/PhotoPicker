@@ -52,7 +52,7 @@ allprojects {
 **在APP目录下的build.gradle中添加依赖**
 
 ```java
-implementation 'com.github.yudu233:PhotoPicker:2.0.2'
+implementation 'com.github.yudu233:PhotoPicker:2.0.3'
 ```
 
 **AndroidManifest.xml 配置**
@@ -199,12 +199,15 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 [ucrop](https://github.com/Yalantis/uCrop)
 
 ## 更新日志
-# 当前版本：v2.0.2
-* 优化裁剪时不显示其他类型文件（video、gif）
-* 优化选择gif时默认原图，非原图时不压缩
+# 当前版本：v2.0.3(紧急修复)
+* 修复部分小米手机打开相册直接崩溃问题
 
 
 # 历史版本
+### v2.0.3
+* 优化裁剪时不显示其他类型文件（video、gif）
+* 优化选择gif时默认原图，非原图时不压缩
+---
 ### v2.0.1
 * 代码优化
 * 新增损坏文件判断过滤
@@ -242,7 +245,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 ```
 
 ### 联系方式
-有问题可以添加QQ：19880794
+有问题可以添加QQ：19880794(不常上线) 微信:dadada0413
 
 
 ### 效果预览
