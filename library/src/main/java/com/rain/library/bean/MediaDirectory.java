@@ -1,5 +1,7 @@
 package com.rain.library.bean;
 
+import com.rain.library.utils.Rlog;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +44,7 @@ public class MediaDirectory {
         MediaDirectory directory = (MediaDirectory) o;
 
         if (!id.equals(directory.id)) return false;
+        if (name == null) return false;
         return name.equals(directory.name);
     }
 
