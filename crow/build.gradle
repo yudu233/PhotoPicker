@@ -1,4 +1,6 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
+
+group = 'com.github.yudu233'
 
 android {
     compileSdkVersion rootProject.ext.android["compileSdkVersion"]
@@ -11,23 +13,29 @@ android {
         versionName rootProject.ext.android["versionName"]
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-    implementation 'com.github.bumptech.glide:glide:4.8.0'
-    implementation 'androidx.multidex:multidex:2.0.0'
-    //PhotoView
-    implementation project(':crow')
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api rootProject.ext.dependencies["photoView"]
+    api rootProject.ext.dependencies["luban"]
+    api rootProject.ext.dependencies["ucrop"]
+    api rootProject.ext.dependencies["subsampling_imageView"]
+
+    //slidingUpPanel
+    api 'com.sothree.slidinguppanel:library:3.4.0'
+
 }

@@ -22,11 +22,11 @@
         </activity>
 
         <activity
-            android:name="com.rain.library.ui.PhotoPickActivity"
+            android:name="com.rain.crow.ui.PhotoPickActivity"
             android:theme="@style/PhoAppTheme.AppTheme"/>
 
         <activity
-            android:name="com.rain.library.ui.PhotoPreviewActivity"
+            android:name="com.rain.crow.ui.PhotoPreviewActivity"
             android:theme="@style/PhoAppTheme.AppTheme"/>
 
         <activity
@@ -40,7 +40,7 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="@string/file_provider_authorities"
             android:exported="false"
             android:grantUriPermissions="true">

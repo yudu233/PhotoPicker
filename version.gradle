@@ -1,0 +1,17 @@
+ext {
+    android = [
+            compileSdkVersion: 28,
+            buildToolsVersion: "28.0.3",
+            minSdkVersion    : 21,
+            targetSdkVersion : 28,
+            versionCode      : 23,
+            versionName      : "2.0.3"
+    ]
+
+    dependencies = [
+            "photoView"     :   "com.github.chrisbanes:PhotoView:2.3.0",
+            "luban"         :   "top.zibin:Luban:1.1.8",
+            "ucrop"         :   "com.github.yalantis:ucrop:2.2.4",
+            "subsampling_imageView":    "com.davemorrissey.labs:subsampling-scale-image-view:3.10.0"
+    ]
+}

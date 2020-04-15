@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.Environment;
 import android.text.TextUtils;
 
-import com.rain.library.PhotoPickOptions;
+import com.rain.crow.PhotoPickOptions;
 
 import java.io.File;
 import java.io.IOException;
