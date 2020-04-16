@@ -1,4 +1,4 @@
-package com.rain.crow;
+package com.rain.crow.ui.activity;
 
 import android.graphics.Color;
 import android.os.Build;
@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+
+import com.rain.crow.R;
 
 /**
  * Descriptions : Activity基类

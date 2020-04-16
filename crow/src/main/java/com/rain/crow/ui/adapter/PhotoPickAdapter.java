@@ -1,4 +1,4 @@
-package com.rain.crow;
+package com.rain.crow.ui.adapter;
 
 import android.Manifest;
 import android.app.Activity;
@@ -8,6 +8,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -22,11 +24,14 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.rain.crow.PhotoPick;
+import com.rain.crow.PhotoPickOptions;
+import com.rain.crow.R;
 import com.rain.crow.bean.MediaData;
 import com.rain.crow.bean.PhotoPickBean;
 import com.rain.crow.controller.PhotoPickConfig;
 import com.rain.crow.controller.PhotoPreviewConfig;
-import com.rain.crow.ui.PhotoPickActivity;
+import com.rain.crow.ui.activity.PhotoPickActivity;
 import com.rain.crow.utils.MimeType;
 import com.rain.crow.utils.UCropUtils;
 import com.rain.crow.utils.UtilsHelper;
@@ -111,18 +116,10 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
 
             imageView.getLayoutParams().height = imageSize;
             imageView.getLayoutParams().width = imageSize;
-            checkbox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    changeBoxState(getItem(getAdapterPosition()));
-                }
-            });
-            itemView.findViewById(R.id.photo_pick_rl).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (PhotoPick.isTimeEnabled()) {
-                        doSomeThing();
-                    }
+            checkbox.setOnClickListener(v -> changeBoxState(getItem(getAdapterPosition())));
+            itemView.findViewById(R.id.photo_pick_rl).setOnClickListener(v -> {
+                if (PhotoPick.isTimeEnabled()) {
+                    doSomeThing();
                 }
             });
         }
@@ -212,7 +209,7 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
         String clipImageName = "clip_" + (System.currentTimeMillis() / 1000) + ".jpg";
         File clipImage = new File(PhotoPickOptions.DEFAULT.imagePath, clipImageName);
         clipImagePath = clipImage.getAbsolutePath();
-        UCropUtils.start((Activity) context, new File(picPath), clipImage, photoPickBean.getClipMode());
+        UCropUtils.start((AppCompatActivity) context, new File(picPath), clipImage, photoPickBean.getClipMode());
     }
 
     /**
@@ -250,15 +247,6 @@ public class PhotoPickAdapter extends RecyclerView.Adapter {
         }
         return title;
     }
-
-    /**
-     * get selected photos path
-     *
-     * @return selected photos
-     */
-//    public ArrayList<String> getSelectPhotos() {
-//        return selectPhotos;
-//    }
 
     /**
      * get selected photos info

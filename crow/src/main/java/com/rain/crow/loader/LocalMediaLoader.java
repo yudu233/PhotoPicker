@@ -11,13 +11,14 @@ import com.rain.crow.utils.MimeType;
 import java.util.Locale;
 
 /**
- * @author:duyu
+ * @author: duyu
  * @org :   www.yudu233.com
  * @email : yudu233@gmail.com
  * @date :  2019/7/10 21:13
  * @filename : LocalMediaLoader
- * @describe :
+ * @describe : 数据库读取获取Cursor的Loader类
  */
+
 public class LocalMediaLoader extends CursorLoader {
 
     private static final Uri QUERY_URI = MediaStore.Files.getContentUri("external");

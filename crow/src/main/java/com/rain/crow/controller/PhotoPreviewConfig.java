@@ -8,7 +8,7 @@ import com.rain.crow.PhotoPick;
 import com.rain.crow.R;
 import com.rain.crow.bean.MediaData;
 import com.rain.crow.bean.PhotoPreviewBean;
-import com.rain.crow.ui.PhotoPreviewActivity;
+import com.rain.crow.ui.activity.PhotoPreviewActivity;
 
 import java.util.ArrayList;
 

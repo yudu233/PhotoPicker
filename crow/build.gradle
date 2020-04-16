@@ -1,7 +1,5 @@
 apply plugin: 'com.android.library'
 
-group = 'com.github.yudu233'
-
 android {
     compileSdkVersion rootProject.ext.android["compileSdkVersion"]
     buildToolsVersion rootProject.ext.android["buildToolsVersion"]
@@ -14,11 +12,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    compileOptions {
-        targetCompatibility JavaVersion.VERSION_1_8
-        sourceCompatibility JavaVersion.VERSION_1_8
-    }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -26,6 +19,10 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -33,9 +30,7 @@ dependencies {
     api rootProject.ext.dependencies["photoView"]
     api rootProject.ext.dependencies["luban"]
     api rootProject.ext.dependencies["ucrop"]
+    api rootProject.ext.dependencies["slidinguppanel"]
     api rootProject.ext.dependencies["subsampling_imageView"]
-
-    //slidingUpPanel
-    api 'com.sothree.slidinguppanel:library:3.4.0'
 
 }

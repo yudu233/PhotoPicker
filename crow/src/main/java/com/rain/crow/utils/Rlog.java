@@ -35,12 +35,14 @@ import javax.xml.transform.stream.StreamSource;
 
 
 /**
- * Created by Gh0st on 2016/6/7 007.
- * https://github.com/ZhaoKaiQiang/KLog
- * 日志工具
+ * @author duyu
+ * @version 1.0
+ * @desc 日志工具
+ * @filename Rlog.java
+ * @date 2020/4/16 10:33
  */
 public class Rlog {
-    private static String TAG = "Entrepreneurial";
+    private static String TAG = "Crow";
     private static boolean LOG_DEBUG = true;
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     private static final int VERBOSE = 2;

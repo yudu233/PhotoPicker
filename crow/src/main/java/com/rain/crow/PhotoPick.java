@@ -6,7 +6,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.Settings;
+
 import androidx.appcompat.app.AlertDialog;
+
 import android.widget.Toast;
 
 import com.rain.crow.bean.MediaData;
@@ -54,13 +56,14 @@ public final class PhotoPick {
     }
 
     public static void startCompression(Context context, ArrayList<MediaData> mediaData, final CommonResult result) {
+        Rlog.d("compression image size is " + mediaData.size());
         List<String> paths = new ArrayList<>();
         for (MediaData data : mediaData) {
             if (data.isCamera()) {
                 paths.add(data.getCameraImagePath());
             } else if (data.isClip()) {
                 paths.add(data.getClipImagePath());
-            } else{
+            } else {
                 paths.add(data.getOriginalPath());
             }
         }
@@ -71,7 +74,7 @@ public final class PhotoPick {
                 .setCompressListener(new OnCompressListener() {
                     @Override
                     public void onStart() {
-                        Rlog.e("Rain", "Luban compression start");
+                        Rlog.d("Luban compression start");
                     }
 
                     @Override
@@ -82,7 +85,7 @@ public final class PhotoPick {
                     @Override
                     public void onError(Throwable e) {
                         result.onSuccess(null, false);
-                        Rlog.e("Rain", "onError:" + e.getMessage());
+                        Rlog.d("onError:" + e.getMessage());
 
                     }
                 }).launch();
@@ -92,19 +95,11 @@ public final class PhotoPick {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(UtilsHelper.getString(R.string.permission_tip_title));
         builder.setMessage(UtilsHelper.getString(resId));
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                activity.finish();
-            }
-        });
-        builder.setPositiveButton(R.string.settings, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                intent.setData(Uri.parse("package:" + activity.getPackageName()));
-                activity.startActivity(intent);
-            }
+        builder.setNegativeButton(R.string.cancel, (dialogInterface, i) -> activity.finish());
+        builder.setPositiveButton(R.string.settings, (dialogInterface, i) -> {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.setData(Uri.parse("package:" + activity.getPackageName()));
+            activity.startActivity(intent);
         });
         builder.setCancelable(false);
         return builder;

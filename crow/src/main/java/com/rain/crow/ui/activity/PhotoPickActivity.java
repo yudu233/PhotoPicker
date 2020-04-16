@@ -1,4 +1,4 @@
-package com.rain.crow.ui;
+package com.rain.crow.ui.activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -6,20 +6,18 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.rain.crow.BaseActivity;
-import com.rain.crow.PhotoGalleryAdapter;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.rain.crow.PhotoPick;
-import com.rain.crow.PhotoPickAdapter;
 import com.rain.crow.PhotoPickOptions;
 import com.rain.crow.R;
 import com.rain.crow.bean.MediaData;
@@ -29,6 +27,8 @@ import com.rain.crow.controller.PhotoPreviewConfig;
 import com.rain.crow.impl.CommonResult;
 import com.rain.crow.loader.MediaStoreHelper;
 import com.rain.crow.observer.UpdateUIObserver;
+import com.rain.crow.ui.adapter.PhotoGalleryAdapter;
+import com.rain.crow.ui.adapter.PhotoPickAdapter;
 import com.rain.crow.utils.MimeType;
 import com.rain.crow.utils.Rlog;
 import com.rain.crow.utils.UtilsHelper;
@@ -47,7 +47,7 @@ import java.util.Observer;
 
 /**
  * Descriptions :照片选择器
- * GitHub : https://github.com/Rain0413
+ * GitHub : https://github.com/yudu233
  * Blog   : http://blog.csdn.net/sinat_33680954
  * Created by Rain on 16-12-7.
  */
@@ -68,6 +68,7 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
     private ArrayList<MediaData> photoList = new ArrayList<>();
     private ArrayList<MediaDirectory> photoDirectoryList = new ArrayList<>();
     private LoadingDialog loadingDialog;
+    private MediaStoreHelper mediaStoreHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +89,7 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
      * 初始化控件
      */
     private void init() {
+        mediaStoreHelper = new MediaStoreHelper();
         //获取全部媒体文件
         loadMediaData();
 
@@ -111,23 +113,15 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
         gallery_rv.setAdapter(galleryAdapter);
 
         //当选择照片的时候更新toolbar的标题
-        adapter.setOnUpdateListener(new PhotoPickAdapter.OnUpdateListener() {
-            @Override
-            public void updateToolBarTitle(String title) {
-                menuItem.setTitle(title);
-            }
-        });
+        adapter.setOnUpdateListener(title -> menuItem.setTitle(title));
 
         //相册列表item选择的时候关闭slidingUpPanelLayout并更新照片adapter
-        galleryAdapter.setOnItemClickListener(new PhotoGalleryAdapter.OnItemClickListener() {
-            @Override
-            public void onClick(ArrayList<MediaData> photos, int position) {
-                if (adapter != null) {
-                    PhotoPreviewConfig.setPreviewPhotos(photos);
-                    slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                    toolbar.setTitle(photoDirectoryList.get(position).getName());
-                    adapter.refresh(photos);
-                }
+        galleryAdapter.setOnItemClickListener((photos, position) -> {
+            if (adapter != null) {
+                PhotoPreviewConfig.setPreviewPhotos(photos);
+                slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                toolbar.setTitle(photoDirectoryList.get(position).getName());
+                adapter.refresh(photos);
             }
         });
 
@@ -139,15 +133,11 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
             }
 
             @Override
-            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState,
+                                            SlidingUpPanelLayout.PanelState newState) {
             }
         });
-        slidingUpPanelLayout.setFadeOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-            }
-        });
+        slidingUpPanelLayout.setFadeOnClickListener(v -> slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED));
         UpdateUIObserver.getInstance().addObserver(this);
     }
 
@@ -155,31 +145,23 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
      * 获取媒体文件
      */
     private void loadMediaData() {
-        MediaStoreHelper.getData(this, PhotoPickConfig.getInstance().getMimeType(),
-                PhotoPickConfig.getInstance().isShowGif(), new MediaStoreHelper.PhotosResultCallback() {
-                    @Override
-                    public void onResultCallback(final List<MediaDirectory> directories) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                List<MediaData> photos = directories.get(0).getMediaData();
-                                for (int i = 0; i < photos.size(); i++) {
-                                    if (UtilsHelper.isFileExist(photos.get(i).getOriginalPath()))
-                                        photoList.add(photos.get(i));
-                                }
-                                photoDirectoryList.add(directories.get(0));
-                                for (int i = 1; i < directories.size(); i++) {
-                                    if (UtilsHelper.isFileExist(directories.get(i).getDirPath())) {
-                                        photoDirectoryList.add(directories.get(i));
-                                    }
-                                }
-                                PhotoPreviewConfig.setPreviewPhotos(photoList);
-                                adapter.refresh(photoList);
-                                galleryAdapter.refresh(photoDirectoryList);
-                            }
-                        });
+        mediaStoreHelper.getData(this, PhotoPickConfig.getInstance().getMimeType(),
+                PhotoPickConfig.getInstance().isShowGif(), directories -> runOnUiThread(() -> {
+                    List<MediaData> photos = directories.get(0).getMediaData();
+                    for (int i = 0; i < photos.size(); i++) {
+                        if (UtilsHelper.isFileExist(photos.get(i).getOriginalPath()))
+                            photoList.add(photos.get(i));
                     }
-                });
+                    photoDirectoryList.add(directories.get(0));
+                    for (int i = 1; i < directories.size(); i++) {
+                        if (UtilsHelper.isFileExist(directories.get(i).getDirPath())) {
+                            photoDirectoryList.add(directories.get(i));
+                        }
+                    }
+                    PhotoPreviewConfig.setPreviewPhotos(photoList);
+                    adapter.refresh(photoList);
+                    galleryAdapter.refresh(photoDirectoryList);
+                }));
     }
 
     //请求权限(先检查)
@@ -246,7 +228,7 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
                         //不做压缩处理 直接发送原图信息
                         sendImages();
                     }
-                }else {
+                } else {
                     PhotoPick.toast(getString(R.string.tips_no));
                     finish();
                 }
@@ -264,13 +246,13 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
                 loadingDialog.dismiss();
             }
             if (success && file.exists()) {
-                Rlog.e(TAG, "Luban compression success:" + file.getAbsolutePath() + " ; image length = " + file.length());
+                Rlog.d(TAG, "Luban compression success:" + file.getAbsolutePath() + " ; image length = " + file.length());
                 MediaData mediaData = adapter.getSelectPhotosInfo().get(index);
                 mediaData.setCompressionPath(file.getAbsolutePath());
                 mediaData.setCompressed(true);
                 index++;
                 if (index > 0 && index == adapter.getSelectPhotosInfo().size()) {
-                    Rlog.e(TAG, "all select image compression success!");
+                    Rlog.d(TAG, "all select image compression success!");
                     sendImages();
                 }
             } else {
@@ -295,6 +277,7 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK) {
             return;
         }
@@ -342,18 +325,15 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
                     photo.setImageType(MimeType.createImageType(adapter.getCameraImagePath()));
                     photo.setMimeType(MimeType.TYPE_IMAGE);
                     PhotoPick.startCompression(PhotoPickActivity.this,
-                            new ArrayList<>(Arrays.asList(photo)), new CommonResult<File>() {
-                                @Override
-                                public void onSuccess(File data, boolean success) {
-                                    if (success) {
-                                        photo.setCompressed(true);
-                                        photo.setCompressionPath(data.getAbsolutePath());
-                                    } else {
-                                        photo.setCompressed(false);
-                                    }
-                                    adapter.getSelectPhotosInfo().add(photo);
-                                    sendImages();
+                            new ArrayList<>(Arrays.asList(photo)), (CommonResult<File>) (data, success) -> {
+                                if (success) {
+                                    photo.setCompressed(true);
+                                    photo.setCompressionPath(data.getAbsolutePath());
+                                } else {
+                                    photo.setCompressed(false);
                                 }
+                                adapter.getSelectPhotosInfo().add(photo);
+                                sendImages();
                             });
                 } else {
                     MediaData mediaData = new MediaData();

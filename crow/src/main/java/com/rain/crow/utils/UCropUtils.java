@@ -1,8 +1,9 @@
 package com.rain.crow.utils;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.net.Uri;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.rain.crow.PhotoPick;
 import com.yalantis.ucrop.UCrop;
@@ -15,7 +16,7 @@ import java.io.File;
  * Created by Administrator on 2017/5/3 0003.
  */
 public class UCropUtils {
-    public static void start(Activity mActivity, File sourceFile, File destinationFile, boolean showClipCircle) {
+    public static void start(AppCompatActivity mActivity, File sourceFile, File destinationFile, boolean showClipCircle) {
         UCrop uCrop = UCrop.of(Uri.fromFile(sourceFile), Uri.fromFile(destinationFile));
         //.withAspectRatio(aspectRatioX, aspectRatioY)  //动态的设置图片的宽高比
 

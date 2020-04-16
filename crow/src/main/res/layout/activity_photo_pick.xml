@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/toolbar_layout"/>
+    <include layout="@layout/toolbar_layout" />
 
-    <com.sothree.slidinguppanel.SlidingUpPanelLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/slidingUpPanelLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -20,19 +18,12 @@
         app:umanoScrollableView="@+id/gallery_rcl"
         app:umanoShadowHeight="4dp">
 
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginBottom="48dp"
-                android:layout_weight="1"/>
-        </LinearLayout>
+            android:layout_marginBottom="48dp"
+            android:layout_weight="1" />
 
         <LinearLayout
             android:id="@+id/dragView"
@@ -47,7 +38,7 @@
                 android:id="@+id/view"
                 android:layout_width="match_parent"
                 android:layout_height="1px"
-                android:background="@color/fresco_wait_color"/>
+                android:background="@color/fresco_wait_color" />
 
             <TextView
                 android:id="@+id/gallery"
@@ -58,12 +49,12 @@
                 android:minHeight="48dp"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:text="@string/gallery"
-                android:textSize="@dimen/text_size_16sp"/>
+                android:textSize="@dimen/text_size_16sp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/gallery_rcl"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
         </LinearLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 </LinearLayout>

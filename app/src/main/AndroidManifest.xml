@@ -22,11 +22,11 @@
         </activity>
 
         <activity
-            android:name="com.rain.crow.ui.PhotoPickActivity"
+            android:name="com.rain.crow.ui.activity.PhotoPickActivity"
             android:theme="@style/PhoAppTheme.AppTheme"/>
 
         <activity
-            android:name="com.rain.crow.ui.PhotoPreviewActivity"
+            android:name="com.rain.crow.ui.activity.PhotoPreviewActivity"
             android:theme="@style/PhoAppTheme.AppTheme"/>
 
         <activity

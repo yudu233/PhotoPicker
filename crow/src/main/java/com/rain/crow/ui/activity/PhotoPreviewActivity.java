@@ -1,4 +1,4 @@
-package com.rain.crow.ui;
+package com.rain.crow.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -23,7 +23,6 @@ import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.github.chrisbanes.photoview.OnPhotoTapListener;
 import com.github.chrisbanes.photoview.PhotoView;
-import com.rain.crow.BaseActivity;
 import com.rain.crow.PhotoPick;
 import com.rain.crow.PhotoPickOptions;
 import com.rain.crow.R;
@@ -334,7 +333,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
         public void onSuccess(File file, boolean success) {
 
             if (success && file.exists()) {
-                Rlog.e("Rain", "Luban compression success:" + file.getAbsolutePath() + " ; image length = " + file.length());
+                Rlog.d("Rain", "Luban compression success:" + file.getAbsolutePath() + " ; image length = " + file.length());
                 MediaData photo = selectPhotosInfo.get(index);
                 photo.setCompressed(true);
                 if (MimeType.isGif(photo.getImageType())) {
@@ -345,7 +344,7 @@ public class PhotoPreviewActivity extends BaseActivity implements OnPhotoTapList
                 index++;
 
                 if (index > 0 && index == selectPhotosInfo.size()) {
-                    Rlog.e("Rain", "all select image compression success!");
+                    Rlog.d("Rain", "all select image compression success!");
                     if (loadingDialog != null) {
                         loadingDialog.dismiss();
                     }

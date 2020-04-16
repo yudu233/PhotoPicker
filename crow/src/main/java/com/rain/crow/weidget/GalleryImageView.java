@@ -5,14 +5,15 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.widget.ImageView;
+
+import androidx.appcompat.widget.AppCompatImageView;
 
 /**
  * Describe :自定义 Image 用来兼容 fresco
  * Email:baossrain99@163.com
  * Created by Rain on 17-5-3.
  */
-public class GalleryImageView extends ImageView {
+public class GalleryImageView extends AppCompatImageView {
 
     private static final String TAG = "GalleryImageView";
 

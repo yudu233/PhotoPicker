@@ -1,4 +1,4 @@
-package com.rain.crow;
+package com.rain.crow.ui.adapter;
 
 
 import android.app.Activity;
@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.rain.crow.R;
 import com.rain.crow.bean.MediaData;
 import com.rain.crow.bean.MediaDirectory;
 import com.rain.crow.controller.PhotoPickConfig;

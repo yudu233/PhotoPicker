@@ -8,7 +8,7 @@ import com.rain.crow.bean.MediaData;
 import com.rain.crow.bean.PhotoPickBean;
 import com.rain.crow.impl.PhotoSelectCallback;
 import com.rain.crow.loader.ImageLoader;
-import com.rain.crow.ui.PhotoPickActivity;
+import com.rain.crow.ui.activity.PhotoPickActivity;
 import com.rain.crow.utils.MimeType;
 
 import java.util.List;

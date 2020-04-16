@@ -195,7 +195,7 @@ public class MimeType {
                 File file = new File(path);
                 String fileName = file.getName();
                 int last = fileName.lastIndexOf(".") + 1;
-                String temp = fileName.substring(last, fileName.length());
+                String temp = fileName.substring(last);
                 return "image/" + temp;
             }
         } catch (Exception e) {
@@ -245,7 +245,7 @@ public class MimeType {
         try {
             int index = path.lastIndexOf(".");
             if (index > 0) {
-                String imageType = path.substring(index, path.length());
+                String imageType = path.substring(index);
                 switch (imageType) {
                     case ".png":
                     case ".PNG":
