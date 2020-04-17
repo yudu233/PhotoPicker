@@ -216,6 +216,7 @@ public class PhotoPickActivity extends BaseActivity implements Observer {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (PhotoPick.isTimeEnabled()) {
             if (item.getItemId() == R.id.ok) {
+                index = 0;
                 checkImages();
                 if (adapter != null && !adapter.getSelectPhotosInfo().isEmpty()) {
                     MediaData mediaData = adapter.getSelectPhotosInfo().get(0);
