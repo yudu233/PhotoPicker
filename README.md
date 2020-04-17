@@ -7,7 +7,6 @@ Android 照片选择器 ，支持单图、多图、视频、gif选择，内置�
 简书：[PhotoPicker](http://www.jianshu.com/p/a6b5831797d0)
 
 ### 各位读者来点Star支持一下吧
-==如使用请尽快更新到2.0.0版本+，本版本新增多个功能，修复旧版本已知问题==
 
 参考项目：
 - https://github.com/donglua/PhotoPicker
@@ -52,7 +51,10 @@ allprojects {
 **在APP目录下的build.gradle中添加依赖**
 
 ```java
-implementation 'com.github.yudu233:PhotoPicker:2.0.3'
+//support版本
+implementation 'com.github.yudu233:PhotoPicker:2.0.4'
+//androidx版本
+implementation 'com.github.yudu233:PhotoPicker:3.0.0'
 ```
 
 **AndroidManifest.xml 配置**
@@ -101,7 +103,7 @@ new PhotoPickConfig
 
 > **pickMode(PhotoPickConfig.MODE_PICK_SINGLE)**</br>
     设置照片选择模式(单选、多选)，默认为单选
-    
+
 > **maxPickSize(9)**</br>
     多选时可以选择的图片数量，当pickMode为多选时默认为9张，单选默认为1
 
@@ -116,17 +118,17 @@ new PhotoPickConfig
 
 > **showOriginal(true)**</br>
     是否显示原图按钮，默认显示，选中后若开启了图片压缩将不再压缩图片，返回原图
-    
+
 > **startCompression(true)**</br>
     是否启动图片压缩功能，默认开启(目前图片裁剪后没有再做压缩处理)
-    
+
 > **selectedMimeType(List<MediaData> data)**</br>
     传入上一次选中的数据，用于判断下次进入是否可展示其他类型文件。如类似朋友圈，第一次选择了图片，此时数据类型为MimeType.TYPE_ALL，打开时将过滤视频文件。</br>
     **==注：如果没有多类型的文件限制，可以不加该api==**
-    
+
 > **setCallback(new PhotoSelectCallback())**</br>
     回调方式1：setCallback();回调方式2：onActivityResult()
-    
+
 ### 初始化
 > 在Application中初始化：
 ```
@@ -145,8 +147,8 @@ new PhotoPickConfig
         //自定义主题颜色 同步APP
         options.photoPickThemeColor = R.color.colorAccent;
         return options;
-    }   
-        
+    }
+
 ```
 
 ###  回调方式
@@ -158,7 +160,7 @@ new PhotoPickConfig
     .setCallback(new PhotoSelectCallback() {
         @Override
         public void selectResult(ArrayList<MediaData> photos) {
-            
+
         }).build();
 ```
 #### 方式二：
@@ -199,12 +201,20 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 [ucrop](https://github.com/Yalantis/uCrop)
 
 ## 更新日志
-# 当前版本：v2.0.3(紧急修复)
-* 修复部分小米手机打开相册直接崩溃问题
+# 当前版本：v3.0.0
+* 支持AndroidX
+* 修复已知的问题
+* 移除无效代码
 
 
 # 历史版本
-### v2.0.3
+### v2.0.4
+* 新增文件夹有效性校验
+---
+### v2.0.3(紧急修复)
+* 修复部分小米手机打开相册直接崩溃问题
+---
+### v2.0.2
 * 优化裁剪时不显示其他类型文件（video、gif）
 * 优化选择gif时默认原图，非原图时不压缩
 ---
