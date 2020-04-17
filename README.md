@@ -7,7 +7,6 @@ Android 照片选择器 ，支持单图、多图、视频、gif选择，内置�
 简书：[PhotoPicker](http://www.jianshu.com/p/a6b5831797d0)
 
 ### 各位读者来点Star支持一下吧
-==如使用请尽快更新到2.0.0版本+，本版本新增多个功能，修复旧版本已知问题==
 
 参考项目：
 - https://github.com/donglua/PhotoPicker
@@ -52,7 +51,10 @@ allprojects {
 **在APP目录下的build.gradle中添加依赖**
 
 ```java
-implementation 'com.github.yudu233:PhotoPicker:2.0.3'
+//support版本
+implementation 'com.github.yudu233:PhotoPicker:2.0.4'
+//androidx版本
+implementation 'com.github.yudu233:PhotoPicker:3.0.0'
 ```
 
 **AndroidManifest.xml 配置**
@@ -199,12 +201,20 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 [ucrop](https://github.com/Yalantis/uCrop)
 
 ## 更新日志
-# 当前版本：v2.0.3(紧急修复)
-* 修复部分小米手机打开相册直接崩溃问题
+# 当前版本：v3.0.0
+* 支持AndroidX
+* 修复已知的问题
+* 移除无效代码
 
 
 # 历史版本
-### v2.0.3
+### v2.0.4
+* 新增文件夹有效性校验
+---
+### v2.0.3(紧急修复)
+* 修复部分小米手机打开相册直接崩溃问题
+---
+### v2.0.2
 * 优化裁剪时不显示其他类型文件（video、gif）
 * 优化选择gif时默认原图，非原图时不压缩
 ---
