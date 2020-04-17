@@ -9,7 +9,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
-import com.rain.library.loader.ImageLoader;
+import com.rain.crow.loader.ImageLoader;
 import com.rain.photopicker.R;
 
 /**

@@ -2,9 +2,10 @@ package com.rain.photopicker;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.multidex.MultiDex;
 
-import com.rain.library.PhotoPick;
+import androidx.multidex.MultiDex;
+
+import com.rain.crow.PhotoPick;
 
 /**
  * Describe:
