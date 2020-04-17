@@ -65,7 +65,7 @@ public final class PhotoPick {
                 paths.add(data.getOriginalPath());
             }
         }
-
+        ExternalStorage.getInstance().checkStorageValid();
         Luban.with(context)
                 .load(paths)
                 .setTargetDir(PhotoPickOptions.DEFAULT.imagePath)
