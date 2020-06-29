@@ -53,8 +53,6 @@ allprojects {
 ```java
 //support版本
 implementation 'com.github.yudu233:PhotoPicker:2.0.4'
-//androidx版本
-implementation 'com.github.yudu233:PhotoPicker:3.0.0'
 ```
 
 **AndroidManifest.xml 配置**
