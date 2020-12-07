@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Environment;
 import android.text.TextUtils;
 
-import com.rain.crow.PhotoPickOptions;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +22,6 @@ public class PhotoPickOptionsConfig {
         PhotoPickOptions options = new PhotoPickOptions();
         options.filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "eWorld/";
         options.imagePath = options.filePath +  "cytx/";
-        options.photoPickAuthority = context.getString(R.string.file_provider_authorities);
         options.photoPickThemeColor = R.color.colorAccent;
         return options;
     }

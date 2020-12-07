@@ -7,11 +7,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.rain.crow.bean.MediaData;
-import com.rain.crow.controller.PhotoPickConfig;
-import com.rain.crow.impl.PhotoSelectCallback;
-import com.rain.crow.utils.MimeType;
+import com.rain.photopicker.bean.MediaData;
+import com.rain.photopicker.controller.PhotoPickConfig;
 import com.rain.photopicker.glide.GlideImageLoader;
+import com.rain.photopicker.impl.PhotoSelectCallback;
+import com.rain.photopicker.utils.MimeType;
 
 import java.util.ArrayList;
 import java.util.List;

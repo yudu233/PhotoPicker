@@ -8,7 +8,8 @@ import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
 
-import com.rain.crow.utils.UtilsHelper;
+
+import com.rain.photopicker.utils.UtilsHelper;
 
 import java.io.File;
 import java.io.FileOutputStream;

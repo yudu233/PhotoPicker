@@ -5,7 +5,6 @@ import android.content.Context;
 
 import androidx.multidex.MultiDex;
 
-import com.rain.crow.PhotoPick;
 
 /**
  * Describe:

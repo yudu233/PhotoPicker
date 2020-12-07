@@ -1,1 +1,2 @@
-include ':app', ':crow'
+include ':photopicker'
+include ':app'

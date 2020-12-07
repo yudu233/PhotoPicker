@@ -1,0 +1,39 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode 23
+        versionName "2.0.3"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation "com.github.chrisbanes:PhotoView:2.3.0"
+    implementation "top.zibin:Luban:1.1.8"
+    implementation "com.github.yalantis:ucrop:2.2.4"
+    implementation "com.sothree.slidinguppanel:library:3.4.0"
+    implementation  "com.davemorrissey.labs:subsampling-scale-image-view:3.10.0"
+}

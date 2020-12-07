@@ -6,13 +6,12 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.widget.ImageView;
 
 /**
  * Descriptions :自定义ImageView
  * Created by Rain on 16-9-14.
  */
-public class GridImageView extends ImageView {
+public class GridImageView extends androidx.appcompat.widget.AppCompatImageView {
 
     public GridImageView(Context context, AttributeSet attrs) {
         super(context, attrs);

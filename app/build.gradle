@@ -1,15 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion rootProject.ext.android["compileSdkVersion"]
-    buildToolsVersion rootProject.ext.android["buildToolsVersion"]
-
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
     defaultConfig {
-        minSdkVersion rootProject.ext.android["minSdkVersion"]
-        targetSdkVersion rootProject.ext.android["targetSdkVersion"]
-        versionCode rootProject.ext.android["versionCode"]
-        versionName rootProject.ext.android["versionName"]
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode 23
+        versionName "2.0.3"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -25,8 +24,11 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    testImplementation 'junit:junit:4.12'
-    implementation project(':crow')
-    implementation rootProject.ext.dependencies["multidex"]
-    implementation rootProject.ext.dependencies["glide"]
+    implementation project(':photopicker')
+
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    implementation "com.github.chrisbanes:PhotoView:2.3.0"
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+
 }
